@@ -1,0 +1,826 @@
+﻿@using MvcApplication1.ViewModel;
+@{
+    ViewBag.Title = "TRMS - My Dashboard";
+    Layout = "~/Areas/EMP/Views/Shared/_Layout.cshtml";
+
+    string EMP_STD_LEC_LoginUserType = "";
+    if (MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeFunctionSLSID.ToString().Contains("student"))
+    {
+        EMP_STD_LEC_LoginUserType = "STD";
+    }
+    else if (MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeFunctionSLSID.ToString().Contains("lecturer"))
+    {
+        EMP_STD_LEC_LoginUserType = "LEC";
+    }
+    else
+    {
+        EMP_STD_LEC_LoginUserType = "EMP";
+    }
+}
+
+@model ViewModels.DashboardData
+
+@{
+    //Present - Leave - Absent
+    string pr_chart_color_a = "#66bb6a ", pr_chart_color_b = "#7266ba", pr_chart_color_c = "#ee6e73";
+    //Ontime - Late - Earlyout
+    string pn_chart_color_d = "#29b6f6", pn_chart_color_e = "#ffc107", pn_chart_color_f = "#f76397", pn_chart_color_g = "#FFFF6F";
+}
+
+<style>
+    #chartLeavesManager {
+        height: 280px;
+    }
+
+    #circle1 {
+        width: 12px;
+        height: 12px;
+        background-color: #3bafda;
+        display: inline-block;
+        border-radius: 50%;
+    }
+
+    #circle2 {
+        margin-left: 10px;
+        width: 12px;
+        height: 12px;
+        background: #f76397;
+        display: inline-block;
+        border-radius: 50%;
+    }
+
+    #circle3 {
+        margin-left: 10px;
+        width: 12px;
+        height: 12px;
+        background: #00b19d;
+        display: inline-block;
+        border-radius: 50%;
+    }
+</style>
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("dashboard.welcome")@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("dashboard.Name") <span class="text-success">@GlobalVariables.CheckNULLValidation(GlobalVariables.GV_EmployeeName)</span> </h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/EMP/EMP/Dashboard">@EMP_STD_LEC_LoginUserType</a></li>
+                    <li class="breadcrumb-item active">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Menu.emp.title.dashboard")</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="mdi mdi-account-box"></i>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Menu.emp.title.dashboard")</h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    @{
+                        //Model.dashboardAttendanceChart = "P=" + perPresent + ",L=" + perLeave + ",A=" + perAbsent + ",O=" + perOnTime + ",T=" + perLate + ",E=" + perEarlyGone;
+
+                        string perPresent = "0", perLeave = "0", perAbsent = "0", perOnTime = "0", perLate = "0", perOutTime = "0", perEarlyGone = "0";
+
+                        if (Model.dashboardAttendanceChart != null && Model.dashboardAttendanceChart != "")
+                        {
+                            string strCounterPercent = Model.dashboardAttendanceChart.ToString();
+                            string[] strMain = strCounterPercent.Split(',');
+
+                            if (strMain.Length == 7)
+                            {
+                                string[] strInner0 = strMain[0].Split('=');
+                                string[] strInner1 = strMain[1].Split('=');
+                                string[] strInner2 = strMain[2].Split('=');
+                                string[] strInner3 = strMain[3].Split('=');
+                                string[] strInner4 = strMain[4].Split('=');
+                                string[] strInner5 = strMain[5].Split('=');
+                                string[] strInner6 = strMain[6].Split('=');
+
+                                perPresent = strInner0[1].ToString();
+                                perLeave = strInner1[1].ToString();
+                                perAbsent = strInner2[1].ToString();
+                                perOnTime = strInner3[1].ToString();
+                                perLate = strInner4[1].ToString();
+                                perOutTime = strInner5[1].ToString();
+                                perEarlyGone = strInner6[1].ToString();
+                            }
+                        }
+                    }
+
+                    <div class="row">
+                        <div class="col-lg-4 col-md-4">
+                            <div class="widget-simple-chart text-right card-box" style="background-color: #E0F1E2; border: 1px #66BB6A dotted;">
+                                <div class="circliful-chart" data-dimension="90" data-text="@perPresent%" data-width="5" data-fontsize="14" data-percent="@perPresent" data-fgcolor="@pr_chart_color_a" data-bgcolor="#ebeff2"></div>
+                                <h3 class="m-t-10" style="color:@pr_chart_color_a" title="@Model.dashboardElement.present">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Menu.emp.present")</h3>
+                                <p class="text-muted m-b-10">in @DateTime.Now.ToString("MMM yyyy")</p>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 col-md-4">
+                            <div class="widget-simple-chart text-right card-box" style="background-color: #DCD6ED; border: 1px #7866BA dotted;">
+                                <div class="circliful-chart" data-dimension="90" data-text="@perLeave%" data-width="5" data-fontsize="14" data-percent="@perLeave" data-fgcolor="@pr_chart_color_b" data-bgcolor="#ebeff2"></div>
+                                <h3 class="m-t-10" style="color:@pr_chart_color_b" title="@Model.dashboardElement.leave">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Menu.emp.leave")</h3>
+                                <p class="text-muted m-b-10">in @DateTime.Now.ToString("MMM yyyy")</p>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 col-md-4">
+                            <div class="widget-simple-chart text-right card-box" style="background-color: #FBDDDE; border: 1px #EE6E73 dotted;">
+                                <div class="circliful-chart" data-dimension="90" data-text="@perAbsent%" data-width="5" data-fontsize="14" data-percent="@perAbsent" data-fgcolor="@pr_chart_color_c" data-bgcolor="#ebeff2"></div>
+                                <h3 class="m-t-10" style="color:@pr_chart_color_c" title="@Model.dashboardElement.absent">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Menu.emp.absent")</h3>
+                                <p class="text-muted m-b-10">in @DateTime.Now.ToString("MMM yyyy")</p>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- end row -->
+
+                    <div class="row">
+
+                        @*<div class="col-lg-3 col-md-3">
+                                <div class="widget-simple-chart text-right card-box" style="background-color: #E0F5FE">
+                                    <div class="circliful-chart" data-dimension="90" data-text="@perOnTime%" data-width="5" data-fontsize="14" data-percent="@perOnTime" data-fgcolor="@pn_chart_color_d" data-bgcolor="#ebeff2"></div>
+                                    <h3 class="m-t-10" style="color:@pn_chart_color_d" title="@Model.dashboardElement.onTime">On Time</h3>
+                                    <p class="text-muted m-b-10">in @DateTime.Now.ToString("MMM yyyy")</p>
+                                </div>
+                            </div>*@
+
+                        <div class="col-lg-6 col-md-6">
+                            <div class="widget-simple-chart text-right card-box" style="background-color: #FFF5D9; border: 1px #FFC107 dotted;">
+                                <!-- FFF5D9 -->
+                                <div class="circliful-chart" data-dimension="90" data-text="@perLate%" data-width="5" data-fontsize="14" data-percent="@perLate" data-fgcolor="@pn_chart_color_e" data-bgcolor="#ebeff2"></div>
+                                <h3 class="m-t-10" style="color:@pn_chart_color_e" title="@Model.dashboardElement.late">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Menu.emp.late")</h3>
+                                <p class="text-muted m-b-10">in @DateTime.Now.ToString("MMM yyyy")</p>
+                            </div>
+                        </div>
+
+                        @*<div class="col-lg-3 col-md-3">
+        <div class="widget-simple-chart text-right card-box" style="background-color: #FFFFC6">
+            <div class="circliful-chart" data-dimension="90" data-text="@perOutTime%" data-width="5" data-fontsize="14" data-percent="@perOutTime" data-fgcolor="@pn_chart_color_g" data-bgcolor="#ebeff2"></div>
+            <h3 class="m-t-10" style="color:@pn_chart_color_g" title="@Model.dashboardElement.outTime">Exit</h3>
+            <p class="text-muted m-b-10">in @DateTime.Now.ToString("MMM yyyy")</p>
+        </div>
+    </div>*@
+
+                        <div class="col-lg-6 col-md-6">
+                            <div class="widget-simple-chart text-right card-box" style="background-color: #FEE7EF; border: 1px #F76397 dotted;">
+                                <div class="circliful-chart" data-dimension="90" data-text="@perEarlyGone%" data-width="5" data-fontsize="14" data-percent="@perEarlyGone" data-fgcolor="@pn_chart_color_f" data-bgcolor="#ebeff2"></div>
+                                <h3 class="m-t-10" style="color:@pn_chart_color_f" title="@Model.dashboardElement.earlyGone">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Menu.emp.earlyout")</h3>
+                                <p class="text-muted m-b-10">in @DateTime.Now.ToString("MMM yyyy")</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end row -->
+                    <!-- table row -->
+                    <div class="row">
+                        <div class="col-lg-8 col-md-8">
+
+                            <div class="card-box" style="min-height: 420px !important;">
+                                <h2 class="m-t-0 header-title">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Menu.emp.events")</h2>
+
+
+                                <!--<div style="overflow-y: scroll; height: 250px;">-->
+
+                                <table class="table dataTable dt-responsive nowrap">
+                                    <thead>
+                                        <tr>
+                                            <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Menu.emp.empcode")</th>
+                                            <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Menu.emp.empname")</th>
+                                            <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Menu.emp.day-date")</th>
+                                            <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Menu.emp.eventtype")</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        @if (Model.dashboardEvents != null && Model.dashboardEvents.Count > 0)
+                                        {
+                                            int break_count = 0;
+                                            int counter = 0, a = 0;
+                                            string classTitle = "", className = "table-success";
+
+                                            foreach (var i in Model.dashboardEvents)
+                                            {
+                                                if ((counter % 2) == 0)
+                                                {
+                                                    if (a == 0)
+                                                    {
+                                                        className = "table-success";
+                                                        a++;
+                                                    }
+                                                    else if (a == 1)
+                                                    {
+                                                        className = "table-info";
+                                                        a++;
+                                                    }
+                                                    else
+                                                    {
+                                                        className = "table-warning";
+                                                        a = 0;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    className = "";
+                                                }
+
+                                                if (i.event_title.Contains("Birthday"))
+                                                {
+                                                    classTitle = "text-danger h4";
+                                                }
+                                                else
+                                                {
+                                                    classTitle = "";
+                                                }
+
+                                                <tr class="@className">
+                                                    <th scope="row">@i.employee_code</th>
+                                                    <td>@i.employee_name</td>
+                                                    <td>@i.event_date.Replace("Jan", "01").Replace("Feb", "02").Replace("Mar", "03").Replace("Apr", "04").Replace("May", "05").Replace("Jun", "06").Replace("Jul", "07").Replace("Aug", "08").Replace("Sep", "09").Replace("Oct", "10").Replace("Nov", "11").Replace("Dec", "12")</td>
+                                                    <td class="@classTitle">@i.event_title</td>
+                                                </tr>
+
+                                                counter++;
+                                                break_count++;
+
+                                                if (break_count == 5)
+                                                {
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr class="">
+                                                <td colspan="4" class="text-danger">No Data Found</td>
+                                            </tr>
+                                        }
+
+
+                                        @if (Model.dashboardEvents != null && Model.dashboardEvents.Count > 0)
+                                        {
+                                            if (Model.dashboardEvents.Count == 1)
+                                            {
+                                                <tr class="">
+                                                    <td colspan="4">&nbsp;</td>
+                                                </tr>
+                                                <tr class="">
+                                                    <td colspan="4">&nbsp;</td>
+                                                </tr>
+                                                <tr class="">
+                                                    <td colspan="4">&nbsp;</td>
+                                                </tr>
+                                                <tr class="">
+                                                    <td colspan="4">&nbsp;</td>
+                                                </tr>
+                                            }
+                                            else if (Model.dashboardEvents.Count == 2)
+                                            {
+                                                <tr class="">
+                                                    <td colspan="4">&nbsp;</td>
+                                                </tr>
+                                                <tr class="">
+                                                    <td colspan="4">&nbsp;</td>
+                                                </tr>
+                                                <tr class="">
+                                                    <td colspan="4">&nbsp;</td>
+                                                </tr>
+                                            }
+                                            else if (Model.dashboardEvents.Count == 3)
+                                            {
+                                                <tr class="">
+                                                    <td colspan="4">&nbsp;</td>
+                                                </tr>
+                                                <tr class="">
+                                                    <td colspan="4">&nbsp;</td>
+                                                </tr>
+                                            }
+                                            else if (Model.dashboardEvents.Count == 4)
+                                            {
+                                                <tr class="">
+                                                    <td colspan="4">&nbsp;</td>
+                                                </tr>
+                                            }
+                                            else if (Model.dashboardEvents.Count == 5)
+                                            {
+
+                                            }
+
+                                        }
+
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="text-right">
+                                            <td colspan="4" class="text-danger">&nbsp;<!--<a href="/HR/HR/DashboardEventsHolidays">View All</a>--></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                                <!-- </div>-->
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 col-md-4">
+
+                            <div class="card-box" style="min-height: 420px !important;">
+                                <h2 class="m-t-0 header-title">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Menu.emp.upholiday")</h2>
+                                <table class="table dataTable dt-responsive nowra">
+                                    <thead>
+                                        <tr>
+                                            <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Menu.emp.date")</th>
+                                            <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Menu.emp.holititle")</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.dashboardHolidays != null && Model.dashboardHolidays.Count > 0)
+                                        {
+                                            int break_count = 0;
+                                            int counter = 0, a = 0;
+                                            string className = "table-success";
+                                            foreach (var i in Model.dashboardHolidays)
+                                            {
+                                                if ((counter % 2) == 0)
+                                                {
+                                                    if (a == 0)
+                                                    {
+                                                        className = "table-warning";
+                                                        a++;
+                                                    }
+                                                    else if (a == 1)
+                                                    {
+                                                        className = "table-success";
+                                                        a++;
+                                                    }
+                                                    else
+                                                    {
+                                                        className = "table-info";
+                                                        a = 0;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    className = "";
+                                                }
+
+                                                <tr class="@className">
+                                                    <td>@i.holiday_date.Replace("Jan", "01").Replace("Feb", "02").Replace("Mar", "03").Replace("Apr", "04").Replace("May", "05").Replace("Jun", "06").Replace("Jul", "07").Replace("Aug", "08").Replace("Sep", "09").Replace("Oct", "10").Replace("Nov", "11").Replace("Dec", "12")</td>
+                                                    <td>@i.holiday_title</td>
+                                                </tr>
+
+                                                counter++;
+                                                break_count++;
+
+                                                if (break_count == 5)
+                                                {
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr class="">
+                                                <td colspan="2" class="text-danger">No Data Found</td>
+                                            </tr>
+                                        }
+
+
+
+                                        @if (Model.dashboardHolidays != null && Model.dashboardHolidays.Count > 0)
+                                        {
+                                            if (Model.dashboardHolidays.Count == 1)
+                                            {
+                                                <tr class="">
+                                                    <td colspan="2">&nbsp;</td>
+                                                </tr>
+                                                <tr class="">
+                                                    <td colspan="2">&nbsp;</td>
+                                                </tr>
+                                                <tr class="">
+                                                    <td colspan="2">&nbsp;</td>
+                                                </tr>
+                                                <tr class="">
+                                                    <td colspan="2">&nbsp;</td>
+                                                </tr>
+                                            }
+                                            else if (Model.dashboardHolidays.Count == 2)
+                                            {
+                                                <tr class="">
+                                                    <td colspan="2">&nbsp;</td>
+                                                </tr>
+                                                <tr class="">
+                                                    <td colspan="2">&nbsp;</td>
+                                                </tr>
+                                                <tr class="">
+                                                    <td colspan="2">&nbsp;</td>
+                                                </tr>
+                                            }
+                                            else if (Model.dashboardHolidays.Count == 3)
+                                            {
+                                                <tr class="">
+                                                    <td colspan="2">&nbsp;</td>
+                                                </tr>
+                                                <tr class="">
+                                                    <td colspan="2">&nbsp;</td>
+                                                </tr>
+                                            }
+                                            else if (Model.dashboardHolidays.Count == 4)
+                                            {
+                                                <tr class="">
+                                                    <td colspan="2">&nbsp;</td>
+                                                </tr>
+                                            }
+                                            else if (Model.dashboardHolidays.Count == 5)
+                                            {
+
+                                            }
+
+                                        }
+
+
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="text-right">
+                                            <td colspan="2" class="text-danger">&nbsp;</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <!-- end row -->
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="row">
+        <div class="col-12">
+            <div class="p-t-10">
+                <h3><i class="mdi mdi-account-box"></i>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Menu.emp.attenview")</h3>
+            </div>
+
+            <hr />
+
+            <div class="row">
+
+                <div class="col-md-4">
+                    <div class="card-box">
+                        <h4 class="m-t-0 header-title">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Menu.emp.leave.summary")</h4>
+
+                        <div class="small m-t-20 m-b-10 m-l-15"><div id="circle1"></div>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Menu.emp.applied")&nbsp;&nbsp;<div id="circle2"></div>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Menu.emp.approve")&nbsp;&nbsp;<div id="circle3"></div>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Menu.emp.notapprove")</div>
+                        <div id="chartLeavesManager">
+                            <div id="leaves-bars" class="ct-chart ct-golden-section"></div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card-box">
+
+                        <h4 class="m-t-0 header-title">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Menu.emp.presnce") @DateTime.Now.ToString("MMM yyyy")</h4>
+
+                        <div id="chartPresence">
+                            <svg style="height:320px;width:100%"></svg>
+                        </div>
+
+                    </div>
+                </div>
+
+
+
+                <div class="col-md-4">
+                    <div class="card-box">
+
+                        <h4 class="m-t-0 header-title">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Menu.emp.presnce.punctuality") @DateTime.Now.ToString("MMM yyyy")</h4>
+
+                        <div id="chartPunctuality">
+                            <svg style="height:320px;width:100%"></svg>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+</div>
+<!-- End content -->
+
+@section JS {
+
+    <script>
+
+        function loadChart(a, b, c, d, e, f, g) {
+
+            (function ($) {
+                'use strict';
+
+                //Donut chart2
+                nv.addGraph(function () {
+                    var chart = nv.models.pieChart()
+                        .x(function (d) { return d.label })
+                        .y(function (d) { return d.value })
+                        .showLabels(true)     //Display pie labels
+                        .labelThreshold(.05)  //Configure the minimum slice size for labels to show up
+                        .labelType("percent") //Configure what type of data to show in the label. Can be "key", "value" or "percent"
+                        .donut(true)          //Turn on Donut mode. Makes pie chart look tasty!
+                        .donutRatio(0.35)     //Configure how big you want the donut hole size to be.
+
+                    ;
+
+                    d3.select("#chartPunctuality svg")
+                        .datum(PunctualityChartData())
+                        .transition().duration(350)
+                        .call(chart);
+
+                    return chart;
+                });
+                //Donut chart3
+                nv.addGraph(function () {
+                    var chart = nv.models.pieChart()
+                        .x(function (d) { return d.label })
+                        .y(function (d) { return d.value })
+                        .showLabels(true)     //Display pie labels
+                        .labelThreshold(.05)  //Configure the minimum slice size for labels to show up
+                        .labelType("percent") //Configure what type of data to show in the label. Can be "key", "value" or "percent"
+                        .donut(true)          //Turn on Donut mode. Makes pie chart look tasty!
+                        .donutRatio(0.35)     //Configure how big you want the donut hole size to be.
+
+                    ;
+
+                    d3.select("#chartPresence svg")
+                        .datum(PresenceChartData())
+                        .transition().duration(350)
+                        .call(chart);
+
+                    return chart;
+                });
+
+                //Pie chart data
+                function ExitChartData() {
+                    return [
+                        {
+                            "label": "Exit",
+                            "value": f,
+                            "color": "@pn_chart_color_g" //"#29b6f6"
+                        },
+                        {
+                            "label": "Early Out",
+                            "value": g,
+                            'color': "@pn_chart_color_f" //'#f76397'
+                        }
+
+
+                    ];
+                }
+                //Pie chart data
+                function PunctualityChartData() {
+                    return [
+                        {
+                            "label": "On Time",
+                            "value": d,
+                            "color": "@pn_chart_color_d" //"#29b6f6"
+                        },
+                        {
+                            "label": "Late",
+                            "value": e,
+                            'color': "@pn_chart_color_e" //'#ffc107'
+                        }
+
+                    ];
+                }
+                function PresenceChartData() {
+                    return [
+                         {
+                             "label": "Present",
+                             "value": a,
+                             "color": "@pr_chart_color_a" //"#66bb6a"
+                         },
+                        {
+                            "label": "Leave",
+                            "value": b,
+                            'color': "@pr_chart_color_b" //'#7266ba'
+                        },
+                        {
+                            "label": "Absent",
+                            "value": c,
+                            'color': "@pr_chart_color_c" //'#ee6e73'
+                        }
+
+
+                    ];
+                }
+            })(jQuery);
+
+
+
+
+        }
+
+        $(document).ready(function () {
+            //loadChart(0, 0, 0, 0, 0, 0, 0);
+        });
+
+
+
+
+
+    </script>
+
+    <!-- Counter Up  -->
+    <script src="/plugins/waypoints/lib/jquery.waypoints.min.js"></script>
+    <script src="/plugins/counterup/jquery.counterup.min.js"></script>
+
+    <!-- Sparkline -->
+    <script src="/plugins/jquery-sparkline/jquery.sparkline.min.js"></script>
+
+    <!-- Circliful -->
+    <script src="/plugins/jquery-circliful/js/jquery.circliful.min.js"></script>
+
+    <script type="text/javascript">
+        jQuery(document).ready(function ($) {
+            $('.counter').counterUp({
+                delay: 100,
+                time: 1200
+            });
+            $('.circliful-chart').circliful();
+
+
+            //donuts
+            var data = "@Model.dashboardAttendanceChart.ToString()";
+            console.log("1: " + data);
+            if (data.length > 0) {
+                var strMain = data.split(',');
+
+                var strInner0 = strMain[0].split('=');
+                var strInner1 = strMain[1].split('=');
+                var strInner2 = strMain[2].split('=');
+                var strInner3 = strMain[3].split('=');
+                var strInner4 = strMain[4].split('=');
+                var strInner5 = strMain[5].split('=');
+                var strInner6 = strMain[6].split('=');
+
+                var present = strInner0[1];
+                var leave = strInner1[1];
+                var absent = strInner2[1];
+                var ontime = strInner3[1];
+                var late = strInner4[1];
+                var out = strInner5[1];
+                var early = strInner6[1];
+
+                console.log("2: " + present + " : " + leave + " : " + absent + " : " + ontime + " : " + late + " : " + out + " : " + early);
+
+                //loadChart(20, 30, 50, 10, 90);
+                if (present == 0 && leave == 0 && absent == 0) {
+                    $('#chartPresence').css("height", "320px");
+                    $('#chartPresence').html("<span class='text-danger'>N/A</span>");
+                }
+                else {
+                    loadChart(present, leave, absent, ontime, late, out, early);
+                }
+                if (ontime == 0 && late == 0 && out == 0 && early == 0) {
+                    $('#chartPunctuality').css("height", "320px");
+                    $('#chartPunctuality').html("<span class='text-danger'>N/A</span>");
+                }
+                else {
+                    loadChart(present, leave, absent, ontime, late, out, early);
+                }
+            }
+
+            //////////////////////////////////////////
+            //bar chart
+            var dataLeaves = "@Model.dashboardLeavesChart.ToString()";
+            console.log("0: " + dataLeaves);
+            if (dataLeaves.length > 0) {
+
+                var strMain = dataLeaves.split(';');
+
+                var strInner0 = strMain[0].split(',');
+                var strInner1 = strMain[1].split(',');
+                var strInner2 = strMain[2].split(',');
+                var strInner3 = strMain[3].split(',');
+                var strInner4 = strMain[4].split(',');
+
+                console.log("1: " + strInner0[0] + " : " + strInner0[1] + " : " + strInner0[2]);//month numbers - get names
+                console.log("2: " + strInner1[0] + " : " + strInner1[1] + " : " + strInner1[2]);//jun
+                console.log("3: " + strInner2[0] + " : " + strInner2[1] + " : " + strInner2[2]);//last 2nd month data - jul
+                console.log("4: " + strInner3[0] + " : " + strInner3[1] + " : " + strInner3[2]);//aug
+                console.log("5: " + strInner4[0] + " : " + strInner4[1] + " : " + strInner4[2]);//this month data - sep
+
+
+                var data = {
+
+                    //4 months
+                    //labels: [getMonthName(strInner0[0]), getMonthName(strInner0[1]), getMonthName(strInner0[2]), getMonthName((strInner0[2] * 1 + 1))],//labels: ['Jan', 'Feb', 'Mar', 'Apr'],
+                    //series: [
+                    //      [strInner1[0], strInner2[0], strInner3[0], strInner4[0]],//jun jul, aug, sep
+                    //      [strInner1[1], strInner2[1], strInner3[1], strInner4[1]],//jun jul, aug, sep
+                    //      [strInner1[2], strInner2[2], strInner3[2], strInner4[2]] //jun jul, aug, sep
+                    //]
+
+                    labels: [getMonthName(strInner0[0]), getMonthName(strInner0[1]), getMonthName(strInner0[2]), getMonthName((strInner0[2] * 1 + 1))],//labels: ['Jan', 'Feb', 'Mar', 'Apr'],
+                    series: [{
+                        name: 'Applied',
+                        //meta: 'text-danger',
+                        data: [strInner1[0], strInner2[0], strInner3[0], strInner4[0]],//jun jul, aug, sep
+                    }, {
+                        name: 'Approved',
+                        //meta: 'text-success',
+                        data: [strInner1[1], strInner2[1], strInner3[1], strInner4[1]],//jun jul, aug, sep
+                    }, {
+                        name: 'Not Approved',
+                        //meta: 'text-info',
+                        data: [strInner1[2], strInner2[2], strInner3[2], strInner4[2]] //jun jul, aug, sep
+                    }]
+                };
+
+                var options = {
+                    seriesBarDistance: 10,
+                    fullWidth: true,
+                    showArea: true,
+                    height: '280px'
+                };
+
+                var responsiveOptions = [
+                  ['screen and (max-width: 640px)', {
+                      seriesBarDistance: 5,
+                      axisX: {
+                          labelInterpolationFnc: function (value) {
+                              return value[0];
+                          }
+                      }
+                  }]
+                ];
+
+                new Chartist.Bar('#leaves-bars', data, options, responsiveOptions);
+
+            }
+
+
+        });
+
+        function getMonthName(m) {
+            if (m == 1 || m == 13)
+                monthName = "Jan";
+            else if (m == 2 || m == 14)
+                monthName = "Feb";
+            else if (m == 3)
+                monthName = "Mar";
+            else if (m == 4)
+                monthName = "Apr";
+            else if (m == 5)
+                monthName = "May";
+            else if (m == 6)
+                monthName = "Jun";
+            else if (m == 7)
+                monthName = "Jul";
+            else if (m == 8)
+                monthName = "Aug";
+            else if (m == 9)
+                monthName = "Sep";
+            else if (m == 10)
+                monthName = "Oct";
+            else if (m == 11)
+                monthName = "Nov";
+            else if (m == 12)
+                monthName = "Dec";
+            else
+                monthName = "";
+
+            return monthName;
+        }
+
+
+    </script>
+
+}
+

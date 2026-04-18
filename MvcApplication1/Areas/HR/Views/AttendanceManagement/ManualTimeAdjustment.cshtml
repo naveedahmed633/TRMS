@@ -1,0 +1,306 @@
+﻿@{
+    ViewBag.Title = "TRMS - Attendance Management";
+    Layout = "~/Areas/HR/Views/Shared/_Layout.cshtml";
+}
+
+@model ViewModels.CreateManualAttendance
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("dashboard.welcome")  <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span></h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/HR">HR</a></li>
+                    <li class="breadcrumb-item active">Attendance Adjustment</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="ti-files"></i>Manual Time Adjustment</h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="row">
+                                <div id="calendar"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            @using (Html.BeginForm("UpdateAttendanceLogTime", "AttendanceManagement", FormMethod.Post, new { id = "attendance-form" }))
+                            {
+                                <div class="row">
+                                    <div class="col-4">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.empcode") <span class="text-danger font-14">*</span></label>
+                                        <select id="employees" class="form-control" name="employee_code" required></select>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-4">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.date") <span class="text-danger font-14">*</span></label>
+                                        <input type="text" class="form-control datepicker" id="date" autocomplete="off" name="date" required />
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4">
+                                        <button type="button" id="loadRecord" class="btn btn-primary waves-effect waves-light m-t-10">Load Record</button>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-4">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.timein") <span class="text-danger font-14">*</span></label>
+                                        <input type="time" class="form-control" id="time_in" step="1" autocomplete="off" name="timeIn" required />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-4">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.timeout") <span class="text-danger font-14">*</span></label>
+                                        <input type="time" class="form-control" id="time_out" step="1" autocomplete="off" name="timeOut" required />
+                                    </div>
+                                </div>
+                                <div class="row m-t-10">
+                                    <div class="col-4">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.remarks") <span class="text-danger font-14">*</span></label>
+                                        <select class="form-control" id="remark" name="remark" required>
+                                            <option value="PO">PO - On Time - On-Time</option>
+                                            <option value="POM">POM - On Time - Miss Punch</option>
+                                            <option value="POE">POE - On Time - Early Out</option>
+                                            <option value="PLO">PLO - Late - On-Time</option>
+                                            <option value="PLE">PLE - Late - Early Out</option>
+                                            <option value="PLM">PLM - Late - Miss Punch</option>
+                                            <option value="AB">AB - Absent</option>
+                                            <option value="OFF">OFF - Off</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                                <div class="row m-t-10">
+                                    <div class="col-4 text-danger">
+                                        @Html.AntiForgeryToken()
+                                        @Html.ValidationSummary()
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4">
+                                        <button type="submit" value="Submit" id="update" onclick="return validateFormData();" class="btn btn-primary waves-effect waves-light m-t-10">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("attendance.updateatt")</button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    @*<div>
+                    <div class="row">
+                        <div class="col-12">
+                            <h2>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("attendance.updatebyuf")</h2>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            &nbsp;
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6">
+                            <a href="~/Uploads/SamplePostAdjustment.csv">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("attendance.downloadsample")</a>
+                        </div>
+
+                        <div class="col-6">
+                            &nbsp;
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            &nbsp;
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-12">
+                            @using (Html.BeginForm("UploadFileManualAttendance", "AttendanceManagement", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                            {
+                                <div class="row">
+                                    <div class="col-12 text-danger">
+                                        @Html.AntiForgeryToken()
+                                        @Html.ValidationSummary()
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4">
+                                        <label class="btn btn-primary" for="my-file-selector">
+                                            <input id="my-file-selector" onchange="alertFilename()" type="file" name="file" value="alert" accept=".csv" style="display:none; ">
+                                            @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("attendance.click")
+                                        </label>
+                                        <h3 class="label" id="file-name"></h3>
+                                    </div>
+
+                                    <div class="col-4">
+                                        <button id="btnUpload" type="submit" value="Submit" class="btn btn-danger waves-effect waves-light">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("attendance.uploadfile")</button>
+                                        <label class="label">@ViewBag.Message</label>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    </div>*@
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End content -->
+
+@section JS {
+
+    <script type="text/javascript" src="@Href("~/Scripts/chosen.ajaxaddition.jquery.js")"></script>
+    <script>
+
+        function alertFilename() {
+            var thefile = document.getElementById('my-file-selector');
+            document.getElementById('file-name').innerHTML = thefile.value;
+        }
+
+        $(document).ready(function () {
+            $(".chzn-select").chosen();
+            $(".datepicker").datepicker({ dateFormat: 'dd-mm-yy' });
+
+            $("#attendance-form").on("submit", function (e) {
+                e.preventDefault(); // Prevent the default form submission
+
+                const form = $(this);
+                const url = form.attr("action"); // Get the form's action URL
+
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: form.serialize(), // Serialize the form data
+                    success: function (response) {
+                        if (response && response.Success) {
+                            alert("Attendance log updated successfully!");
+                        } else {
+                            alert("Failed to update attendance log. Please try again.");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        alert("An error occurred: " + error);
+                    }
+                });
+            });
+
+
+            $('#loadRecord').on('click', function () {
+                // Step 1: Validate fields
+                const empId = $('#employees').val().trim();
+                const date = $('#date').val().trim();
+
+                if (!empId || !date) {
+                    alert('Both Employee ID and Date are required.');
+                    return;
+                }
+
+                // Step 2: Send AJAX request
+                $.ajax({
+                    url: '@Url.Action("GetAttendanceRecordForDate", "AttendanceManagement", null, Request.Url.Scheme)',
+                    method: 'POST', // Use the appropriate HTTP method
+                    data: {
+                        empId: empId,
+                        date: date
+                    },
+                    dataType: 'json',
+                    success: function (response) {
+                        // Step 3: Populate fields or handle no record
+                        if (response && response.time_in !== undefined && response.time_out !== undefined) {
+                            $('#time_in').val(response.time_in);
+                            $('#time_out').val(response.time_out);
+                            $('#remark').val(response.final_remarks);
+                        } else {
+                            alert('No record found.');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error loading record:', error);
+                        alert('An error occurred while loading the record. Please try again.');
+                    }
+                });
+            });
+
+            $('#employees').ajaxChosen({
+                dataType: 'json',
+                type: 'POST',
+                url: '@Url.Action("ChangeEmployeePasswordExceptSuperHRsDataHandler", "EmployeeManagement", null, Request.Url.Scheme)'
+            }, {
+                loadingImg: '@Href("~/Content/ChosenAutoComplete/loading.gif")'
+            });
+
+
+
+            var url = '@Url.Action("DataHandler", "AttendanceManagement", null, Request.Url.Scheme)';
+
+            var columns = [
+                  { "data": "date" },
+                   { "data": "employee_code" },
+                   { "data": "employee_first_name" },
+                   { "data": "employee_last_name" },
+                   { "data": "time_in" },
+                   { "data": "status_in" },
+                   { "data": "time_out" },
+                   { "data": "status_out" },
+                   { "data": "final_remarks" },
+                   { "data": "terminal_in" },
+                   { "data": "terminal_out" }
+
+            ];
+
+            @*
+               I did this so that like initDataTables the JS
+            for serverside processing can be used for other tables.
+                NOTE: The names of the columns correspond to the View Model.
+            For example in this example the column names, first_name, last_name
+            etc are taken from ViewModels.Employee
+        *@
+
+            //initServerSideTable('#attendance_table', url, columns);
+        });
+
+
+
+    </script>
+}

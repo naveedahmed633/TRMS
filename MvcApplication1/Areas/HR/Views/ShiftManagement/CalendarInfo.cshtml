@@ -1,0 +1,123 @@
+﻿@{
+    ViewBag.Title = "TRMS - Group Calendar";
+    Layout = "~/Areas/HR/Views/Shared/_LayoutCalendarInfo.cshtml";
+}
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">Welcome <span class="text-danger">'HR'</span>! [Login ID: <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & Name: <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span>]</h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/HR">HR</a></li>
+                    <li class="breadcrumb-item active">General Calendar</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="mdi mdi-calendar-clock"></i> Calendar Info <small class="text-danger">(press F5 KEY once to reload)</small></h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="row">
+                                <div id="calendar"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <form id="calendar_edit_form">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <label class="control-label">General Shift</label>
+
+                                        <select class="form-control" id="general-shift">
+                                            <option value="-2" selected="selected" disabled="disabled">Select Shift</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-4">
+                                        <label class="control-label">Shifts Specific to Week Days</label>
+                                        <select class="form-control" id="day">
+                                            <option value="-2" selected="selected" disabled="disabled">Select Day</option>
+                                            <option value='0'>Sunday</option>
+                                            <option value='1'>Monday</option>
+                                            <option value='2'>Tuesday</option>
+                                            <option value='3'>Wednesday</option>
+                                            <option value='4'>Thursday</option>
+                                            <option value='5'>Friday</option>
+                                            <option value='6'>Saturday</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-4">
+                                        <select class="form-control" id="day-shift">
+                                            <option value="-2" selected="selected" disabled="disabled">Select Shift</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4">
+                                        <button type="submit" value="Submit" id="submit_calendar_button" class="btn btn-primary waves-effect waves-light m-t-10">Save Calander</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End content -->
+
+@section JS {
+    <script src="@Url.Content("/Scripts/generalCalendar.js")"></script>
+    <script>
+
+        $(document).ready(function () {
+            //$('#accordion').accordion("option", "active", 2);
+            //$("input[type=submit], button").button();
+            $(".datepicker").datepicker({
+                dateFormat: "dd-mm-yy"
+            });
+            //setActiveLink("Calendar");
+
+
+
+
+
+
+        });
+
+
+    </script>
+
+}

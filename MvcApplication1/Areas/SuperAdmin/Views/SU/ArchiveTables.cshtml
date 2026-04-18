@@ -1,0 +1,137 @@
+﻿@{
+    ViewBag.Title = "TRMS - Archive Tables";
+    Layout = "~/Areas/SuperAdmin/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">Welcome <span class="text-danger">'SuperAdmin'</span>! [Login ID: <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & Name: <span class="text-success">@User.Identity.Name</span>]</h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/SuperAdmin">Super Admin</a></li>
+                    <li class="breadcrumb-item active">Archive Tables</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="mdi mdi-account-box"></i> Archive Tables </h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    @using (Html.BeginForm("ArchiveTables", "SU", FormMethod.Post, new { @id = "form_archive_table" }))
+                    {
+                        <div class="row">
+                            <div class="col-4">
+                                <label class="control-label">Date From</label>
+                                <input id="FromDate" type="text" class="form-control datepicker" name="FromDate" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-4">
+                                <label class="control-label">Date To</label>
+                                <input id="ToDate" type="text" class="form-control datepicker" name="ToDate" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 text-danger">
+                                @Html.AntiForgeryToken()
+                                @Html.ValidationSummary()
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary waves-effect waves-light">Submit</button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End content -->
+
+
+@section JS {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+
+        $(document).ready(function () {
+            //$('#accordion').accordion("option", "active", 0);
+            $('.datepicker').datepicker({ dateFormat: 'yy-mm-dd' });
+            //$("input[type=submit], button").button();
+            //setActiveLink("Archive Tables");
+
+            $('#form_archive_table').on("submit", function () {
+
+                if ($('#alert_msg').length > 0)
+                    $('#alert_msg').text("");
+
+                var fDate = $('#form_archive_table').find('[name="FromDate"]').val().split("-").reverse();
+                var tDate = $('#form_archive_table').find('[name="ToDate"]').val().split("-").reverse();
+
+                if (fDate == "") {
+                    alert("Please select 'From Date'");
+                    $('#FromDate').focus();
+                    return false;
+                }
+
+                if (tDate == "") {
+                    alert("Please select 'To Date'");
+                    $('#ToDate').focus();
+                    return false;
+                }
+
+                fDate = new Date(fDate[2] + "-" + fDate[1] + "-" + fDate[0]);
+                tDate = new Date(tDate[2] + "-" + tDate[1] + "-" + tDate[0]);
+
+                var today = new Date();
+
+                if (fDate > tDate) {
+                    alert("'From Date' must be lower than 'To Date'");
+                    $('#FromDate').val("");
+                    $('#FromDate').focus();
+                    return false;
+                }
+
+                if (fDate >= today || tDate >= today) {
+                    //$('#FromDate').val("");
+                    //$('#ToDate').val("");
+                    alert("'Todays' or 'Future' date is not allowed to select.");
+                    return false;
+                }
+
+                var r = confirm("Are you sure you want to Archive this duration records?");
+                if (r == false) {
+                    return false;
+                }
+
+                return true;
+            });
+        });
+
+    </script>
+}

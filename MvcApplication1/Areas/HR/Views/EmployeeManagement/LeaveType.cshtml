@@ -1,0 +1,351 @@
+﻿@{
+    ViewBag.Title = "TRMS - Leave Type Management";
+    Layout = "~/Areas/HR/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    //Titles - Leave Types
+    string TitleLeaves = "", TitleLeave01 = "", TitleLeave02 = "", TitleLeave03 = "", TitleLeave04 = "", TitleLeave05 = "", TitleLeave06 = "", TitleLeave07 = "", TitleLeave08 = "";
+    string TitleLeave09 = "", TitleLeave10 = "", TitleLeave11 = "", TitleLeave12 = "", TitleLeave13 = "", TitleLeave14 = "", TitleLeave15 = "";
+    BLL.PdfReports.LeavesTypesTitles leavesTitles = new BLL.PdfReports.LeavesTypesTitles();
+    TitleLeaves = leavesTitles.getLeavesTypesTitles();
+    if (TitleLeaves != null && TitleLeaves.Contains(','))
+    {
+        string[] strSplit = TitleLeaves.Split(',');
+        if (strSplit != null && strSplit.Length > 0)
+        {
+            TitleLeave01 = strSplit[0].ToString(); TitleLeave02 = strSplit[1].ToString(); TitleLeave03 = strSplit[2].ToString(); TitleLeave04 = strSplit[3].ToString();
+            TitleLeave05 = strSplit[4].ToString(); TitleLeave06 = strSplit[5].ToString(); TitleLeave07 = strSplit[6].ToString(); TitleLeave08 = strSplit[7].ToString();
+            TitleLeave09 = strSplit[8].ToString(); TitleLeave10 = strSplit[9].ToString(); TitleLeave11 = strSplit[10].ToString(); TitleLeave12 = strSplit[11].ToString();
+            TitleLeave13 = strSplit[12].ToString(); TitleLeave14 = strSplit[13].ToString(); TitleLeave15 = strSplit[14].ToString();
+        }
+    }
+    else
+    {
+        TitleLeave01 = @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.sick"); TitleLeave02 = @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.casual"); TitleLeave03 = @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.annual"); TitleLeave04 = @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.other");
+        TitleLeave05 = @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.tour"); TitleLeave06 = @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.visit"); TitleLeave07 = @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.meeting"); TitleLeave08 = @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.maternity");
+        TitleLeave09 = "Sick"; TitleLeave10 = "Casual"; TitleLeave11 = "Annual"; TitleLeave12 = "Other";
+        TitleLeave13 = "Tour"; TitleLeave14 = "Visit"; TitleLeave15 = "Meeting";
+    }
+}
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("dashboard.welcome")  <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span></h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/HR">HR</a></li>
+                    <li class="breadcrumb-item active">Leaves</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="ti-files"></i> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.leavetypesman") </h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    @using (Html.BeginForm("LeaveType", "EmployeeManagement", FormMethod.Post, new { id = "employee-form" }))
+                    {
+                        <div class="row">
+                            <div class="col-4">
+                                <input id="Id" name="Id" type="hidden" value="@ViewBag.LastInactiveID.ToString()" />
+                                <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.typename")</label>
+                                <input type="text" class="form-control" name="LeaveTypeText" autocomplete="off" required />
+                            </div>
+                        </div>
+
+                        <div class="row m-t-10">
+                            <div class="col-md-4">
+                                <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.defaultcount")</label>
+                                <select id="default-count" class="form-control" name="LeaveDefaultCount" required>
+                                    @{
+                                        for (int i = 0; i < 100; i++)
+                                        {
+                                            <option value="@i">@i</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row m-t-10">
+                            <div class="col-md-4">
+                                <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.maxcount")</label>
+                                <select id="max-count" class="form-control" name="LeaveMaxCount" required>
+                                    @{
+                                        for (int i = 0; i < 100; i++)
+                                        {
+                                            <option value="@i">@i</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        @*<div class="row m-t-10">
+                                <div class="col-4">
+                                    <input type="checkbox" class="control-label" id="isactive" name="isactive">
+                                    <label class="control-label" for="customCheck2">Is Active?</label>
+                                </div>
+                            </div>*@
+
+                                        <div class="row m-t-10">
+                                            <div class="col-12 text-danger">
+                                                @Html.AntiForgeryToken()
+                                                @Html.ValidationSummary()
+                                                @if (Request.QueryString["Message"] != null && Request.QueryString["Message"].ToString() == "success")
+                                                {
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <span class="span_message"><b>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.successmsg")</b></span>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @if (Request.QueryString["Message"] != null && Request.QueryString["Message"].ToString() == "already")
+                                                {
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <span class="span_message"><b>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.errmsg1")</b></span>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @if (Request.QueryString["Message"] != null && Request.QueryString["Message"].ToString() == "already-leave")
+                                                {
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <span class="span_message"><b>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.errmsg2")</b></span>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @if (Request.QueryString["Message"] != null && Request.QueryString["Message"].ToString() == "already-name")
+                                                {
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <span class="span_message"><b>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.errmsg3")</b></span>
+                                                        </div>
+                                                    </div>
+                                                }
+
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-4">
+                                                <button type="submit" onclick="submitcheck()" class="btn btn-primary waves-effect waves-light m-t-10">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.add")</button>
+                                                <button type="button" onclick="redirectToPage();" value="Reset" class="btn btn-primary waves-effect waves-light m-t-10">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.reset")</button>
+                                            </div>
+                                        </div>
+                                        }
+
+
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+
+
+                    <div class="row">
+                        <div class="col-12 m-b-10">
+                            <h3>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.currentlist")</h3>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <table id="leave_type_table" class="table table-striped table-bordered dataTable dt-responsive no-footer small" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.id")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.typename")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.defaultcount")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.maxcount")</th>
+                                        @*<th>Is Active?</th>*@
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.action")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.createdate")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.updatedate")</th>
+                                    </tr>
+                                </thead>
+
+                            </table>
+                        </div>
+                    </div>
+
+                    @*<div class="row m-t-10">
+                            <div class="col-12">
+                                <button type="submit" id="btnExport" class="btn btn-primary waves-effect waves-light">Export Grid Data</button>
+                            </div>
+                        </div>*@
+
+                    <div class="row">
+                        <div class="col-2">
+                            <span class="h4">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.exportgrid"):</span>
+                        </div>
+                        <div id="divExportButtons" class="col-10">
+                            &nbsp;
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<div id="moll">
+</div>
+<div id="toast" class="toast-message" style='display:none'>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.msg")</div>
+
+<!-- Custom Modal -->
+<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="mySmallModalLabel">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.msgalert")</h4>
+            </div>
+            <div class="modal-body">
+                <span id="alert_message"></span>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+@section JS {
+    <script type="text/javascript" src="@Href("~/Scripts/chosen.ajaxaddition.jquery.js")"></script>
+    <script src="@Url.Content("/Scripts/leaveTypeCRUD.js")" ty type="text/javascript"></script>
+    <script>
+
+        function redirectToPage() {
+            window.location = '/HR/EmployeeManagement/LeaveType';
+            //alert('abc');
+            //window.location.reload();
+        }
+
+
+        $(document).ready(function () {
+            var empCode2= @Html.Raw(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId);
+
+            //alert($('#Id').val());
+
+            $.ajax({
+                url: '/HR/HR/VerfiyDataHandler',
+                type: "POST",
+                data: { empId: empCode2 },
+                dataType: "json",
+
+                success: function (data) {
+                    if (data.HRExportGridData == false) {
+                        $("#btnExport").hide();
+                    }
+
+
+
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+            $(".datepicker").datepicker({ dateFormat: 'dd-mm-yy' });
+            $("#btnExport").click(function (e) {
+                setupTableExportButton('#leave_type_table', 'Leave-Type');
+                e.preventDefault();
+            });
+
+            HideSpanMessage();
+
+        });
+
+        function HideSpanMessage() {
+            setTimeout(function () { $('.span_message').hide(); }, 3000);
+        }
+
+        function submitcheck() {
+
+            var dCount = $('[name="LeaveDefaultCount"]').val();
+            var mCount = $('[name="LeaveMaxCount"]').val();
+            if (mCount < dCount) {
+                $('#alert_message').text("The 'Default Count' should be less than 'Max. Count'.");
+                $('.bs-example-modal-sm').modal('show');
+                return false;
+            }
+
+            return true;
+
+            //var fDate = $('[name="str_SessionStartDate"]').val();
+            //var tDate = $('[name="str_SessionEndDate"]').val();
+            //if (tDate < fDate) {
+            //    $('#alert_message').text("The 'To Date' should be greater than 'From Date'.");
+            //    $('.bs-example-modal-ms').modal('show');
+            //    return false;
+            //} else { return true; }
+        }
+
+        function setChosenSelectList(selector, URL) {
+
+
+            $(selector).ajaxChosen({
+                dataType: 'json',
+                type: 'POST',
+                url: URL
+            }, {
+                loadingImg: '@Href("~/Content/ChosenAutoComplete/loading.gif")'
+            });
+        }
+
+        setChosenSelectList('#users-select', '@Url.Action("dropdown_users", "EmployeeManagement", null, Request.Url.Scheme)');
+
+
+        var url = '@Url.Action("LeaveTypeDataHandler", "EmployeeManagement", null, Request.Url.Scheme)';
+
+        var columns = [
+                  { "data": "Id" },
+                  { "data": "LeaveTypeText" },
+                  { "data": "LeaveDefaultCount" },
+                  { "data": "LeaveMaxCount" },
+                  //{ "data": "IsActive" },
+                  { "data": "actions" },
+                  { "data": "CreateDateTimeText" },
+                  { "data": "UpdateDateTimeText" }
+        ];
+
+        //initServerSideTable('#leave_type_table', url, columns, 100);//10, 25, 50, 100, 500, 1000, 1500
+        initServerSideTableLeaveTypeColumnOrderBy('#leave_type_table', url, columns, 20, 0, "desc");//10, 25, 50, 100, 500, 1000, 1500
+        //function initServerSideTableColumnOrderBy(identifier, url, columns, count, col_pos, order_by)
+
+        editLeaveType = initEditLeaveType("#moll", '@Url.Action("UpdateLeaveType", "EmployeeManagement", null, Request.Url.Scheme)', "LeaveType");
+        deleteLeaveType = initDeleteModal("#moll", '@Url.Action("RemoveLeaveType", "EmployeeManagement", null, Request.Url.Scheme)', "LeaveType");
+
+    </script>
+}

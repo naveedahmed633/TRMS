@@ -1,0 +1,21 @@
+program_code,course_code,course_title,book_name,book_author,default_program_type_id,default_program_type_number,credit_hours,passing_marks,total_marks,is_active_course
+Pharm-D,PD101,Physical Pharmacy-PD-901,0,0,Semester,1,3,33,100,yes
+Pharm-D,PD102,Physical Pharmacy-PD-902,0,0,Semester,1,3,33,100,yes
+Pharm-D,PD103,Physical Pharmacy-PD-903,0,0,Semester,1,3,33,100,yes
+Pharm-D,PD104,Physical Pharmacy-PD-904,0,0,Semester,1,1,33,100,yes
+Pharm-D,PD105,Physical Pharmacy-PD-905,0,0,Semester,1,3,33,100,yes
+Pharm-D,PD106,Physical Pharmacy-PD-906,0,0,Semester,1,3,33,100,no
+Pharm-D,PD107,Physical Pharmacy-PD-901,0,0,Semester,1,3,33,100,no
+Pharm-D,PD108,Physical Pharmacy-PD-902,0,0,Semester,1,3,33,100,no
+Pharm-D,PD109,Physical Pharmacy-PD-903,0,0,Semester,1,3,33,100,no
+Pharm-D,PD110,Physical Pharmacy-PD-904,0,0,Semester,1,1,33,100,no
+Pharm-D,PD201,Physical Pharmacy-PD-901,0,0,Semester,1,3,33,100,yes
+Pharm-D,PD202,Physical Pharmacy-PD-902,0,0,Semester,1,3,33,100,yes
+Pharm-D,PD203,Physical Pharmacy-PD-903,0,0,Semester,1,3,33,100,yes
+Pharm-D,PD204,Physical Pharmacy-PD-904,0,0,Semester,1,1,33,100,yes
+Pharm-D,PD205,Physical Pharmacy-PD-905,0,0,Semester,1,3,33,100,yes
+Pharm-D,PD206,Physical Pharmacy-PD-906,0,0,Semester,1,3,33,100,no
+Pharm-D,PD207,Physical Pharmacy-PD-901,0,0,Semester,1,3,33,100,no
+Pharm-D,PD208,Physical Pharmacy-PD-902,0,0,Semester,1,3,33,100,no
+Pharm-D,PD209,Physical Pharmacy-PD-903,0,0,Semester,1,3,33,100,no
+Pharm-D,PD210,Physical Pharmacy-PD-904,0,0,Semester,1,1,33,100,no

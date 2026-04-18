@@ -1,0 +1,120 @@
+﻿@{
+    ViewBag.Title = "TRMS - Group Calendar";
+    Layout = "~/Areas/HR/Views/Shared/_LayoutCalendar.cshtml";
+}
+
+
+
+<div class="row">
+    <div class="form-group col-md-12">
+        @*<h5 style="font-weight: bold;">Calendar</h5>*@
+
+        <div class="row">
+            <div class="col-12 text-right">
+                <a id="btnBack1" class="btn btn-default" href="javascript: history.go(-1)">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.back")</a>
+            </div>
+        </div>
+
+        <div class="row" style="background-color:#eee;padding:55px;margin:15px;border-radius:25px;padding-bottom:10px">
+            <h4 style="font-weight: bold; text-align:center;">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.gcalendar")</h4>
+            <div id="calendar"></div>
+        </div>
+        <form id="calendar_edit_form" style="margin:15px">
+            @*<div class="row">
+                <div class="col-md-3">
+                    
+
+                </div>
+            </div>*@
+            <div class="row">
+                <div class="col-md-3">
+
+                    <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.gshift")</label>
+
+                    <select class="form-control" id="general-shift">
+                        <option value="-2" selected="selected" disabled="disabled">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.select")</option>
+                    </select>
+
+
+                    <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.shiftspecific")</label>
+                    <select class="form-control" id="day">
+                        <option value="-2" selected="selected" disabled="disabled">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.selectday")</option>
+                        <option value='0'>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.sun")</option>
+                        <option value='1'>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.mon")</option>
+                        <option value='2'>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.tues")</option>
+                        <option value='3'>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.wed")</option>
+                        <option value='4'>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.thurs")</option>
+                        <option value='5'>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.fri")</option>
+                        <option value='6'>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.sat")</option>
+                    </select>
+                    <select class="form-control" id="day-shift">
+                        <option value="-2" selected="selected" disabled="disabled">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.select")</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                </div>
+
+                <div class="col-md-3">
+                    <h3>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.legend")</h3>
+                    <ul>
+                        <li><span style="background-color: black; width: 38px; height:25px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>&nbsp;&nbsp;<span>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.shifttimeassigned")</span></li>
+                        <li>&nbsp;</li>
+                        <li><span style="background-color: red; width: 38px; height:25px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>&nbsp;&nbsp;<span>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.holiday")</span></li>
+                        <li>&nbsp;</li>
+                        <li><span style="background-color: blue; width: 38px; height:25px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>&nbsp;&nbsp;<span>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.gholiday")</span></li>
+                    </ul>
+                </div>
+
+            </div>
+
+
+            <div class="row">
+                <div class="col-md-3">
+                    <button type="submit" value="Submit" class="btn btn-primary waves-effect waves-light m-t-10" id="submit_calendar_button">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.savecal")</button>
+                </div>
+                <div class="col-6">
+                    &nbsp;
+                </div>
+                <div class="col-3 text-right">
+                    <a id="btnBack2" class="btn btn-default" href="javascript: history.go(-1)">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.back")</a>
+                </div>
+
+            </div>
+
+            <!--<button type="submit" value="Submit" id="submit_calendar_button">Save Calander</button>-->
+        </form>
+
+
+    </div>
+
+</div>
+
+
+@section JS {
+    <script src="@Url.Content("/CSCAL/generalCalendar.js")"></script>
+    <script>
+
+
+
+        $(document).ready(function () {
+            //$('#accordion').accordion("option", "active", 2);
+            //$("input[type=submit], button").button();
+            //$(".datepicker").datepicker({
+            //    dateFormat: "dd-mm-yy"
+            //});
+            //setActiveLink("Calendar");
+
+
+
+
+
+
+        });
+
+
+    </script>
+
+}
+
+

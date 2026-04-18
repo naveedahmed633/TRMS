@@ -1,0 +1,291 @@
+﻿@{
+    ViewBag.Title = "Edit Contractual Staff";
+}
+
+<style>
+    input:valid {
+        color: green;
+    }
+
+    input:invalid {
+        color: red;
+    }
+</style>
+
+<div class="row">
+    <div class="form-group col-md-3">
+        <h5 style="font-weight: bold;">Edit Contractual Staff</h5>
+        @using (Html.BeginForm("EditContractualStaff", "ManageEmployees", FormMethod.Post, new { id = "contractualStaff-form" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary()
+
+
+
+    <div class="row">
+        <div class="col-md-12">
+            <label class="control-label">Employee Code</label>
+
+            <select id="consolidated-employees" class="form-control" name="employee_code" id="employee_code" required></select>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <label class="control-label">Employee Name</label>
+            <input type="text" class="form-control " id="employee_name" name="employee_name" maxlength="50" required>
+        </div>
+    </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Email</label>
+                    <input type="email" class="form-control " id="email" name="email" maxlength="50" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Address</label>
+                    <input type="text" class="form-control " id="address" name="address" maxlength="50">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Date of Joining</label>
+                    <input type="text" class="form-control datepicker" id="date_of_joining" name="date_of_joining" style="background-color: #FFF" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Date of Leaving</label>
+                    <input type="text" class="form-control datepicker" id="date_of_leaving" name="date_of_leaving" style="background-color: #FFF">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Mobile No</label>
+                    <input type="text" pattern="^[0-9]*$" class="form-control " id="mobile_no" maxlength="11" name="mobile_no">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Company</label>
+                    <input type="text" class="form-control " id="company" name="company" maxlength="50" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Region</label>
+                    <input type="text" class="form-control " id="region" maxlength="50" name="region">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Location</label>
+                    <input type="text" class="form-control " id="location" maxlength="50" name="location">
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Group</label>
+                    <input type="text" class="form-control " id="grade" maxlength="50" name="grade">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Function</label>
+                    <input type="text" class="form-control " id="function" maxlength="50" name="function">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Designation</label>
+                    <input type="text" class="form-control " id="designation" maxlength="50" name="designation">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Department</label>
+                    <input type="text" class="form-control " id="department" maxlength="50" name="department">
+                </div>
+            </div>
+
+            <br><br>
+            <div class="row">
+                <div class="col-md-12" style="margin-top:5px">
+                    <button id="save" type="submit" value="Submit">Edit Contractual Staff</button>
+                </div>
+            </div>
+            <br><br><br>
+        }
+
+    </div>
+
+    <div style="margin-bottom:5px" class="col-md-9">
+        <br><br>
+        <table id="employee-table" class="display cell-border" width="100%">
+            <thead>
+
+                <tr>
+                    <th>Employee Name</th>
+                    <th>Employee Code</th>
+                    <th>Company Name</th>
+                    <th>Department</th>
+                    <th>Email</th>
+                    <th>Designation</th>
+                    <th>Location</th>
+                    <th>Region</th>
+                </tr>
+
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button type="submit" id="btnExport" style="margin-top:5px">Export Grid Data</button>
+    </div>
+  
+</div>
+
+
+
+@section JS {
+    <script type="text/javascript" src="@Href("~/Scripts/chosen.ajaxaddition.jquery.js")"></script>
+    <script type="text/javascript">
+
+        function callEmployee(value) {
+            console.log(value);
+            var obj = {
+                id: value
+            };
+            $.ajax({
+                url: "getEmployee",
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(obj),
+                success: function (data) {
+                    console.log(data.results);
+                    console.log(data.results.mobile_no);
+                    //implement
+                    document.getElementById("employee_name").value = data.results.employee_name;
+                    document.getElementById("email").value = data.results.email;
+                    document.getElementById("address").value = data.results.address;
+                    document.getElementById("date_of_joining").value = data.results.date_of_joining;
+                    document.getElementById("date_of_leaving").value = data.results.date_of_leaving;
+                    document.getElementById("mobile_no").value = data.results.mobile_no;
+                    document.getElementById("company").value = data.results.company;
+                    document.getElementById("region").value = data.results.region;
+                    document.getElementById("location").value = data.results.location;
+                    document.getElementById("grade").value = data.results.grade;
+                    document.getElementById("function").value = data.results.function;
+                    document.getElementById("designation").value = data.results.designation;
+                    document.getElementById("department").value = data.results.department;
+                }
+            });
+
+        }
+        
+
+
+
+        $(document).ready(function () {
+            $('#accordion').accordion("option", "active", 1);
+            setActiveLink("Edit Contractual Staff");
+            $(".datepicker").datepicker({ dateFormat: 'dd-mm-yy' });
+            //setActiveLink("Manual Attendance");
+            $(".chzn-select").chosen();
+            //  $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+            $("input[type=submit], button").button();
+
+            var url = '@Url.Action("EmployeeDataHandler", "ManageEmployees", null, Request.Url.Scheme)';
+            $('#consolidated-employees').ajaxChosen({
+                dataType: 'json',
+                type: 'POST',
+                url: '@Url.Action("getEmployee", "Attendance", null, Request.Url.Scheme)'
+            }, {
+                loadingImg: '@Href("~/Content/ChosenAutoComplete/loading.gif")'
+            });
+
+            $(function () {
+                $("#consolidated-employees").change(function () {
+                    callEmployee($("#consolidated-employees :selected").text());
+                   // alert($('option:selected').text()); $("#elementId").val(); 
+                });
+            });
+
+            var columns = [
+                  { "data": "employee_name" },
+                  { "data": "employee_code" },
+                  { "data": "company" },
+                  { "data": "department" },
+                  { "data": "email" },
+                  { "data": "designation" },
+                  { "data": "location" },
+                  { "data": "region" }
+            ];
+            initServerSideTable('#employee-table', url, columns);
+        });
+
+        setupTableExportButton('#employee-table', '#btnExport', 'ContractualStaff');
+        $('#contractualStaff-form').on("submit", function (e) {
+
+            if (!checkSubmit('#contractualStaff-form')) {
+                e.preventDefault();
+            }
+        });
+       
+        function checkSubmit(id) {
+
+            jDate = $(id).find('[name*="date_of_joining"]').val().split("-").reverse();
+            lDate = $(id).find('[name*="date_of_leaving"]').val().split("-").reverse();
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth() + 1; //January is 0!
+            var yyyy = today.getFullYear();
+
+            if (dd < 10) {
+                dd = '0' + dd
+            }
+
+            if (mm < 10) {
+                mm = '0' + mm
+            }
+
+            today = new Date(parseInt(yyyy) + '-' + parseInt(mm) + '-' + parseInt(dd));
+
+            var numbers = /^[0-9]+$/;
+            empcode = $(id).find('[name*="employee_code"]').val();
+
+            jDate = new Date(parseInt(jDate[0]), parseInt(jDate[1]) - 1, parseInt(jDate[2]));
+            lDate = new Date(parseInt(lDate[0]), parseInt(lDate[1]) - 1, parseInt(lDate[2]));
+
+            if (jDate >= lDate) {
+                alert("Joining Date must be before of Leaving Date");
+               // console.log("todays attendance :" + today + "Date of leaving :" + lDate);
+                return false;
+            }
+            else
+            {
+
+                if (today >= lDate) {
+                    alert("Leaving date must be greater than today's date");
+                    return false;
+                }
+               
+
+            }
+
+
+
+
+
+            return true;
+        }
+
+    </script>
+}

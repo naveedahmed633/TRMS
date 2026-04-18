@@ -1,0 +1,533 @@
+﻿@{
+    ViewBag.Title = "TRMS - Employee Evaluation";
+    Layout = "~/Areas/HR/Views/Shared/_Layout.cshtml";
+}
+
+@model List<ViewModels.Department>
+
+<style>
+    .radio_spacing {
+        word-spacing: 26px;
+        margin-left: 36px;
+        margin-top: 13px;
+    }
+</style>
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("dashboard.welcome")  <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span></h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/HR">HR</a></li>
+                    <li class="breadcrumb-item active">HR</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    @using (Html.BeginForm("AddEmpEvaluation", "EmployeeManagement"))
+    {
+    <!-- Page-Content -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card-box">
+                    <!-- <div class="panel-heading">
+                        <h4>Invoice</h4>
+                    </div> -->
+                    <div class="panel-body">
+                        <div class="clearfix">
+                            <div class="pull-left">
+                                <h3 class="text-right"><i class="ti-files"></i> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.pereva")</h3>
+                            </div>
+                            <div class="pull-right small text-muted">
+                                @DateTime.Now.ToString("f")
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="row">
+                            <div class="col-12">
+                                @if (Request.QueryString["message"] != null && Request.QueryString["message"].ToString() == "success")
+                                {
+                                    <div class="form-group row">
+                                        <div class="text-danger h4 msg">
+                                            @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.success")
+                                        </div>
+                                    </div>
+                                }
+
+                                @if (Request.QueryString["message"] != null && Request.QueryString["message"].ToString() == "already")
+                                {
+                                    <div class="form-group row">
+                                        <div class="text-danger h4 msg">
+                                            @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.alreadyeva")
+                                        </div>
+                                    </div>
+                                }
+
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6">
+
+
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.empcode")</label>
+                                        <select id="monthly-time-sheet-employees" class="form-control" name="empCode" required></select>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.review")</label>
+                                        <input type="text" pattern=".{2,}" title="2 characters minimum" readonly class="form-control" id="fname" name="reviewPeriod" required />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <p class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.point1")</p>
+                                        <ul>
+                                            <li>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.op1") </li>
+                                            <li>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.op2") </li>
+                                            <li>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.op3") </li>
+                                            <li>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.op4")  </li>
+                                            <li>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.op5") </li>
+                                        </ul>
+                                        <p class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.point2")</p>
+                                        <p class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.point3")</p>
+                                        <p class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.point4")</p>
+                                    </div>
+                                </div>
+
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.personality")</label>
+                                        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.personality1")</p>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="personality" value="1" required /><label for="inlineRadio1">1</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="personality" value="2" required /><label for="inlineRadio1">2</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="personality" value="3" required /><label for="inlineRadio1">3</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="personality" value="4" required /><label for="inlineRadio1">4</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="personality" value="5" required /><label for="inlineRadio1">5</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.communication")</label>
+                                        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.communication1")</p>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="communicationSkills" value="1" required /><label for="inlineRadio1">1 </label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="communicationSkills" value="2" required /><label for="inlineRadio1">2 </label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="communicationSkills" value="3" required /><label for="inlineRadio1">3 </label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="communicationSkills" value="4" required /><label for="inlineRadio1">4 </label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="communicationSkills" value="5" required /><label for="inlineRadio1">5 </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.attendance")</label>
+                                        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.attendance1")</p>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="attendancePromptness" value="1" required /><label for="inlineRadio1">1</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="attendancePromptness" value="2" required /><label for="inlineRadio1">2</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="attendancePromptness" value="3" required /><label for="inlineRadio1">3</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="attendancePromptness" value="4" required /><label for="inlineRadio1">4</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="attendancePromptness" value="5" required /><label for="inlineRadio1">5</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.imitative")</label>
+                                        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.imitative1")</p>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="imitative" value="1" required /><label for="inlineRadio1">1</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="imitative" value="2" required /><label for="inlineRadio1">2</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="imitative" value="3" required /><label for="inlineRadio1">3</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="imitative" value="4" required /><label for="inlineRadio1">4</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="imitative" value="5" required /><label for="inlineRadio1">5</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.orgtime")</label>
+                                        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.orgtime1")</p>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="organizationAwareness" value="1" required /><label for="inlineRadio1">1</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="organizationAwareness" value="2" required /><label for="inlineRadio1">2</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="organizationAwareness" value="3" required /><label for="inlineRadio1">3</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="organizationAwareness" value="4" required /><label for="inlineRadio1">4</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="organizationAwareness" value="5" required /><label for="inlineRadio1">5</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.selfcontrol")</label>
+                                        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.selfcontrol1")</p>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="selfControl" value="1" required /><label for="inlineRadio1">1</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="selfControl" value="2" required /><label for="inlineRadio1">2</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="selfControl" value="3" required /><label for="inlineRadio1">3</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="selfControl" value="4" required /><label for="inlineRadio1">4</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="selfControl" value="5" required /><label for="inlineRadio1">5</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.empstrength")</label>
+                                        <input type="text" pattern=".{2,}" title="2 characters minimum" class="form-control" maxlength="140" name="majorStrength" required />
+                                    </div>
+                                </div>
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.goals")</label>
+                                        <textarea class="form-control" rows="5" id="goal" maxlength="160" name="goal"></textarea>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="col-6">
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.posdep")</label>
+                                        <input type="text" pattern=".{2,}" title="2 characters minimum" class="form-control" maxlength="140" name="postion" required />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.project")</label>
+                                        <input type="text" pattern=".{2,}" title="2 characters minimum" class="form-control" maxlength="140" name="project" required />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.pres")</label>
+                                        <input type="text" pattern=".{2,}" title="2 characters minimum" class="form-control" maxlength="140" name="primaryResponsibilities" required />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.sres")</label>
+                                        <input type="text" pattern=".{2,}" title="2 characters minimum" class="form-control" maxlength="140" name="secondaryResponsibilities" required />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.careerpath")</label>
+                                        <input type="text" pattern=".{2,}" title="2 characters minimum" class="form-control" maxlength="140" name="careerPath" required />
+                                    </div>
+                                </div>
+
+
+                                <div class="row m-t-20">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.proficiency")</label>
+                                        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.proficiency1")</p>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="proficiency" value="1" required /><label for="inlineRadio1">1</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="proficiency" value="2" required /><label for="inlineRadio1">2</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="proficiency" value="3" required /><label for="inlineRadio1">3</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="proficiency" value="4" required /><label for="inlineRadio1">4</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="proficiency" value="5" required /><label for="inlineRadio1">5</label>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.pmanagement")</label>
+                                        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.pmanagement1")</p>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="projectManagement" value="1" required /><label for="inlineRadio1">1</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="projectManagement" value="2" required /><label for="inlineRadio1">2</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="projectManagement" value="3" required /><label for="inlineRadio1">3</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="projectManagement" value="4" required /><label for="inlineRadio1">4</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="projectManagement" value="5" required /><label for="inlineRadio1">5</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.attentiontd")</label>
+                                        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.attentiontd1")</p>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="attentionDetail" value="1" required /><label for="inlineRadio1">1</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="attentionDetail" value="2" required /><label for="inlineRadio1">2</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="attentionDetail" value="3" required /><label for="inlineRadio1">3</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="attentionDetail" value="4" required /><label for="inlineRadio1">4</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="attentionDetail" value="5" required /><label for="inlineRadio1">5</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.cinteraction")</label>
+                                        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.cinteraction1")</p>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="clientInteraction" value="1" required /><label for="inlineRadio1">1</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="clientInteraction" value="2" required /><label for="inlineRadio1">2</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="clientInteraction" value="3" required /><label for="inlineRadio1">3</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="clientInteraction" value="4" required /><label for="inlineRadio1">4</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="clientInteraction" value="5" required /><label for="inlineRadio1">5</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.creativity")</label>
+                                        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.creativity1")</p>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="creativity" value="1" required /><label for="inlineRadio1">1</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="creativity" value="2" required /><label for="inlineRadio1">2</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="creativity" value="3" required /><label for="inlineRadio1">3</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="creativity" value="4" required /><label for="inlineRadio1">4</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="creativity" value="5" required /><label for="inlineRadio1">5</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.business")</label>
+                                        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.business1")</p>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="businessSkill" value="1" required /><label for="inlineRadio1">1</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="businessSkill" value="2" required /><label for="inlineRadio1">2</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="businessSkill" value="3" required /><label for="inlineRadio1">3</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="businessSkill" value="4" required /><label for="inlineRadio1">4</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="businessSkill" value="5" required /><label for="inlineRadio1">5</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.achievements")</label>
+                                        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.achievements1")</p>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="achievement" value="1" required /><label for="inlineRadio1">1</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="achievement" value="2" required /><label for="inlineRadio1">2</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="achievement" value="3" required /><label for="inlineRadio1">3</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="achievement" value="4" required /><label for="inlineRadio1">4</label>
+                                        </div>
+                                        <div class="radio radio-success form-check-inline radio_spacing">
+                                            <input type="radio" name="achievement" value="5" required /><label for="inlineRadio1">5</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.improvementarea")</label>
+                                        <input type="text" pattern=".{2,}" title="2 characters minimum" class="form-control" maxlength="140" name="areaImprovement" required />
+                                    </div>
+                                </div>
+
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.othercomments")</label>
+                                        <input type="text" pattern=".{2,}" title="2 characters minimum" class="form-control" maxlength="140" name="otherComment" required />
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="row m-t-10">
+                            <div class="col-12 text-danger">
+                                @Html.AntiForgeryToken()
+                                @Html.ValidationSummary()
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary waves-effect waves-light m-t-10">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.submit")</button>
+                                <button type="button" class="btn btn-primary waves-effect waves-light m-t-10" onclick="redirectToPage();">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.reset")</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    }
+</div>
+
+<!-- End content -->
+@section JS {
+    <script type="text/javascript" src="@Href("~/Scripts/chosen.ajaxaddition.jquery.js")"></script>
+    <script>
+
+        function redirectToPage() {
+            window.location.reload();
+        }
+        $(document).ready(function () {
+            setEmployeeDropDowns();
+
+            HideSpanMessage();
+
+            var d = new Date();
+            var CurrentYear = d.getFullYear('yyyy');
+            var PreviousYear = CurrentYear - 1;
+            $('#fname').val(PreviousYear + ' - ' + CurrentYear);
+
+        });
+
+
+
+        function HideSpanMessage() {
+            setTimeout(function () { $('.msg').hide(); }, 8000);
+        }
+        function setEmployeeDropDowns() {
+            $('#monthly-time-sheet-employees').ajaxChosen({
+                dataType: 'json',
+                type: 'POST',
+                url: '@Url.Action("ChangeEmployeePasswordDataHandler", "EmployeeManagement", null, Request.Url.Scheme)'
+            }, {
+                loadingImg: '@Href("~/Content/ChosenAutoComplete/loading.gif")'
+            });
+        }
+    </script>
+}

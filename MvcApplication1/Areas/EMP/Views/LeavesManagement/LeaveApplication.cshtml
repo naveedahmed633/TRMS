@@ -1,0 +1,1121 @@
+﻿@{
+    ViewBag.Title = "TRMS - Leave Application";
+    Layout = "~/Areas/EMP/Views/Shared/_Layout.cshtml";
+
+    string EMP_STD_LEC_LoginUserType = "";
+    if (MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeFunctionSLSID.ToString().Contains("student"))
+    {
+        EMP_STD_LEC_LoginUserType = "STD";
+    }
+    else if (MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeFunctionSLSID.ToString().Contains("lecturer"))
+    {
+        EMP_STD_LEC_LoginUserType = "LEC";
+    }
+    else
+    {
+        EMP_STD_LEC_LoginUserType = "EMP";
+    }
+
+}
+
+@model ViewModels.CreateLeaveApplication
+
+@{
+    //Titles - Leave Types
+    string TitleLeaves = "", TitleLeave01 = "", TitleLeave02 = "", TitleLeave03 = "", TitleLeave04 = "", TitleLeave05 = "", TitleLeave06 = "", TitleLeave07 = "", TitleLeave08 = "";
+    string LTCS = "", TitleLeave09 = "", TitleLeave10 = "", TitleLeave11 = "", TitleLeave12 = "", TitleLeave13 = "", TitleLeave14 = "", TitleLeave15 = "";
+    BLL.PdfReports.LeavesTypesTitles leavesTitles = new BLL.PdfReports.LeavesTypesTitles();
+    TitleLeaves = leavesTitles.getLeavesTypesTitles();
+    if (TitleLeaves != null && TitleLeaves.Contains(','))
+    {
+        string[] strSplit = TitleLeaves.Split(',');
+        if (strSplit != null && strSplit.Length > 0)
+        {
+            TitleLeave01 = strSplit[0].ToString(); TitleLeave02 = strSplit[1].ToString(); TitleLeave03 = strSplit[2].ToString(); TitleLeave04 = strSplit[3].ToString();
+            TitleLeave05 = strSplit[4].ToString(); TitleLeave06 = strSplit[5].ToString(); TitleLeave07 = strSplit[6].ToString(); TitleLeave08 = strSplit[7].ToString();
+            TitleLeave09 = strSplit[8].ToString(); TitleLeave10 = strSplit[9].ToString(); TitleLeave11 = strSplit[10].ToString(); TitleLeave12 = strSplit[11].ToString();
+            TitleLeave13 = strSplit[12].ToString(); TitleLeave14 = strSplit[13].ToString(); TitleLeave15 = strSplit[14].ToString();
+        }
+    }
+    else
+    {
+        TitleLeave01 = "Sick"; TitleLeave02 = "Casual"; TitleLeave03 = "Annual"; TitleLeave04 = "Other";
+        TitleLeave05 = "Tour"; TitleLeave06 = "Visit"; TitleLeave07 = "Meeting"; TitleLeave08 = "Maternity";
+        TitleLeave09 = "A"; TitleLeave10 = "B"; TitleLeave11 = "C"; TitleLeave12 = "D";
+        TitleLeave13 = "E"; TitleLeave14 = "F"; TitleLeave15 = "G";
+    }
+
+    bool LT01IsActive = false, LT02IsActive = false, LT03IsActive = false, LT04IsActive = false, LT05IsActive = false, LT06IsActive = false, LT07IsActive = false, LT08IsActive = false;
+    bool LT09IsActive = false, LT10IsActive = false, LT11IsActive = false, LT12IsActive = false, LT13IsActive = false, LT14IsActive = false, LT15IsActive = false;
+
+    int LT01DCount = 0, LT02DCount = 0, LT03DCount = 0, LT04DCount = 0, LT05DCount = 0, LT06DCount = 0, LT07DCount = 0, LT08DCount = 0;
+    int LT09DCount = 0, LT10DCount = 0, LT11DCount = 0, LT12DCount = 0, LT13DCount = 0, LT14DCount = 0, LT15DCount = 0;
+
+    int LT01MCount = 0, LT02MCount = 0, LT03MCount = 0, LT04MCount = 0, LT05MCount = 0, LT06MCount = 0, LT07MCount = 0, LT08MCount = 0;
+    int LT09MCount = 0, LT10MCount = 0, LT11MCount = 0, LT12MCount = 0, LT13MCount = 0, LT14MCount = 0, LT15MCount = 0;
+
+    ////BLL.PdfReports.LeavesTypesTitles leavesTitles = new BLL.PdfReports.LeavesTypesTitles();
+    LTCS = leavesTitles.getLeavesTypesCountsStatus();
+    if (LTCS != null && LTCS.Contains(','))
+    {
+        string[] strSplit = LTCS.Split(',');
+        if (strSplit != null && strSplit.Length > 0)
+        {
+            //LT01DCount = int.Parse(strSplit[0].Split('-')[0].ToString()); LT02DCount = int.Parse(strSplit[1].Split('-')[0].ToString()); LT03DCount = int.Parse(strSplit[0].Split('-')[0].ToString()); LT04DCount = int.Parse(strSplit[3].Split('-')[0].ToString());
+            //LT05DCount = int.Parse(strSplit[4].Split('-')[0].ToString()); LT06DCount = int.Parse(strSplit[5].Split('-')[0].ToString()); LT07DCount = int.Parse(strSplit[6].Split('-')[0].ToString()); LT08DCount = int.Parse(strSplit[7].Split('-')[0].ToString());
+            //LT09DCount = int.Parse(strSplit[8].Split('-')[0].ToString()); LT10DCount = int.Parse(strSplit[9].Split('-')[0].ToString()); LT11DCount = int.Parse(strSplit[10].Split('-')[0].ToString()); LT12DCount = int.Parse(strSplit[11].Split('-')[0].ToString());
+            //LT13DCount = int.Parse(strSplit[12].Split('-')[0].ToString()); LT14DCount = int.Parse(strSplit[13].Split('-')[0].ToString()); LT15DCount = int.Parse(strSplit[14].Split('-')[0].ToString());
+
+            LT01MCount = int.Parse(strSplit[0].Split('-')[1].ToString()); LT02MCount = int.Parse(strSplit[1].Split('-')[1].ToString()); LT03MCount = int.Parse(strSplit[1].Split('-')[1].ToString()); LT04MCount = int.Parse(strSplit[3].Split('-')[1].ToString());
+            LT05MCount = int.Parse(strSplit[4].Split('-')[1].ToString()); LT06MCount = int.Parse(strSplit[5].Split('-')[1].ToString()); LT07MCount = int.Parse(strSplit[6].Split('-')[1].ToString()); LT08MCount = int.Parse(strSplit[7].Split('-')[1].ToString());
+            LT09MCount = int.Parse(strSplit[8].Split('-')[1].ToString()); LT10MCount = int.Parse(strSplit[9].Split('-')[1].ToString()); LT11MCount = int.Parse(strSplit[10].Split('-')[1].ToString()); LT12MCount = int.Parse(strSplit[11].Split('-')[1].ToString());
+            LT13MCount = int.Parse(strSplit[12].Split('-')[1].ToString()); LT14MCount = int.Parse(strSplit[13].Split('-')[1].ToString()); LT15MCount = int.Parse(strSplit[14].Split('-')[1].ToString());
+
+            LT01IsActive = strSplit[0].Split('-')[2].ToString() == "True" ? true : false; LT02IsActive = strSplit[1].Split('-')[2].ToString() == "True" ? true : false; LT03IsActive = strSplit[2].Split('-')[2].ToString() == "True" ? true : false; LT04IsActive = strSplit[3].Split('-')[2].ToString() == "True" ? true : false;
+            LT05IsActive = strSplit[4].Split('-')[2].ToString() == "True" ? true : false; LT06IsActive = strSplit[5].Split('-')[2].ToString() == "True" ? true : false; LT07IsActive = strSplit[6].Split('-')[2].ToString() == "True" ? true : false; LT08IsActive = strSplit[7].Split('-')[2].ToString() == "True" ? true : false;
+            LT09IsActive = strSplit[8].Split('-')[2].ToString() == "True" ? true : false; LT10IsActive = strSplit[9].Split('-')[2].ToString() == "True" ? true : false; LT11IsActive = strSplit[10].Split('-')[2].ToString() == "True" ? true : false; LT12IsActive = strSplit[11].Split('-')[2].ToString() == "True" ? true : false;
+            LT13IsActive = strSplit[12].Split('-')[2].ToString() == "True" ? true : false; LT14IsActive = strSplit[13].Split('-')[2].ToString() == "True" ? true : false; LT15IsActive = strSplit[14].Split('-')[2].ToString() == "True" ? true : false;
+        }
+    }
+}
+
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("dashboard.welcome")  <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span></h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/EMP/EMP/Dashboard">@EMP_STD_LEC_LoginUserType</a></li>
+                    <li class="breadcrumb-item active">Leaves</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="ti-files"></i>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.title.page")</h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+                    <input id="LT01IsActive" type="hidden" value="@LT01IsActive.ToString().ToLower()" /><input id="LT02IsActive" type="hidden" value="@LT02IsActive.ToString().ToLower()" /><input id="LT03IsActive" type="hidden" value="@LT03IsActive.ToString().ToLower()" /><input id="LT04IsActive" type="hidden" value="@LT04IsActive.ToString().ToLower()" />
+                    <input id="LT05IsActive" type="hidden" value="@LT05IsActive.ToString().ToLower()" /><input id="LT06IsActive" type="hidden" value="@LT06IsActive.ToString().ToLower()" /><input id="LT07IsActive" type="hidden" value="@LT07IsActive.ToString().ToLower()" /><input id="LT08IsActive" type="hidden" value="@LT08IsActive.ToString().ToLower()" />
+                    <input id="LT09IsActive" type="hidden" value="@LT09IsActive.ToString().ToLower()" /><input id="LT10IsActive" type="hidden" value="@LT10IsActive.ToString().ToLower()" /><input id="LT11IsActive" type="hidden" value="@LT11IsActive.ToString().ToLower()" /><input id="LT12IsActive" type="hidden" value="@LT12IsActive.ToString().ToLower()" />
+                    <input id="LT13IsActive" type="hidden" value="@LT13IsActive.ToString().ToLower()" /><input id="LT14IsActive" type="hidden" value="@LT14IsActive.ToString().ToLower()" /><input id="LT15IsActive" type="hidden" value="@LT15IsActive.ToString().ToLower()" />
+
+                    <div class="row">
+                        <div class="col-6 text-success">
+                            <label class="control-label"><b><u>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.session.datestart")</u></b> @Model.strSessionStartDate</label>
+                        </div>
+                        <div class="col-6 text-success">
+                            <label class="control-label"><b><u>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.session.dateend")</u></b> @Model.strSessionEndDate</label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-3 text-danger">
+                            <label class="control-label"><b><u>@TitleLeave01:</u></b> <span title="used leaves">@Model.AvailedSickLeaves</span> / <span title="allowed leaves">@Model.AvailableSickLeaves</span></label>
+                        </div>
+                        <div class="col-3 text-danger">
+                            <label class="control-label"><b><u>@TitleLeave02:</u></b> <span title="used leaves">@Model.AvailedCasualLeaves</span> / <span title="allowed leaves">@Model.AvailableCasualLeaves</span></label>
+                        </div>
+                        <div class="col-3 text-danger">
+                            <label class="control-label"><b><u>@TitleLeave03:</u></b> <span title="used leaves">@Model.AvailedAnnualLeaves</span> / <span title="allowed leaves">@Model.AvailableAnnualLeaves</span></label>
+                        </div>
+
+                        <div class="col-3 text-danger">
+                            <label class="control-label"><b><u>@TitleLeave04:</u></b> <span title="used leaves">@Model.AvailedOtherLeaves</span> / <span title="allowed leaves">@Model.AvailableOtherLeaves</span></label>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        @{
+                            if (LT05IsActive && Model.AvailableLeaveType01 > 0)
+                            {
+                                <div class="col-3 text-danger">
+                                    <label class="control-label"><b><u>@TitleLeave05:</u></b> <span title="used leaves">@Model.AvailedLeaveType01</span> / <span title="allowed leaves">@Model.AvailableLeaveType01</span></label>
+                                </div>
+                            }
+                        }
+                        @{
+                            if (LT06IsActive && Model.AvailableLeaveType02 > 0)
+                            {
+                                <div class="col-3 text-danger">
+                                    <label class="control-label"><b><u>@TitleLeave06:</u></b> <span title="used leaves">@Model.AvailedLeaveType02</span> / <span title="allowed leaves">@Model.AvailableLeaveType02</span></label>
+                                </div>
+                            }
+                        }
+                        @{
+                            if (LT07IsActive && Model.AvailableLeaveType03 > 0)
+                            {
+                                <div class="col-3 text-danger">
+                                    <label class="control-label"><b><u>@TitleLeave07:</u></b> <span title="used leaves">@Model.AvailedLeaveType03</span> / <span title="allowed leaves">@Model.AvailableLeaveType03</span></label>
+                                </div>
+                            }
+                        }
+                        @{
+                            if (LT08IsActive && Model.AvailableLeaveType04 > 0)
+                            {
+                                <div class="col-3 text-danger">
+                                    <label class="control-label"><b><u>@TitleLeave08:</u></b> <span title="used leaves">@Model.AvailedLeaveType04</span> / <span title="allowed leaves">@Model.AvailableLeaveType04</span></label>
+                                </div>
+                            }
+                        }
+
+
+                    </div>
+
+                    <div class="row">
+
+                        @{
+                            if (LT09IsActive && Model.AvailableLeaveType05 > 0)
+                            {
+                                <div class="col-3 text-danger">
+                                    <label class="control-label"><b><u>@TitleLeave09:</u></b> <span title="used leaves">@Model.AvailedLeaveType05</span> / <span title="allowed leaves">@Model.AvailableLeaveType05</span></label>
+                                </div>
+                            }
+                        }
+                        @{
+                            if (LT10IsActive && Model.AvailableLeaveType06 > 0)
+                            {
+                                <div class="col-3 text-danger">
+                                    <label class="control-label"><b><u>@TitleLeave10:</u></b> <span title="used leaves">@Model.AvailedLeaveType06</span> / <span title="allowed leaves">@Model.AvailableLeaveType06</span></label>
+                                </div>
+                            }
+                        }
+                        @{
+                            if (LT11IsActive && Model.AvailableLeaveType07 > 0)
+                            {
+                                <div class="col-3 text-danger">
+                                    <label class="control-label"><b><u>@TitleLeave11:</u></b> <span title="used leaves">@Model.AvailedLeaveType07</span> / <span title="allowed leaves">@Model.AvailableLeaveType07</span></label>
+                                </div>
+                            }
+                        }
+                        @{
+                            if (LT12IsActive && Model.AvailableLeaveType08 > 0)
+                            {
+                                <div class="col-3 text-danger">
+                                    <label class="control-label"><b><u>@TitleLeave12:</u></b> <span title="used leaves">@Model.AvailedLeaveType08</span> / <span title="allowed leaves">@Model.AvailableLeaveType08</span></label>
+                                </div>
+                            }
+                        }
+
+                    </div>
+
+                    <div class="row">
+
+                        @{
+                            if (LT13IsActive && Model.AvailableLeaveType09 > 0)
+                            {
+                                <div class="col-3 text-danger">
+                                    <label class="control-label"><b><u>@TitleLeave13:</u></b> <span title="used leaves">@Model.AvailedLeaveType09</span> / <span title="allowed leaves">@Model.AvailableLeaveType09</span></label>
+                                </div>
+                            }
+                        }
+                        @{
+                            if (LT14IsActive && Model.AvailableLeaveType10 > 0)
+                            {
+                                <div class="col-3 text-danger">
+                                    <label class="control-label"><b><u>@TitleLeave14:</u></b> <span title="used leaves">@Model.AvailedLeaveType10</span> / <span title="allowed leaves">@Model.AvailableLeaveType10</span></label>
+                                </div>
+                            }
+                        }
+                        @{
+                            if (LT15IsActive && Model.AvailableLeaveType11 > 0)
+                            {
+                                <div class="col-3 text-danger">
+                                    <label class="control-label"><b><u>@TitleLeave15:</u></b> <span title="used leaves">@Model.AvailedLeaveType11</span> / <span title="allowed leaves">@Model.AvailableLeaveType11</span></label>
+                                </div>
+                            }
+                        }
+
+                    </div>
+
+
+                    @using (Html.BeginForm("LeaveApplication", "LeavesManagement", FormMethod.Post, new { id = "leave-application-form", enctype = "multipart/form-data" }))
+                    {
+                        <div class="row">
+                            <div class="col-4">
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.leave") <span class="text-danger font-14">*</span></label>
+                                        <select id="leave_allocation_id" name="leave_allocation_id" class="form-control" onchange="SetLeaveAllocation()" required>
+                                            <option value="1">Apply for Leave</option>
+                                            <option value="2">Apply for Allocation</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+
+
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.leave-allo")<span class="text-danger font-14">*</span></label>
+                                        <select id="leave_type_id" name="leave_type_id" class="form-control" required>
+                                            <option value="">-- Select Leave Type --</option>
+                                            @foreach (ViewModels.LeaveTypeInfo item in Model.leave_types)
+                                            {
+                                                <option value="@item.Id">@item.LeaveTypeText</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12 m-t-10">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.datef")<span class="text-danger font-14">*</span></label>
+                                        <input id="from_date" name="from_date" type="text" class="form-control datepicker" autocomplete="off" required />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.datet") <span class="text-danger font-14">*</span></label>
+                                        <input id="to_date" name="to_date" type="text" class="form-control datepicker" autocomplete="off" required />
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+
+                            <div class="col-2">
+                            </div>
+
+                            <div class="col-4">
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.approvr") <span class="text-danger font-14">*</span></label>
+                                        <select id="approver_id" name="approver_id" class="form-control" required>
+                                            @if (Model.leave_approver.Any())
+                                            {
+                                                foreach (ViewModels.LeaveApproverInfo item in Model.leave_approver)
+                                                {
+                                                    <option value="@item.Id">@item.EmployeeCode - @item.FirstName @item.LastName</option>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <option value="1">Super HR - 000000</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.reason") <span class="text-danger font-14">*</span></label>
+                                        <select id="leave_reason_id" name="leave_reason_id" class="form-control" required>
+                                            @foreach (ViewModels.LeaveReasonInfo item in Model.leave_reasons)
+                                            {
+                                                <option value="@item.Id">@item.LeaveReasonText</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.detai")</label>
+                                        <input id="reason_detail" name="reason_detail" type="text" class="form-control" />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label"> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.upatt")</label>
+                                        <input type="file" id="attachment_file_path" name="attachment_file_path" accept=".jpg" class="form-control">
+                                        <input type="hidden" id="user_id" name="user_id" value="194101" />
+                                        <input type="hidden" id="leave_status_id" name="leave_status_id" value="1" />
+                                        <input type="hidden" id="employee_id" name="employee_id" value="0" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row m-t-10">
+                            <div class="col-12 text-danger span_message">
+                                @Html.AntiForgeryToken()
+                                @Html.ValidationSummary()
+                                @ViewBag.Message
+
+                                @if (Request.QueryString["message"] != null && Request.QueryString["message"].ToString() == "image")
+                                {
+                                    <div class="form-group row">
+                                        <div class="text-danger h4 msg">
+                                            Image Size limit is exceeding from 2MB.
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="submit" id="leave_application" onclick="clearr();" class="btn btn-primary waves-effect waves-light m-t-10">Submit</button>
+                                <button type="button" class="btn btn-primary waves-effect waves-light m-t-10" onclick="redirectToPage();">Reset</button>
+                                @*<button type="submit" id="btn-excel-download" onclick="HideBarr();" class="btn btn-primary waves-effect waves-light m-t-10">Download Excel</button>
+                                    <span id="export_wait" style="display: none;" class="text-danger"><img src='/images/loader.gif' alt='processing' /></span>*@
+                            </div>
+                        </div>
+                    }
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+
+                <div class="panel-body">
+
+                    <h3>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.list.of.prev")</h3>
+
+                    <div class="row m-t-30">
+                        <div class="col-12">
+                            <table id="leave_application_table" class="table table-striped table-bordered dataTable dt-responsive nowrap no-footer small" style="width: 140%;">
+                                <thead>
+                                    <tr>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("empid")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emplt")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.datef")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.datet")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("empls")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("ema")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emuc")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emac")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emdc")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emlr")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("empun")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("empan")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("empa")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emprd")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.apr")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.app")</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-2">
+                            <span class="h4">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.expo")</span>
+                        </div>
+                        <div id="divExportButtons" class="col-10">
+                            &nbsp;
+                        </div>
+                    </div>
+
+                    <div class="row m-t-10 d-none">
+                        <div class="col-12">
+                            <button type="submit" id="btnExport" onclick="CheckData();" class="btn btn-primary waves-effect waves-light">Export Grid Data</button>
+                            <span id="demo" class="text-danger"></span>
+                            <p id="export_wait2" style="display: none;" class="text-danger"><img src='/images/loader.gif' alt='processing' /></p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End content -->
+<!-- sample modal content -->
+<div id="ApprovalStatusModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ApprovalStatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="CenterModalLabel">Approval Status</h4>
+            </div>
+            <div class="modal-body pull-right">
+
+                <div class="row">
+                    <div class="col-12">
+                        Teacher Name: Prof. Alex Paul
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        Date of Submission: 11th March 2018
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        Approval Status: Approved
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Close</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!-- Custom Modal -->
+<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="mySmallModalLabel">Message Alert</h4>
+            </div>
+            <div class="modal-body">
+                <span id="alert_message"></span>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div id="MidTermModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MidTermModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="CenterModalLabel">Leave Application</h4>
+            </div>
+            <div class="modal-body text-center">
+                <img id="image_source" src="~/Images/no-image.png" width="300" />
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Close</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<div id="leave_applicaiton_dialog"></div>
+@section JS {
+
+    <script type="text/javascript" src="@Href("~/Scripts/leavesCRUD.js")"></script>
+
+    <script type="text/javascript">
+
+        function SetLeaveAllocation() {
+
+            resetLeaveAttribute();
+
+            if ($('#leave_allocation_id').val() == 1) {
+
+                $("#leave_type_id > option").each(function () {
+
+                    var x = 16;
+                    var value = $(this).val();
+
+                    if (value >= x) {
+                        //$("#leave_type_id ").hide();
+
+                        //alert($("#leave_type_id").val());
+
+                        $('#leave_type_id').find('[value="' + value + '"]').attr('disabled', 'disabled');
+                        $('#leave_type_id').find('[value="' + value + '"]').css({ "color": "lightgray" });
+                    }
+                    else {
+                        $('#leave_type_id').find('[value="' + value + '"]').removeAttr('disabled', 'disabled');
+                        $('#leave_type_id').find('[value="' + value + '"]').css({ "color": "black" });
+                    }
+                });
+            }
+            else {
+                $("#leave_type_id > option").each(function () {
+
+                    var x = 16;
+                    var value = $(this).val();
+
+                    if (value >= x) {
+                        $('#leave_type_id').find('[value="' + value + '"]').removeAttr('disabled', 'disabled');
+                        $('#leave_type_id').find('[value="' + value + '"]').css({ "color": "black" });
+
+                    }
+                    else {
+                        //$("#leave_type_id ").hide();
+                        $('#leave_type_id').find('[value="' + value + '"]').attr('disabled', 'disabled');
+                        $('#leave_type_id').find('[value="' + value + '"]').css({ "color": "lightgray" });
+                    }
+                });
+            }
+        }
+
+        function resetLeaveAttribute() {
+            $("#leave_type_id > option").each(function () {
+
+                var value = $(this).val();
+
+                $('#leave_type_id').find('[value="' + value + '"]').css({ "color": "black" });
+                $('#leave_type_id').find('[value="' + value + '"]').removeAttr('disabled', 'disabled');
+                $('#leave_type_id').find('[value="' + value + '"]').removeAttr('selected', 'selected');
+
+                $('#leave_type_id').find('[value=""]').attr('selected', true)
+
+            });
+        }
+
+
+        function HideBarr() {
+            HideMessage();
+        }
+
+        function redirectToPage() {
+            window.location = '/EMP/LeavesManagement/LeaveApplication';
+        }
+
+        function CheckData() {
+            var ss = $("#leave_application_table tr").children("td:first").text();
+            if (ss == "No data available in table" || ss == "" || ss == " ") {
+                $('#export_wait2').show();
+                document.getElementById("demo").innerHTML = "No Data Found.";
+                HideBarExcle2();
+            }
+            else {
+                setupTableExportButton('#leave_application_table', 'LeaveApplication');
+                $('#export_wait2').show();
+                HideBarExcle2();
+            }
+        }
+
+        function HideSpanMessage() {
+            setTimeout(function () { $('.span_message').hide(); }, 5000);
+        }
+
+        function HideMessage() { setTimeout(function () { $('#export_wait').hide(); document.getElementById("btn-excel-download").disabled = false; }, 5000); }
+
+        function HideBarExcle2() { setTimeout(function () { $('#export_wait2').hide(); document.getElementById("demo").innerHTML = ""; }, 1500); }
+
+        function searchReport() {
+            // get the entered string
+            var toSearch = $('leave_application_table_filter input').val();
+
+            $('#leave_application_table').DataTable().search(toSearch);
+            $('#leave_application_table').DataTable().draw();
+        }
+
+        popup = function viewImage(image_name) {
+            $('#image_source').attr("src", "/Content/LeaveApps/" + image_name);
+            $('#MidTermModal').modal('show');
+        }
+
+        function clearr() {
+            $('input[type="search"]').focus();
+            $('input[type="search"]').val("");
+            $('#leave_application_table').DataTable().search("");
+            $('#leave_application_table').DataTable().draw();
+            $('input[type="search"]').blur();
+
+            document.getElementById("btn-excel-download").disabled = false;
+            $('#export_wait').hide();
+            $('#export_wait2').hide();
+            document.getElementById("demo").innerHTML = "";
+
+            validateForm();
+        }
+
+        function initReportDataTable(identifier, url, columns) {
+            var oTable = $(identifier).DataTable({
+                "searchDelay": 2000,
+                "scrollY": "300px",
+                "serverSide": true,
+                "ajax": {
+                    "type": "POST",
+                    "url": url,
+                    "contentType": 'application/json; charset=utf-8',
+                    'data': function (data) {
+
+                        //data.employee_id = $('#consolidated-employees').val();
+                        data.from_date = $('#from_date').val();
+                        data.to_date = $('#to_date').val();
+
+                        return data = JSON.stringify(data);
+                    }
+                },
+                "scrollX": true,
+                "scrollCollapse": true,
+                "processing": true,
+                "paging": true,
+                "deferRender": true,
+                "columns": columns,
+                "order": [0, "desc"],
+                "iDisplayLength": 50,
+                "aLengthMenu": [[10, 20, 50, 100], [10, 20, 50, 100]],
+                "responsive": true,
+                "dom": '<"dt-buttons"Bl><"clear">frtip', //"dom": 'Blfrtip',
+                //"dom": 'Bfrtip',
+                "buttons": [
+                    //'copy', 'csv', 'excel', 'pdf', 'print'
+                    //'pageLength',
+                    //{
+                    //    extend: 'copy',
+                    //    text: '<i class="fa fa-files-o"></i> Copy',
+                    //    titleAttr: 'Copy',
+                    //    className: 'btn btn-danger btn-md'
+                    //},
+                    {
+                        extend: 'csv',
+                        text: '<i class="fa fa-files-o"></i> CSV',
+                        titleAttr: 'CSV',
+                        className: 'btn btn-primary btn-md',
+                        filename: 'leaves_application_report',
+                        exportOptions: {
+                            modifier: {
+                                page: 'all',
+                                search: 'none'
+                            },
+                            columns: [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 15]
+                            //columns: ':visible'
+                        }
+                    },
+                    {
+                        extend: 'excel',
+                        text: '<i class="fa fa-files-o"></i> Excel',
+                        titleAttr: 'Excel',
+                        className: 'btn btn-warning btn-md',
+                        filename: 'leaves_application_report',
+                        exportOptions: {
+                            modifier: {
+                                page: 'all',
+                                search: 'none'
+                            },
+                            columns: [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 15]
+                            //columns: ':visible'
+                        }
+                    },
+                    //{
+                    //    extend: 'pdf',
+                    //    text: '<i class="fa fa-file-pdf-o"></i> PDF',
+                    //    titleAttr: 'PDF',
+                    //    className: 'btn btn-danger btn-md',
+                    //    orientation: 'landscape',
+                    //    customize: function (doc) { doc.pageMargins = [10, 10, 10, 10]; },
+                    //    pageSize: 'LEGAL',
+                    //    exportOptions: {
+                    //        modifier: {
+                    //            page: 'all',
+                    //            search: 'none'
+                    //        },
+                    //        columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 11, 12, 13, 14 ]
+                    //        //columns: ':visible'
+                    //    }
+                    //},
+                    {
+                        text: '<i class="fa fa-file-pdf-o"></i> PDF',
+                        extend: 'pdfHtml5',
+                        titleAttr: 'PDF',
+                        className: 'btn btn-danger btn-md',
+                        filename: 'leaves_application_report',
+                        orientation: 'landscape', //portrait
+                        pageSize: 'A4', //A3 , A5 , A6 , legal , letter
+                        exportOptions: {
+                            columns: [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 15], //columns: ':visible',
+                            search: 'applied',
+                            order: 'applied',
+                            page: 'all',
+                        },
+                        customize: function (doc) {
+                            //Remove the title created by datatTables
+                            doc.content.splice(0, 1);
+                            //Create a date string that we use in the footer. Format is dd-mm-yyyy
+                            var now = new Date();
+                            var jsDate = now.getDate() + '-' + (now.getMonth() + 1) + '-' + now.getFullYear();
+                            var jsDateTime = now.getDate() + '-' + (now.getMonth() + 1) + '-' + now.getFullYear();// + ' ' + now.getHour() + ':' + now.getMinute();
+                            // Logo converted to base64
+                            // var logo = getBase64FromImageUrl('https://datatables.net/media/images/logo.png');
+                            // The above call should work, but not when called from codepen.io
+                            // So we use a online converter and paste the string in.
+                            // Done on http://codebeautify.org/image-to-base64-converter
+                            // It's a LONG string scroll down to see the rest of the code !!!
+                            //var logo = 'data:image/jpeg;base64,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ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA=';
+                            var logo = 'data:image/png;base64,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';
+                            // A documentation reference can be found at
+                            // https://github.com/bpampuch/pdfmake#getting-started
+                            // Set page margins [left,top,right,bottom] or [horizontal,vertical]
+                            // or one number for equal spread
+                            // It's important to create enough space at the top for a header !!!
+                            doc.pageMargins = [20, 60, 20, 30];
+                            // Set the font size fot the entire document
+                            doc.defaultStyle.fontSize = 7;
+                            // Set the fontsize for the table header
+                            doc.styles.tableHeader.fontSize = 7;
+                            //doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+                            // Create a header object with 3 columns
+                            // Left side: Logo
+                            // Middle: brandname
+                            // Right side: A document title
+                            doc['header'] = (function () {
+                                return {
+                                    columns: [
+                                        {
+                                            image: logo,
+                                            width: 24
+                                        },
+                                        {
+                                            alignment: 'center',
+                                            italics: true,
+                                            text: 'DUHS - DOW University of Health Sciences \n Leaves Report',
+                                            fontSize: 18,
+                                            margin: [10, 0]
+                                        },
+                                        {
+                                            alignment: 'right',
+                                            fontSize: 12,
+                                            text: 'Print Date Time: ' + jsDateTime.toString()
+                                        }
+                                    ],
+                                    margin: 10
+                                }
+                            });
+                            // Create a footer object with 2 columns
+                            // Left side: report creation date
+                            // Right side: current page and total pages
+                            doc['footer'] = (function (page, pages) {
+                                return {
+                                    columns: [
+                                        {
+                                            alignment: 'left',
+                                            text: ['Created on: ', { text: jsDate.toString() }]
+                                        },
+                                        {
+                                            alignment: 'right',
+                                            text: ['page ', { text: page.toString() }, ' of ', { text: pages.toString() }]
+                                        }
+                                    ],
+                                    margin: 20
+                                }
+                            });
+                            // Change dataTable layout (Table styling)
+                            // To use predefined layouts uncomment the line below and comment the custom lines below
+                            // doc.content[0].layout = 'lightHorizontalLines'; // noBorders , headerLineOnly
+                            var objLayout = {};
+                            objLayout['hLineWidth'] = function (i) { return .5; };
+                            objLayout['vLineWidth'] = function (i) { return .5; };
+                            objLayout['hLineColor'] = function (i) { return '#aaa'; };
+                            objLayout['vLineColor'] = function (i) { return '#aaa'; };
+                            objLayout['paddingLeft'] = function (i) { return 4; };
+                            objLayout['paddingRight'] = function (i) { return 4; };
+                            doc.content[0].layout = objLayout;
+                        }
+                    },
+                    //{
+                    //    extend: 'print',
+                    //    text: '<i class="fa fa-print"></i> Print',
+                    //    titleAttr: 'Print',
+                    //    className: 'btn btn-success btn-md',
+                    //    exportOptions: {
+                    //        modifier: {
+                    //            page: 'all',
+                    //            search: 'none'
+                    //        },
+                    //        columns: [1, 2, 3, 4, 5, 6]
+                    //        //columns: ':visible'
+                    //    }
+                    //}
+                ]
+            });
+
+            oTable.buttons().container().appendTo('#divExportButtons');
+            //$('.buttons-csv').css('margin-right', '10px;');
+
+            oTable.on("draw", function () {
+                var keyword = $(identifier + '_filter > label:eq(0) > input').val();
+                $(identifier).unmark();
+                $(identifier).mark(keyword, {});
+
+                $(identifier + ' tbody tr').click(function (e) {
+                    $('tr.row_selected').removeClass('row_selected');
+                    $(this).addClass('row_selected');
+                });
+            });
+
+            // set the z-index of the 'processing...' overlay
+            // to a great number, so that it may always display
+            // on top of the table. Also set the text color
+            // to black as it is white by default.
+            $(identifier + '_processing').css({
+                "z-index": "1000",
+                "color": "rgb(0, 0, 0)"
+            });
+
+            // initiate search one second after the user
+            // stops typing.
+            function setSearchDelayOnDataTable(idSelector) {
+                // remove all events from the search box
+                $(idSelector + '_filter input').off();
+
+                function customDataTableSearch() {
+
+                    // get the entered string
+                    var toSearch = $(idSelector + '_filter input').val();
+
+                    // do nothing if the string is null.
+                    // I've not tested this, it is just
+                    // in case.
+                    if (toSearch == null) {
+                        return;
+                    }
+
+                    // initiate search programatically.
+                    $(idSelector).DataTable().search(toSearch).draw();
+                }
+
+                // this variable holds the timer
+                var timeout;
+
+                // register a keypress on the search box
+                $(idSelector + '_filter input').keypress(function () {
+                    if (timeout != null) {
+                        clearTimeout(timeout);
+                        timeout = null;
+                    }
+
+                    // timeout set to 1 second.
+                    timeout = setTimeout(customDataTableSearch, 1000);
+                });
+
+            }
+
+            setSearchDelayOnDataTable(identifier);
+        }
+
+
+        $(document).ready(function () {
+
+            var dateToday = new Date();
+            $(".datepicker").datepicker({ dateFormat: 'dd-mm-yy' }); //minDate: dateToday, beforeShowDay: $.datepicker.noWeekends
+
+            HideSpanMessage();
+
+            //validateForm();
+
+            $('.hasDatepicker').keydown(function (e) {
+                var unicode = e.keyCode ? e.keyCode : e.charCode;
+                if (unicode != 13 && unicode != 8 && unicode != 9) { e.preventDefault(); }
+            });
+
+            $('.hasDatepicker').keydown(function (e) {
+                var unicode = e.keyCode ? e.keyCode : e.charCode;
+                if (unicode == 8) { e.preventDefault(); e.stopPropagation(); }
+            });
+
+            $("#btnExport").click(function (e) {
+                $('#leave_application_table').tableExport({ type: 'excel', escape: 'false' });
+                e.preventDefault();
+            });
+
+            /*
+            $("#leave_application").click(function (e) {
+
+                if ($('#from_date').val() == "") {
+
+                    $('#alert_message').text("Please select 'From Date'");
+                    $('.bs-example-modal-lg').modal('show');
+
+                    //alert("Please select 'From Date'");
+                    $('#from_date').focus();
+                    return false;
+                }
+
+                if ($('#to_date').val() == "") {
+
+                    $('#alert_message').text("Please select 'To Date'");
+                    $('.bs-example-modal-lg').modal('show');
+
+                    //alert("Please select 'To Date'");
+                    $('#to_date').focus();
+                    return false;
+                }
+
+                e.preventDefault();
+
+                if (validateForm()) {
+                    searchReport();
+                }
+
+            });
+            */
+
+            var url = '@Url.Action("LeaveApplicationDataHandler", "LeavesManagement", null, Request.Url.Scheme)';
+            var columns = [
+              { "data": "Id" },
+                   { "data": "LeaveTypeText" },
+                   { "data": "FromDateText" },
+                   { "data": "ToDateText" },
+                   { "data": "LeaveStatusText" },
+                   { "data": "actions" },
+                   { "data": "EmployeeCode" },
+                   { "data": "ApproverCode" },
+                   { "data": "DaysCount" },
+                   { "data": "LeaveReasonText" },
+                   { "data": "UsersName" },
+                   { "data": "ApproverName" },
+                   { "data": "AttachmentFilePath" },
+                   { "data": "ReasonDetail" },
+                   { "data": "ApproverDetail" },
+                   { "data": "CreateDateText" }
+            ];
+
+            @*
+                   I did this so that like initDataTables the JS
+            for serverside processing can be used for other tables.
+                NOTE: The names of the columns correspond to the View Model.
+            For example in this example the column names, first_name, last_name
+            etc are taken from ViewModels.Employee
+        *@
+
+            initReportDataTable('#leave_application_table', url, columns);
+            editLeaveApplication = initEditModal("#leave_applicaiton_dialog", '@Url.Action("UpdateLeaveApplication", "LeavesManagement", null, Request.Url.Scheme)', "Leave_Application");
+            deleteLeaveApplication = initDeleteModal("#leave_applicaiton_dialog", '@Url.Action("RemoveLeaveApplication", "LeavesManagement", null, Request.Url.Scheme)', "Leave_Application");
+
+            // ---------------------------- IR ----------------------------
+
+            //download excel
+            $("#btn-excel-download").click(function (e) {
+
+                if ($('#from_date').val() == "") {
+                    $('#alert_message').text("Please select 'From Date'");
+                    $('.bs-example-modal-lg').modal('show');
+
+                    //alert("Please select 'From Date'");
+                    $('#from_date').focus();
+                    return false;
+                }
+
+                if ($('#to_date').val() == "") {
+
+                    $('#alert_message').text("Please select 'To Date'");
+                    $('.bs-example-modal-lg').modal('show');
+
+                    //alert("Please select 'To Date'");
+                    $('#to_date').focus();
+                    return false;
+                }
+
+                //alert($('#export_wait').html());
+
+                if ($('#export_wait').html() == "No Data Found.") {
+                    $('#export_wait').html("<img src='/images/loader.gif' style='width: 110px; margin-left:34%;' alt='processing'>");
+                }
+
+                $('#export_wait').show();
+
+                var post_data = {
+                    //"employee_id": "TYPE_EMP", //$('#employee_id').val(),
+                    "from_date": $('#from_date').val(),
+                    "to_date": $('#to_date').val()
+                };
+
+                $("#btn-excel-download").attr("disabled", "disabled");
+
+                $.ajax({
+                    cache: false,
+                    type: 'post',
+                    url: '/EMP/Report/ConsolidatedReportExcelDownload',
+                    data: post_data,
+                    //contentType: 'application/json;charset=utf-8',
+                    dataType: 'json',
+                    success: function (data) {
+
+                        if (data.FileGuid != "" & data.FileName != "") {
+
+                            $('#export_wait').hide();
+                            $("#btn-excel-download").removeAttr("disabled");
+
+                            //console.log('export done successfully InShaAllah!!!');
+                            //var response = JSON.stringify(data);
+                            //alert(data.FileGuid + ' >> ' + data.FileName);
+
+                            window.location = '/EMP/Report/Download?fileGuid=' + data.FileGuid + '&fileName=' + data.FileName;
+                        }
+                        else {
+                            $('#export_wait').html("No Data Found.");
+                        }
+                    },
+                    error: function (jq) {
+                        console.log('Error: ' + jq.responseText);
+                    }
+
+                });
+                //  serializeAndSend();
+                e.preventDefault();
+            });
+
+            // ------------ Leaves Settings - Enabled and Disabled  -------------
+
+            resetLeaveAttribute();
+
+            $("#leave_type_id > option").each(function () {
+
+                var x = 16;
+                var value = $(this).val();
+
+                if (value >= x) {
+                    //$("#leave_type_id ").hide();
+
+                    //alert($("#leave_type_id").val());
+
+                    $('#leave_type_id').find('[value="' + value + '"]').attr('disabled', 'disabled');
+                    $('#leave_type_id').find('[value="' + value + '"]').css({ "color": "lightgray" });
+                }
+                else {
+                    $('#leave_type_id').find('[value="' + value + '"]').removeAttr('disabled', 'disabled');
+                    $('#leave_type_id').find('[value="' + value + '"]').css({ "color": "black" });
+                }
+            });
+
+
+        });
+
+        function validateForm() {
+            var fDate = $('#leave-application-form').find('[name*="from_date"]').val().split("-").reverse();
+            var tDate = $('#leave-application-form').find('[name*="to_date"]').val().split("-").reverse();
+
+            fDate = new Date(fDate[0] + "-" + fDate[1] + "-" + fDate[2]);
+            tDate = new Date(tDate[0] + "-" + tDate[1] + "-" + tDate[2]);
+
+            console.log('fDate = ' + fDate);
+            console.log('tDate = ' + tDate);
+
+            if (fDate > tDate) {
+
+                $('#alert_message').text("'To Date' should be greater than 'From Date'");
+                $('.bs-example-modal-lg').modal('show');
+
+                //alert("To Date should be greater than From Date.");
+                return false;
+            }
+
+            /*var r = confirm("Are you sure you want to Reprocess?");
+            if (r == false) {
+                return false;
+            }*/
+
+            return true;
+        }
+    </script>
+
+
+}

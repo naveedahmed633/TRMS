@@ -1,0 +1,339 @@
+﻿@{
+    ViewBag.Title = "TRMS - Letter";
+    Layout = "~/Areas/HR/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .monthPicker {
+        z-index: 1000;
+    }
+
+
+    /* body { background: #ccc;} */
+    div.jHtmlArea .ToolBar ul li a.custom_disk_button {
+        background: url(images/disk.png) no-repeat;
+        background-position: 0 0;
+    }
+
+    div.jHtmlArea {
+        border: solid 1px #ccc;
+    }
+</style>
+
+@model TimeTune.EmpLetterViewModel
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">Welcome <span class="text-danger">'HR'</span>! [Login ID: <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & Name: <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span>]</h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/HR">HR</a></li>
+                    <li class="breadcrumb-item active">HR</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="ti-files"></i> Letters </h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-12">
+                            @if (Request.QueryString["Message"] != null && Request.QueryString["Message"].ToString() == "success")
+                            {
+                                <div class="row">
+                                    <div class="col-12">
+                                        <span class="span_message">The record is added successfully!</span>
+                                    </div>
+                                </div>
+                            }
+                            @if (Request.QueryString["Message"] != null && Request.QueryString["Message"].ToString() == "already")
+                            {
+                                <div class="row">
+                                    <div class="col-12">
+                                        <span class="span_message">This record already exists.</span>
+                                    </div>
+                                </div>
+                            }
+                            @using (Html.BeginForm("Letters", "EmployeeManagement", FormMethod.Post, new { id = "monthly-time-sheet-form" }))
+                            {
+                                <div class="row">
+                                    <div class="col-4">
+                                        <label class="control-label">Letter</label>
+                                        <select id="letterDropDown" name="leave_type_id" class="form-control" required>
+                                            <option value="1">none</option>
+                                            @*<option value="1">none</option>
+                                            <option value="1">Appointment Letter</option>
+                                            <option value="1">Offer Letter</option>
+                                            <option value="1">Salary Certificate</option>
+                                            <option value="1">Concern Certificate</option>
+                                            <option value="1">Create Letter</option>*@
+                                            @foreach(ViewModels.Letter item in Model.ltt)
+                                            {
+                                                <option value="1">@item.LetterName</option>
+                                            }
+                                        <option value="1">Create Letter</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-4">
+                                        <label style="display:none" id="lbLetter" class="control-label">Letter Name</label> 
+                                        <input type="text" style="display:none" id="letterName" name="letterName" class="m-t-10 form-control" autocomplete="off" />
+                                    </div>
+                                    @*<div class="col-4">
+                                        <label class="control-label">Employee Code</label>
+                                        <select id="monthly-time-sheet-employees" class="form-control" name="employee_id" required></select>
+                                    </div>
+                                    <div class="col-4">
+                                        <label class="control-label">Select Month</label>
+                                        <input id="monthly-time-sheet-month" type="text" name="month" class="form-control monthPicker" autocomplete="off" required />
+                                    </div>*@
+                                </div>
+
+
+                                @*<div class="row m-t-10">
+                                    <div class="col-4">
+                                        <label class="control-label">Text 1</label>
+                                        <input id="text1" name="text1" type="text" class="form-control" maxlength="100" />
+                                    </div>
+                                    <div class="col-4">
+                                        <label class="control-label">Text 3</label>
+                                        <input id="text1" name="text1" type="text" class="form-control" maxlength="100" />
+                                    </div>
+                                    <div class="col-4">
+                                        <label class="control-label">Text 4</label>
+                                        <input id="text1" name="text1" type="text" class="form-control" maxlength="100" />
+                                    </div>
+                                </div>
+
+
+                                <div class="row m-t-10">
+                                    <div class="col-12" style="margin-bottom: 10px;">
+                                        <label class="control-label">Subject</label>
+                                        <input id="text1" name="text1" type="text" class="form-control" maxlength="70"/>
+                                    </div>
+                                    <div class="col-12" style="margin-bottom: 10px;">
+                                        <label class="control-label">Body</label>
+                                        <textarea id="Textarea1" class="form-control" maxlength="300" style="height: 202px;"></textarea>
+                                    </div>
+                                </div>*@
+
+
+    <div id="txtEditor"></div>
+    <input id="text99" name="text99" type="hidden" />
+
+
+                                <div class="row">
+                                    <div class="col-12 text-danger">
+                                        @Html.AntiForgeryToken()
+                                        @Html.ValidationSummary()
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                       <button type="submit" id="generate-monthly-time-sheet" class="btn btn-primary waves-effect waves-light m-t-10" style="display: @ViewData["PDFDownloadEnabled"];" onclick="return AssignValue();" >Export PDF</button>
+                                        <span id="export_wait" style="display: none;" class="text-danger"><img src='/images/loader.gif' alt='processing' /></span><span id="pdf-no-data-found" class="text-danger">@ViewData["PDFNoDataFound"]</span>
+                                    </div>
+                                </div>
+                            }
+                            <button type="button" id="SaveLetter" class="btn btn-primary waves-effect waves-light m-t-10" onclick="SaveLetterBtn();" style="display:none">Save Letter</button>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End content -->
+<!-- Custom Modal -->
+<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="mySmallModalLabel">Message Alert</h4>
+            </div>
+            <div class="modal-body">
+                <span id="alert_message"></span>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+@section JS {
+
+    <script type="text/javascript" src="@Href("~/Scripts/chosen.ajaxaddition.jquery.js")"></script>
+    @*<script type="text/javascript" src="@Href("~/Scripts/GenerateReports.js")"></script>*@
+    <script type="text/javascript" src="@Href("~/Scripts/monthpicker.js")"></script>
+<script src="~/js/editor.js"></script>
+    @*<script src="~/Scripts/jHtmlArea-0.8.js"></script>*@
+    <script>
+
+        //$("#monthly-time-sheet-form").submit(function (e) {
+           
+        //    return true;
+        //});
+
+        function setTypeOfReportDropDown() {
+            $('#type-of-report').chosen();
+            $('#type-of-report').on("change", function () {
+                switch ($('#type-of-report').val()) {
+                    case "monthly-time-sheet":
+
+                        $('#monthly-time-sheet').show();
+                        $('#summary-report').hide();
+                        $('#monthly-attendance-register').hide();
+
+                        break;
+                    case "summary-report":
+
+                        $('#monthly-time-sheet').hide();
+                        $('#summary-report').show();
+                        $('#monthly-attendance-register').hide();
+
+                        break;
+                    case "monthly-attendance-register":
+
+                        $('#monthly-time-sheet').hide();
+                        $('#summary-report').hide();
+                        $('#monthly-attendance-register').show();
+
+                        break;
+                }
+            });
+        }
+
+
+        @*function setEmployeeDropDowns() {
+            $('#monthly-time-sheet-employees').ajaxChosen({
+                dataType: 'json',
+                type: 'POST',
+                url: '@Url.Action("ChangeEmployeePasswordDataHandler", "EmployeeManagement", null, Request.Url.Scheme)'
+            }, {
+                loadingImg: '@Href("~/Content/ChosenAutoComplete/loading.gif")'
+            });
+        }*@
+
+        function AssignValue()
+        {
+            var _Value = $('#txtEditor').Editor("getText");
+            $('#text99').val(_Value);
+            return true;
+
+        }
+       
+        function HideSpanMessage() {
+            setTimeout(function () { $('.span_message').hide(); }, 3000);
+        }
+
+
+        function SaveLetterBtn() {
+
+            var _Value = $('#txtEditor').Editor("getText");
+
+            var post_data2 = {
+                "LetterName": $('#letterName').val(),
+                "LetterFormate": _Value
+            };
+
+            var data3 = JSON.stringify(post_data2);
+            
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url: "/HR/EmployeeManagement/AddLetter",
+                "contentType": 'application/json; charset=utf-8',
+                dataType: 'json',
+                data: data3,
+                success: function (r) {
+                    alert("Letter Save Sucessfully");
+                    window.location.reload();
+                }
+            });
+        }
+
+
+        $("#letterDropDown").change(function () {
+
+            var text = $('#letterDropDown option:selected').text();
+            if (text == "Create Letter") {
+                $("#letterName").css("display", "inline");
+                $("#lbLetter").css("display", "inline");
+
+                $("#SaveLetter").css("display", "inline");
+                $('#txtEditor').Editor('setText', (""));
+
+            } else {
+                $("#letterName").css("display", "none");
+                $("#lbLetter").css("display", "none");;
+                $("#SaveLetter").css("display", "none");
+                var post_data2 = { "LetterName": $('#letterDropDown option:selected').text() };
+
+                $.ajax({
+                    cache: false,
+                    type: "POST",
+                    url: "/HR/EmployeeManagement/Letter_Formate",
+                    //"contentType": 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    data: post_data2,
+                    success: function (r) {
+                        // console.log(r);
+                        //var remo = r.replace('"', "'");
+                        $('#txtEditor').Editor('setText', (r));
+                        // console.log(remo);
+                        //$('#_total').text(r[0].total);
+                        //$('#_result').text(r[0].result);
+
+
+                    }
+                });
+            }
+        });
+       
+
+        $(document).ready(function () {
+
+            $("#txtEditor").Editor();
+           
+      
+            $("#lbLetter").css("display", "none");
+            //$(function () {
+            //    $("textarea").htmlarea();
+            //});
+
+            //$(".chzn-select").chosen();
+            //$("#leave_type_id").chosen();
+
+            //$(".datepicker").datepicker();
+            //setEmployeeDropDowns();
+
+            HideSpanMessage();
+
+            //setTypeOfReportDropDown();
+
+        });
+
+    </script>
+}

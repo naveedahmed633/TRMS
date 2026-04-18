@@ -1,0 +1,458 @@
+﻿@{
+    ViewBag.Title = "TRMS - Approve Application";
+    Layout = "~/Areas/SLM/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">Welcome <span class="text-danger">'SLM'</span>! [Login ID: <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & Name: <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span>]</h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/SLM/SLM/Dashboard">SLM</a></li>
+                    <li class="breadcrumb-item active">Approve Application</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="ti-files"></i> SLM - Approve Application </h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row m-t-30">
+                        <div class="col-12">
+                            <table id="leave_application_table" class="table table-striped table-bordered dataTable dt-responsive nowrap no-footer small" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Leave Type</th>
+                                        <th>Date From</th>
+                                        <th>Date To</th>
+                                        <th>Days Count</th>
+                                        <th>Reason</th>
+                                        <th>User's Name</th>
+                                        <th>Leave Status</th>
+                                        <th>Attachment</th>
+                                        <th>Reason Detail</th>
+                                        <th>User Code</th>
+                                        <th>Approver Code</th>
+                                        <th>Approver Name</th>
+                                        <th>Approver Response</th>
+                                        <th>Active</th>
+                                        <th>Create Date</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row m-t-10">
+                        <div class="col-12">
+                            <button type="submit" id="btnExport" onclick="CheckData();" class="btn btn-primary waves-effect waves-light">Export Grid Data</button>
+                            <span id="demo" class="text-danger"></span>
+                            <p id="export_wait2" style="display: none;" class="text-danger"><img src='/images/loader.gif' alt='processing' /></p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End content -->
+
+<!-- Custom Modal -->
+<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="mySmallModalLabel">Message Alert</h4>
+            </div>
+            <div class="modal-body">
+                <span id="alert_message"></span>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div id="MidTermModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MidTermModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="CenterModalLabel">Leave Application Approval</h4>
+            </div>
+            <div class="modal-body text-center">
+                <img id="image_source" src="~/Images/no-image.png" width="300" />
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Close</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<div id="leave_applicaiton_dialog"></div>
+@section JS {
+
+    <script type="text/javascript" src="@Href("~/Scripts/leavesCRUD.js")"></script>
+
+    <script type="text/javascript">
+        function HideBarr() {
+            HideMessage();
+        }
+
+        function CheckData() {
+            var ss = $("#leave_application_table tr").children("td:first").text();
+            if (ss == "No data available in table" || ss == "" || ss == " ") {
+                $('#export_wait2').show();
+                document.getElementById("demo").innerHTML = "No Data Found.";
+                HideBarExcle2();
+            }
+            else {
+                setupTableExportButton('#leave_application_table', 'LeaveApplication');
+                $('#export_wait2').show();
+                HideBarExcle2();
+            }
+        }
+
+        function HideMessage() { setTimeout(function () { $('#export_wait').hide(); document.getElementById("btn-excel-download").disabled = false; }, 5000); }
+
+        function HideBarExcle2() { setTimeout(function () { $('#export_wait2').hide(); document.getElementById("demo").innerHTML = ""; }, 1500); }
+
+        function searchReport() {
+            // get the entered string
+            var toSearch = $('leave_application_table_filter input').val();
+
+            $('#leave_application_table').DataTable().search(toSearch);
+            $('#leave_application_table').DataTable().draw();
+        }
+
+        popup = function viewImage(image_name) {
+            $('#image_source').attr("src", "/Content/LeaveApps/" + image_name);
+            $('#MidTermModal').modal('show');
+        }
+
+        function clearr() {
+            $('input[type="search"]').focus();
+            $('input[type="search"]').val("");
+            $('#leave_application_table').DataTable().search("");
+            $('#leave_application_table').DataTable().draw();
+            $('input[type="search"]').blur();
+
+            document.getElementById("btn-excel-download").disabled = false;
+            $('#export_wait').hide();
+            $('#export_wait2').hide();
+            document.getElementById("demo").innerHTML = "";
+
+            validateForm();
+        }
+
+        function initReportDataTable(identifier, url, columns) {
+            var oTable = $(identifier).DataTable({
+                "searchDelay": 2000,
+                "scrollY": "300px",
+                "serverSide": true,
+                "ajax": {
+                    "type": "POST",
+                    "url": url,
+                    "contentType": 'application/json; charset=utf-8',
+                    'data': function (data) {
+
+                        //data.employee_id = $('#consolidated-employees').val();
+                        data.from_date = $('#from_date').val();
+                        data.to_date = $('#to_date').val();
+
+                        return data = JSON.stringify(data);
+                    }
+                },
+                "scrollX": true,
+                "scrollCollapse": true,
+                "processing": true,
+                "paging": true,
+                "deferRender": true,
+                "columns": columns,
+                "order": [0, "desc"],
+                "iDisplayLength": 10,
+                "aLengthMenu": [[10, 20, 50, 100], [10, 20, 50, 100]],
+                "responsive": true
+            });
+
+            oTable.on("draw", function () {
+                var keyword = $(identifier + '_filter > label:eq(0) > input').val();
+                $(identifier).unmark();
+                $(identifier).mark(keyword, {});
+
+                $(identifier + ' tbody tr').click(function (e) {
+                    $('tr.row_selected').removeClass('row_selected');
+                    $(this).addClass('row_selected');
+                });
+            });
+
+            // set the z-index of the 'processing...' overlay
+            // to a great number, so that it may always display
+            // on top of the table. Also set the text color
+            // to black as it is white by default.
+            $(identifier + '_processing').css({
+                "z-index": "1000",
+                "color": "rgb(0, 0, 0)"
+            });
+
+            // initiate search one second after the user
+            // stops typing.
+            function setSearchDelayOnDataTable(idSelector) {
+                // remove all events from the search box
+                $(idSelector + '_filter input').off();
+
+                function customDataTableSearch() {
+
+                    // get the entered string
+                    var toSearch = $(idSelector + '_filter input').val();
+
+                    // do nothing if the string is null.
+                    // I've not tested this, it is just
+                    // in case.
+                    if (toSearch == null) {
+                        return;
+                    }
+
+                    // initiate search programatically.
+                    $(idSelector).DataTable().search(toSearch).draw();
+                }
+
+                // this variable holds the timer
+                var timeout;
+
+                // register a keypress on the search box
+                $(idSelector + '_filter input').keypress(function () {
+                    if (timeout != null) {
+                        clearTimeout(timeout);
+                        timeout = null;
+                    }
+
+                    // timeout set to 1 second.
+                    timeout = setTimeout(customDataTableSearch, 1000);
+                });
+
+            }
+
+            setSearchDelayOnDataTable(identifier);
+        }
+
+
+        $(document).ready(function () {
+
+            var dateToday = new Date();
+            $(".datepicker").datepicker({ dateFormat: 'dd-mm-yy', minDate: dateToday, beforeShowDay: $.datepicker.noWeekends });
+
+            //validateForm();
+
+            $('.hasDatepicker').keydown(function (e) {
+                var unicode = e.keyCode ? e.keyCode : e.charCode;
+                if (unicode != 13 && unicode != 8 && unicode != 9) { e.preventDefault(); }
+            });
+
+            $('.hasDatepicker').keydown(function (e) {
+                var unicode = e.keyCode ? e.keyCode : e.charCode;
+                if (unicode == 8) { e.preventDefault(); e.stopPropagation(); }
+            });
+
+            $("#btnExport").click(function (e) {
+                $('#leave_application_table').tableExport({ type: 'excel', escape: 'false' });
+                e.preventDefault();
+            });
+
+            /*
+            $("#leave_application").click(function (e) {
+
+                if ($('#from_date').val() == "") {
+
+                    $('#alert_message').text("Please select 'From Date'");
+                    $('.bs-example-modal-lg').modal('show');
+
+                    //alert("Please select 'From Date'");
+                    $('#from_date').focus();
+                    return false;
+                }
+
+                if ($('#to_date').val() == "") {
+
+                    $('#alert_message').text("Please select 'To Date'");
+                    $('.bs-example-modal-lg').modal('show');
+
+                    //alert("Please select 'To Date'");
+                    $('#to_date').focus();
+                    return false;
+                }
+
+                e.preventDefault();
+
+                if (validateForm()) {
+                    searchReport();
+                }
+
+            });
+            */
+
+            var url = '@Url.Action("ApproveApplicationDataHandler", "LeavesManagement", null, Request.Url.Scheme)';
+            var columns = [
+                  { "data": "Id" },
+                   { "data": "LeaveTypeText" },
+                   { "data": "FromDateText" },
+                   { "data": "ToDateText" },
+                   { "data": "DaysCount" },
+                   { "data": "LeaveReasonText" },
+                   { "data": "UsersName" },
+                   { "data": "LeaveStatusText" },
+                   { "data": "AttachmentFilePath" },
+                   { "data": "ReasonDetail" },
+                   { "data": "EmployeeCode" },
+                   { "data": "ApproverCode" },
+                   { "data": "ApproverName" },
+                   { "data": "ApproverDetail" },
+                   { "data": "IsActive" },
+                   { "data": "CreateDateText" },
+                   { "data": "actions" },
+            ];
+
+            @*
+                   I did this so that like initDataTables the JS
+            for serverside processing can be used for other tables.
+                NOTE: The names of the columns correspond to the View Model.
+            For example in this example the column names, first_name, last_name
+            etc are taken from ViewModels.Employee
+        *@
+
+            initReportDataTable('#leave_application_table', url, columns);
+            editLeaveApplication = initEditModal("#leave_applicaiton_dialog", '@Url.Action("UpdateLeaveApplication", "LeavesManagement", null, Request.Url.Scheme)', "Leave_Application");
+            deleteLeaveApplication = initDeleteModal("#leave_applicaiton_dialog", '@Url.Action("RemoveLeaveApplication", "LeavesManagement", null, Request.Url.Scheme)', "Leave_Application");
+
+            // ---------------------------- IR ----------------------------
+
+            //download excel
+            $("#btn-excel-download").click(function (e) {
+
+                if ($('#from_date').val() == "") {
+                    $('#alert_message').text("Please select 'From Date'");
+                    $('.bs-example-modal-lg').modal('show');
+
+                    //alert("Please select 'From Date'");
+                    $('#from_date').focus();
+                    return false;
+                }
+
+                if ($('#to_date').val() == "") {
+
+                    $('#alert_message').text("Please select 'To Date'");
+                    $('.bs-example-modal-lg').modal('show');
+
+                    //alert("Please select 'To Date'");
+                    $('#to_date').focus();
+                    return false;
+                }
+
+                //alert($('#export_wait').html());
+
+                if ($('#export_wait').html() == "No Data Found.") {
+                    $('#export_wait').html("<img src='/images/loader.gif' style='width: 110px; margin-left:34%;' alt='processing'>");
+                }
+
+                $('#export_wait').show();
+
+                var post_data = {
+                    //"employee_id": "TYPE_EMP", //$('#employee_id').val(),
+                    "from_date": $('#from_date').val(),
+                    "to_date": $('#to_date').val()
+                };
+
+                $("#btn-excel-download").attr("disabled", "disabled");
+
+                $.ajax({
+                    cache: false,
+                    type: 'post',
+                    url: '/HR/Report/ConsolidatedReportExcelDownload',
+                    data: post_data,
+                    //contentType: 'application/json;charset=utf-8',
+                    dataType: 'json',
+                    success: function (data) {
+
+                        if (data.FileGuid != "" & data.FileName != "") {
+
+                            $('#export_wait').hide();
+                            $("#btn-excel-download").removeAttr("disabled");
+
+                            //console.log('export done successfully InShaAllah!!!');
+                            //var response = JSON.stringify(data);
+                            //alert(data.FileGuid + ' >> ' + data.FileName);
+
+                            window.location = '/HR/Report/Download?fileGuid=' + data.FileGuid + '&fileName=' + data.FileName;
+                        }
+                        else {
+                            $('#export_wait').html("No Data Found.");
+                        }
+                    },
+                    error: function (jq) {
+                        console.log('Error: ' + jq.responseText);
+                    }
+
+                });
+                //  serializeAndSend();
+                e.preventDefault();
+            });
+
+            // ------------------------------------------------------------
+        });
+
+        function validateForm() {
+            var fDate = $('#leave-application-form').find('[name*="from_date"]').val().split("-").reverse();
+            var tDate = $('#leave-application-form').find('[name*="to_date"]').val().split("-").reverse();
+
+            fDate = new Date(fDate[0] + "-" + fDate[1] + "-" + fDate[2]);
+            tDate = new Date(tDate[0] + "-" + tDate[1] + "-" + tDate[2]);
+
+            console.log('fDate = ' + fDate);
+            console.log('tDate = ' + tDate);
+
+            if (fDate > tDate) {
+
+                $('#alert_message').text("'To Date' should be greater than 'From Date'");
+                $('.bs-example-modal-lg').modal('show');
+
+                //alert("To Date should be greater than From Date.");
+                return false;
+            }
+
+            /*var r = confirm("Are you sure you want to Reprocess?");
+            if (r == false) {
+                return false;
+            }*/
+
+            return true;
+        }
+    </script>
+
+
+}

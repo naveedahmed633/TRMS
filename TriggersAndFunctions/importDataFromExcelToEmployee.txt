@@ -1,0 +1,54 @@
+/****** Script for SelectTopNRows command from SSMS  ******/
+insert into TimeTune.dbo.Employees
+
+SELECT
+	   emp.[dbFirstName]
+      ,emp.[dbLastName]
+      ,emp.[dbEmpCode]
+	  ,emp.[dbEmail]
+	  ,''
+	  ,emp.[dbMobileno]
+	  ,SYSDATETIME()
+	  ,emp.[dbDateOfLeaving]
+	  ,1
+	  ,''
+	  ,''
+	  ,3
+
+
+	  ,td.DepartmentId
+	  ,tde.DesignationId
+	  
+	  ,tf.FunctionId
+	  
+	  ,null
+	  ,null
+	  ,null
+	  ,null
+	  
+	  ,tr.RegionId
+	  
+	  ,null
+	  
+	  
+	  
+	  
+  FROM
+  
+  [Upload].[dbo].[Employees] emp
+  
+  left join
+  [TimeTune].dbo.Departments td on
+  emp.dbDepartment = td.dbID
+
+  left join
+  [TimeTune].dbo.Designations tde on
+  emp.dbDesignation = tde.dbID
+
+  left join
+  [TimeTune].dbo.Functions tf on
+  emp.dbfunction = tf.dbID
+
+  left join
+  [TimeTune].dbo.Regions tr on
+  emp.dbRegion = tr.dbID

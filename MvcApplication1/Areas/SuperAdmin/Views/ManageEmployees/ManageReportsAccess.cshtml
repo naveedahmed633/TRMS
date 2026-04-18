@@ -1,0 +1,237 @@
+﻿@{
+    ViewBag.Title = "TRMS - Super HR Management";
+    Layout = "~/Areas/SuperAdmin/Views/Shared/_Layout.cshtml";
+}
+
+@model List<ViewModels.PermissionReport>
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">Welcome <span class="text-danger">'SuperAdmin'</span>! [Login ID: <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & Name: <span class="text-success">@User.Identity.Name</span>]</h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/SuperAdmin">SuperAdmin</a></li>
+                    <li class="breadcrumb-item active">HR Management</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="ti-files"></i> Reports Access Management </h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-8">
+
+                            @using (Html.BeginForm("AddReportsAccess", "ManageEmployees"))
+                            {
+
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label class="control-label">Select Employee</label>
+                                        <select id="employees" class="form-control" name="emp-id" required></select>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-6">
+                                        <label class="control-label">Is Device Status Report Access?</label>
+                                        <select id="is-report-01" class="form-control" name="is-report-01" required>
+                                            <option value="false">No</option>
+                                            <option value="true">Yes</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-6">
+                                        <label class="control-label">Is Report 02 Access?</label>
+                                        <select id="is-report-02" class="form-control" name="is-report-02" required>
+                                            <option value="false">No</option>
+                                            <option value="true">Yes</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-6">
+                                        <label class="control-label">Is Report 03 Access?</label>
+                                        <select id="is-report-03" class="form-control" name="is-report-03" required>
+                                            <option value="false">No</option>
+                                            <option value="true">Yes</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-6">
+                                        <label class="control-label">Is Report 04 Access?</label>
+                                        <select id="is-report-04" class="form-control" name="is-report-04" required>
+                                            <option value="false">No</option>
+                                            <option value="true">Yes</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                                <div class="row">
+                                    <div class="col-12 text-danger">
+                                        @Html.AntiForgeryToken()
+                                        @Html.ValidationSummary()
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary waves-effect waves-light m-t-10">Set Access</button>&nbsp;
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+
+                @*<h1 class="m-t-0 header-title">Currently set in HR Users</h1>*@
+
+                <div class="row">
+                    <div class="col-12">
+                        <table id="hr_table" class="table table-striped table-bordered dataTable dt-responsive nowrap no-footer small" style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>Employee Code</th>
+                                    <th>Device Status</th>
+                                    <th>Report 02</th>
+                                    <th>Report 03</th>
+                                    <th>Report 04</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (ViewModels.PermissionReport emp in Model)
+                                {
+                                    <tr>
+                                        <td>@emp.employee_code</td>
+                                        <td>@emp.prep_01</td>
+                                        <td>@emp.prep_02</td>
+                                        <td>@emp.prep_03</td>
+                                        <td>@emp.prep_04</td>
+                                        <td>
+                                            <div>
+                                                <a href="javascript:void(deleteReportAccess('@emp.employee_code'));">Delete</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row m-t-10">
+                    <div class="col-12">
+                        <button type="submit" id="btnExport" class="btn btn-primary waves-effect waves-light">Export Grid Data</button>
+
+                    </div>
+                </div>
+
+                <div class="row m-t-10" style="display:none;height:0px;width:0px;">
+                    <div class="col-12">
+                        @using (Html.BeginForm("DeleteReportAccess", "ManageEmployees", FormMethod.Post, new { id = "delete-form" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.ValidationSummary()
+
+                            <input type="hidden" id="emp-to-delete" name="emp-id" />
+
+                            <input type="submit" value="submit" />
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- End content -->
+
+@section JS {
+    <script type="text/javascript" src="@Href("~/Scripts/chosen.ajaxaddition.jquery.js")"></script>
+    <script>
+
+        function deleteReportAccess(id) {
+
+            if (confirm('Are you sure you want to remove this record?')) {
+                // Save it!
+                console.log('removed.');
+
+                $('#emp-to-delete').val(id);
+                $('#delete-form').submit();
+            } else {
+                // Do nothing!
+                console.log('cancel.');
+            }            
+        }
+
+        $(document).ready(function () {
+            //$('#accordion').accordion("option", "active", 1);
+            //$("input[type=submit], button").button();
+
+            initDataTable('#hr_table');
+
+            //$('#btnExport').button();
+            $("#btnExport").click(function (e) {
+                setupTableExportButton('#hr_table', 'Reports_Access');
+                e.preventDefault();
+            });
+
+
+
+            setActiveLink("Manage Reports");
+
+
+
+            $('#employees').ajaxChosen({
+                dataType: 'json',
+                type: 'POST',
+                url: '@Url.Action("getEmployeesCodesForReportsAccessDataHandler", "ManageEmployees", null, Request.Url.Scheme)'
+            }, {
+                loadingImg: '@Href("~/Content/ChosenAutoComplete/loading.gif")'
+            });
+
+
+        });
+
+    </script>
+}

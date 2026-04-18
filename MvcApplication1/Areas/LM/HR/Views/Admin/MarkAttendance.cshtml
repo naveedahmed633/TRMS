@@ -1,0 +1,123 @@
+﻿<div class="row">
+    <div class="form-group col-md-3">
+        <h5 style="font-weight: bold;">Reprocess Attendance</h5>
+        @using (Html.BeginForm("MarkAttendance", "Admin", FormMethod.Post, new { id = "attendance-form" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary()
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Employee Code</label>
+
+                    <select id="employees" class="form-control" name="employee_code"></select>
+
+
+                    @*<select class="chzn-select" name="employee_code" style="width:100%;">
+                            <option selected="selected" disabled="disabled" value="0">Select EmployeeCode</option>
+                            @foreach (ViewModels.Employee item in Model.employee)
+                            {
+                                <option value="@item.employee_code">@item.employee_code</option>
+                            }
+                        </select>*@
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">From Date</label>
+                    <input type="text" class="form-control datepicker" name="from_date">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">To Date</label>
+                    <input type="text" class="form-control datepicker" name="to_date">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12" style="margin-top:5px">
+                    <button type="submit" value="Submit">Reprocess Attendance</button>
+                </div>
+            </div>
+
+        }
+    </div>
+    @using (Html.BeginForm("UploadFile", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary()
+
+        <div class="row">
+            <div class="col-md-4">
+                <label class="btn btn-primary" for="my-file-selector" style="margin-left: 15px">
+                    <input id="my-file-selector" onchange="alertFilename()" type="file" name="file" value="alert" accept=".csv" style="display:none; ">
+                    Click to select file
+                </label>
+                <h3 class="label" style="font-size:medium; color:black" id="file-name"></h3>
+            </div>
+
+            <div class="col-md-4" style="margin-top:5px">
+                <button id="btnUpload" type="submit" value="Submit">Upload File</button>
+                <label class="label" style="font-size:medium; color:black"> @ViewBag.Message</label>
+            </div>
+        </div>
+    }
+    <br><br><br><br><br>
+
+</div>
+@section JS {
+
+    <script type="text/javascript" src="@Href("~/Scripts/chosen.ajaxaddition.jquery.js")"></script>
+    <script>
+        $(document).ready(function () {
+            $('#accordion').accordion("option", "active", 4);
+            setActiveLink("Update Attendance");
+            $(".chzn-select").chosen();
+            $("input[type=submit], button").button();
+            $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+
+            //initDataTable("#leavebalance_table");
+
+
+            $('#employees').ajaxChosen({
+                dataType: 'json',
+                type: 'POST',
+                url: '@Url.Action("ChangeEmployeePasswordDataHandler", "EmployeeManagement", null, Request.Url.Scheme)'
+            }, {
+                loadingImg: '@Href("~/Content/ChosenAutoComplete/loading.gif")'
+            });
+
+
+
+
+
+     
+        });
+        $('#attendance-form').on("submit", function (e) {
+
+            fDate = $('#attendance-form').find('[name*="from_date"]').val().split("-").reverse();
+            tDate = $('#attendance-form').find('[name*="to_date"]').val().split("-").reverse();
+
+            fDate = new Date(fDate[2] + "-" + fDate[1] + "-" + fDate[0]);
+            tDate = new Date(tDate[2] + "-" + tDate[1] + "-" + tDate[0]);
+
+
+            if (tDate < fDate) {
+                alert("To Date should be greater than From Date.");
+                return false;
+            }
+
+            var r = confirm("Are you sure you want to Reprocess?");
+            if (r == false) {
+                return false;
+            }
+
+            return true;
+
+        });
+
+
+
+    </script>
+}

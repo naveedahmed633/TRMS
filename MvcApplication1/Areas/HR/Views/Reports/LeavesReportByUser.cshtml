@@ -1,0 +1,956 @@
+﻿@{
+    ViewBag.Title = "TRMS - Leaves Report By User";
+    Layout = "~/Areas/HR/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    //Titles - Leave Types
+    string TitleLeaves = "", TitleLeave01 = "", TitleLeave02 = "", TitleLeave03 = "", TitleLeave04 = "", TitleLeave05 = "", TitleLeave06 = "", TitleLeave07 = "", TitleLeave08 = "";
+    string LTCS = "", TitleLeave09 = "", TitleLeave10 = "", TitleLeave11 = "", TitleLeave12 = "", TitleLeave13 = "", TitleLeave14 = "", TitleLeave15 = "";
+    BLL.PdfReports.LeavesTypesTitles leavesTitles = new BLL.PdfReports.LeavesTypesTitles();
+    TitleLeaves = leavesTitles.getLeavesTypesTitles();
+    if (TitleLeaves != null && TitleLeaves.Contains(','))
+    {
+        string[] strSplit = TitleLeaves.Split(',');
+        if (strSplit != null && strSplit.Length > 0)
+        {
+            TitleLeave01 = strSplit[0].ToString(); TitleLeave02 = strSplit[1].ToString(); TitleLeave03 = strSplit[2].ToString(); TitleLeave04 = strSplit[3].ToString();
+            TitleLeave05 = strSplit[4].ToString(); TitleLeave06 = strSplit[5].ToString(); TitleLeave07 = strSplit[6].ToString(); TitleLeave08 = strSplit[7].ToString();
+            TitleLeave09 = strSplit[8].ToString(); TitleLeave10 = strSplit[9].ToString(); TitleLeave11 = strSplit[10].ToString(); TitleLeave12 = strSplit[11].ToString();
+            TitleLeave13 = strSplit[12].ToString(); TitleLeave14 = strSplit[13].ToString(); TitleLeave15 = strSplit[14].ToString();
+        }
+    }
+    else
+    {
+        TitleLeave01 = @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.sick"); TitleLeave02 = @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.casual"); TitleLeave03 = @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.annual"); TitleLeave04 = @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.other");
+        TitleLeave05 = @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.tour"); TitleLeave06 = @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.visit"); TitleLeave07 = @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.meeting"); TitleLeave08 = @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.maternity");
+        TitleLeave09 = "A"; TitleLeave10 = "B"; TitleLeave11 = "C"; TitleLeave12 = "D";
+        TitleLeave13 = "E"; TitleLeave14 = "F"; TitleLeave15 = "G";
+    }
+
+    bool LT01IsActive = false, LT02IsActive = false, LT03IsActive = false, LT04IsActive = false, LT05IsActive = false, LT06IsActive = false, LT07IsActive = false, LT08IsActive = false;
+    bool LT09IsActive = false, LT10IsActive = false, LT11IsActive = false, LT12IsActive = false, LT13IsActive = false, LT14IsActive = false, LT15IsActive = false;
+
+    int LT01DCount = 0, LT02DCount = 0, LT03DCount = 0, LT04DCount = 0, LT05DCount = 0, LT06DCount = 0, LT07DCount = 0, LT08DCount = 0;
+    int LT09DCount = 0, LT10DCount = 0, LT11DCount = 0, LT12DCount = 0, LT13DCount = 0, LT14DCount = 0, LT15DCount = 0;
+
+    int LT01MCount = 0, LT02MCount = 0, LT03MCount = 0, LT04MCount = 0, LT05MCount = 0, LT06MCount = 0, LT07MCount = 0, LT08MCount = 0;
+    int LT09MCount = 0, LT10MCount = 0, LT11MCount = 0, LT12MCount = 0, LT13MCount = 0, LT14MCount = 0, LT15MCount = 0;
+
+    //BLL.PdfReports.LeavesTypesTitles leavesTitles = new BLL.PdfReports.LeavesTypesTitles();
+    LTCS = leavesTitles.getLeavesTypesCountsStatus();
+    if (LTCS != null && LTCS.Contains(','))
+    {
+        string[] strSplit = LTCS.Split(',');
+        if (strSplit != null && strSplit.Length > 0)
+        {
+            //LT01DCount = int.Parse(strSplit[0].Split('-')[0].ToString()); LT02DCount = int.Parse(strSplit[1].Split('-')[0].ToString()); LT03DCount = int.Parse(strSplit[0].Split('-')[0].ToString()); LT04DCount = int.Parse(strSplit[3].Split('-')[0].ToString());
+            //LT05DCount = int.Parse(strSplit[4].Split('-')[0].ToString()); LT06DCount = int.Parse(strSplit[5].Split('-')[0].ToString()); LT07DCount = int.Parse(strSplit[6].Split('-')[0].ToString()); LT08DCount = int.Parse(strSplit[7].Split('-')[0].ToString());
+            //LT09DCount = int.Parse(strSplit[8].Split('-')[0].ToString()); LT10DCount = int.Parse(strSplit[9].Split('-')[0].ToString()); LT11DCount = int.Parse(strSplit[10].Split('-')[0].ToString()); LT12DCount = int.Parse(strSplit[11].Split('-')[0].ToString());
+            //LT13DCount = int.Parse(strSplit[12].Split('-')[0].ToString()); LT14DCount = int.Parse(strSplit[13].Split('-')[0].ToString()); LT15DCount = int.Parse(strSplit[14].Split('-')[0].ToString());
+
+            LT01MCount = int.Parse(strSplit[0].Split('-')[1].ToString()); LT02MCount = int.Parse(strSplit[1].Split('-')[1].ToString()); LT03MCount = int.Parse(strSplit[1].Split('-')[1].ToString()); LT04MCount = int.Parse(strSplit[3].Split('-')[1].ToString());
+            LT05MCount = int.Parse(strSplit[4].Split('-')[1].ToString()); LT06MCount = int.Parse(strSplit[5].Split('-')[1].ToString()); LT07MCount = int.Parse(strSplit[6].Split('-')[1].ToString()); LT08MCount = int.Parse(strSplit[7].Split('-')[1].ToString());
+            LT09MCount = int.Parse(strSplit[8].Split('-')[1].ToString()); LT10MCount = int.Parse(strSplit[9].Split('-')[1].ToString()); LT11MCount = int.Parse(strSplit[10].Split('-')[1].ToString()); LT12MCount = int.Parse(strSplit[11].Split('-')[1].ToString());
+            LT13MCount = int.Parse(strSplit[12].Split('-')[1].ToString()); LT14MCount = int.Parse(strSplit[13].Split('-')[1].ToString()); LT15MCount = int.Parse(strSplit[14].Split('-')[1].ToString());
+
+            LT01IsActive = strSplit[0].Split('-')[2].ToString() == "True" ? true : false; LT02IsActive = strSplit[1].Split('-')[2].ToString() == "True" ? true : false; LT03IsActive = strSplit[2].Split('-')[2].ToString() == "True" ? true : false; LT04IsActive = strSplit[3].Split('-')[2].ToString() == "True" ? true : false;
+            LT05IsActive = strSplit[4].Split('-')[2].ToString() == "True" ? true : false; LT06IsActive = strSplit[5].Split('-')[2].ToString() == "True" ? true : false; LT07IsActive = strSplit[6].Split('-')[2].ToString() == "True" ? true : false; LT08IsActive = strSplit[7].Split('-')[2].ToString() == "True" ? true : false;
+            LT09IsActive = strSplit[8].Split('-')[2].ToString() == "True" ? true : false; LT10IsActive = strSplit[9].Split('-')[2].ToString() == "True" ? true : false; LT11IsActive = strSplit[10].Split('-')[2].ToString() == "True" ? true : false; LT12IsActive = strSplit[11].Split('-')[2].ToString() == "True" ? true : false;
+            LT13IsActive = strSplit[12].Split('-')[2].ToString() == "True" ? true : false; LT14IsActive = strSplit[13].Split('-')[2].ToString() == "True" ? true : false; LT15IsActive = strSplit[14].Split('-')[2].ToString() == "True" ? true : false;
+        }
+    }
+}
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("dashboard.welcome")  <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span></h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/HR">HR</a></li>
+                    <li class="breadcrumb-item active">Leaves</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="mdi mdi-file-document"></i> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.lrbu")</h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <input id="LT01IsActive" type="hidden" value="@LT01IsActive.ToString().ToLower()" /><input id="LT02IsActive" type="hidden" value="@LT02IsActive.ToString().ToLower()" /><input id="LT03IsActive" type="hidden" value="@LT03IsActive.ToString().ToLower()" /><input id="LT04IsActive" type="hidden" value="@LT04IsActive.ToString().ToLower()" />
+                    <input id="LT05IsActive" type="hidden" value="@LT05IsActive.ToString().ToLower()" /><input id="LT06IsActive" type="hidden" value="@LT06IsActive.ToString().ToLower()" /><input id="LT07IsActive" type="hidden" value="@LT07IsActive.ToString().ToLower()" /><input id="LT08IsActive" type="hidden" value="@LT08IsActive.ToString().ToLower()" />
+                    <input id="LT09IsActive" type="hidden" value="@LT09IsActive.ToString().ToLower()" /><input id="LT10IsActive" type="hidden" value="@LT10IsActive.ToString().ToLower()" /><input id="LT11IsActive" type="hidden" value="@LT11IsActive.ToString().ToLower()" /><input id="LT12IsActive" type="hidden" value="@LT12IsActive.ToString().ToLower()" />
+                    <input id="LT13IsActive" type="hidden" value="@LT13IsActive.ToString().ToLower()" /><input id="LT14IsActive" type="hidden" value="@LT14IsActive.ToString().ToLower()" /><input id="LT15IsActive" type="hidden" value="@LT15IsActive.ToString().ToLower()" />
+
+
+                    <div class="row">
+                        <div class="col-4">
+
+                            <form id="consolidate-form">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.empcode") <span class="text-danger font-14">*</span></label>
+                                        <select id="consolidated-employees" class="form-control" name="employee_id" required></select>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.datefrom") <span class="text-danger font-14">*</span></label>
+                                        <input id="date_from" type="text" class="form-control datepicker" name="from_date" autocomplete="off" required>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.dateto") <span class="text-danger font-14">*</span></label>
+                                        <input id="date_to" type="text" class="form-control datepicker" name="to_date" autocomplete="off" required>
+                                        <input id="users_type" type="hidden" value="0" />
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <button type="submit" id="search-consolidated-report" onclick="clearr();" class="btn btn-primary waves-effect waves-light m-t-10">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.search")</button>&nbsp;
+                                        <button type="button" class="btn btn-primary waves-effect waves-light m-t-10" onclick="redirectToPage();">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.reset")</button>
+                                        @*<button type="submit" id="btn-excel-download" onclick="ExcleHide();" class="btn btn-primary waves-effect waves-light m-t-10">Download Excel</button>*@
+                                        <span id="export_wait" style="display: none;" class="text-danger"><img src='/images/loader.gif' alt='processing' /></span>
+                                    </div>
+                                </div>
+                            </form>
+
+                        </div>
+
+                        <div class="form-group col-4">
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <h4>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.thatsessioninfo")</h4>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-12 text-danger">
+                                    <label class="control-label"><b><u>@TitleLeave01 @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.leavesavailed")</u></b> <span id="AvailedSickLeaves">0</span> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.outoftotal") <span id="AvailableSickLeaves">0</span></label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 text-danger">
+                                    <label class="control-label"><b><u>@TitleLeave02 @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.leavesavailed")</u></b> <span id="AvailedCasualLeaves">0</span> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.outoftotal") <span id="AvailableCasualLeaves">0</span></label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 text-danger">
+                                    <label class="control-label"><b><u>@TitleLeave03 @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.leavesavailed")</u></b> <span id="AvailedAnnualLeaves">0</span> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.outoftotal") <span id="AvailableAnnualLeaves">0</span></label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 text-danger">
+                                    <label class="control-label"><b><u>@TitleLeave04 @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.leavesavailed")</u></b> <span id="AvailedOtherLeaves">0</span> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.outoftotal") <span id="AvailableOtherLeaves">0</span></label>
+                                </div>
+                            </div>
+
+                            <div class="row" id="divAvailableLeaveType01">
+                                <div class="col-12 text-danger">
+                                    <label class="control-label"><b><u>@TitleLeave05 @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.leavesavailed")</u></b> <span id="AvailedLeaveType01">0</span> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.outoftotal") <span id="AvailableLeaveType01">0</span></label>
+                                </div>
+                            </div>
+                            <div class="row" id="divAvailableLeaveType02">
+                                <div class="col-12 text-danger">
+                                    <label class="control-label"><b><u>@TitleLeave06 @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.leavesavailed")</u></b> <span id="AvailedLeaveType02">0</span> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.outoftotal") <span id="AvailableLeaveType02">0</span></label>
+                                </div>
+                            </div>
+                            <div class="row" id="divAvailableLeaveType03">
+                                <div class="col-12 text-danger">
+                                    <label class="control-label"><b><u>@TitleLeave07 @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.leavesavailed")</u></b> <span id="AvailedLeaveType03">0</span> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.outoftotal") <span id="AvailableLeaveType03">0</span></label>
+                                </div>
+                            </div>
+                            <div class="row" id="divAvailableLeaveType04">
+                                <div class="col-12 text-danger">
+                                    <label class="control-label"><b><u>@TitleLeave08 @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.leavesavailed")</u></b> <span id="AvailedLeaveType04">0</span> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.outoftotal") <span id="AvailableLeaveType04">0</span></label>
+                                </div>
+                            </div>
+
+                            <div class="row" id="divAvailableLeaveType05">
+                                <div class="col-12 text-danger">
+                                    <label class="control-label"><b><u>@TitleLeave09 @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.leavesavailed")</u></b> <span id="AvailedLeaveType05">0</span> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.outoftotal") <span id="AvailableLeaveType05">0</span></label>
+                                </div>
+                            </div>
+                            <div class="row" id="divAvailableLeaveType06">
+                                <div class="col-12 text-danger">
+                                    <label class="control-label"><b><u>@TitleLeave10 @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.leavesavailed")</u></b> <span id="AvailedLeaveType06">0</span> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.outoftotal") <span id="AvailableLeaveType06">0</span></label>
+                                </div>
+                            </div>
+                            <div class="row" id="divAvailableLeaveType07">
+                                <div class="col-12 text-danger">
+                                    <label class="control-label"><b><u>@TitleLeave11 @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.leavesavailed")</u></b> <span id="AvailedLeaveType07">0</span> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.outoftotal") <span id="AvailableLeaveType07">0</span></label>
+                                </div>
+                            </div>
+                            <div class="row" id="divAvailableLeaveType08">
+                                <div class="col-12 text-danger">
+                                    <label class="control-label"><b><u>@TitleLeave12 @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.leavesavailed")</u></b> <span id="AvailedLeaveType08">0</span> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.outoftotal") <span id="AvailableLeaveType08">0</span></label>
+                                </div>
+                            </div>
+
+
+                            <div class="row" id="divAvailableLeaveType09">
+                                <div class="col-12 text-danger">
+                                    <label class="control-label"><b><u>@TitleLeave13 @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.leavesavailed")</u></b> <span id="AvailedLeaveType09">0</span> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.outoftotal") <span id="AvailableLeaveType09">0</span></label>
+                                </div>
+                            </div>
+                            <div class="row" id="divAvailableLeaveType10">
+                                <div class="col-12 text-danger">
+                                    <label class="control-label"><b><u>@TitleLeave14 @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.leavesavailed")</u></b> <span id="AvailedLeaveType10">0</span> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.outoftotal") <span id="AvailableLeaveType10">0</span></label>
+                                </div>
+                            </div>
+                            <div class="row" id="divAvailableLeaveType11">
+                                <div class="col-12 text-danger">
+                                    <label class="control-label"><b><u>@TitleLeave15 @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.leavesavailed")</u></b> <span id="AvailedLeaveType11">0</span> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.outoftotal") <span id="AvailableLeaveType11">0</span></label>
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <div class="form-group col-4">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h4>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.currentsessionrange")</h4>
+                                </div>
+                            </div>
+
+
+                            <div class="row m-t-20">
+                                <div class="col-12 text-success">
+                                    <label class="control-label"><b><u>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.csessionstart")</u></b> <span id="strSessionStartDate">-</span></label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 text-success">
+                                    <label class="control-label"><b><u>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.csessionend")</u></b> <span id="strSessionEndDate">-</span></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+
+
+
+                        <div class="row">
+                            <div class="col-12">
+                                <table id="attendance_table" class="table table-striped table-bordered dataTable dt-responsive nowrap no-footer small" style="width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.username")</th>
+                                            <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.leavetype")</th>
+                                            <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.datefrom")</th>
+                                            <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.dateto")</th>
+                                            <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.dayscount")</th>
+                                            <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.reason")</th>
+                                            <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.reasondetail")</th>
+                                            <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.approvername")</th>
+                                            <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.approverdetail")</th>
+                                            <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.leavestatus")</th>
+                                            <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.attachment")</th>
+                                            <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.createdate")</th>
+                                            <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.updatedate")</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="row m-t-10">
+                            <div class="col-12">
+                                <button type="submit" id="btnExport" onclick="ExortExcleBar();" class="btn btn-primary waves-effect waves-light">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.exportgrid")</button>
+                                <span id="demo" class="text-danger"></span>
+                                <p id="export_wait2" style="display: none;" class="text-danger"><img src='/images/loader.gif' alt='processing' /></p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End content -->
+    <!-- Custom Modal -->
+    <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="mySmallModalLabel">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.msgalert")</h4>
+                </div>
+                <div class="modal-body">
+                    <span id="alert_message"></span>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div id="MidTermModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MidTermModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="CenterModalLabel">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leave.leavesreport")</h4>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="image_source" src="~/Images/no-image.png" width="300" />
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.close")</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+
+    @section JS {
+        @*<script src="~/Scripts/zingchart.min.js"></script>*@
+        <script type="text/javascript" src="@Href("~/Scripts/chosen.ajaxaddition.jquery.js")"></script>
+        @*<script type="text/javascript" src="@Href("~/Scripts/monthpicker.js")"></script>*@
+
+        <script type="text/javascript">
+
+            $(document).ready(function () {
+                if($('#LT05IsActive').val() == "false")
+                    $('#divAvailableLeaveType01').hide();
+
+                if($('#LT06IsActive').val() == "false")
+                    $('#divAvailableLeaveType02').hide();
+
+                if($('#LT07IsActive').val() == "false")
+                    $('#divAvailableLeaveType03').hide();
+
+                if($('#LT08IsActive').val() == "false")
+                    $('#divAvailableLeaveType04').hide();
+
+                if($('#LT09IsActive').val() == "false")
+                    $('#divAvailableLeaveType05').hide();
+
+                if($('#LT10IsActive').val() == "false")
+                    $('#divAvailableLeaveType06').hide();
+
+                if($('#LT11IsActive').val() == "false")
+                    $('#divAvailableLeaveType07').hide();
+
+                if($('#LT12IsActive').val() == "false")
+                    $('#divAvailableLeaveType08').hide();
+
+                if($('#LT13IsActive').val() == "false")
+                    $('#divAvailableLeaveType09').hide();
+
+                if($('#LT14IsActive').val() == "false")
+                    $('#divAvailableLeaveType10').hide();
+
+                if($('#LT15IsActive').val() == "false")
+                    $('#divAvailableLeaveType11').hide();
+            });
+
+            function ExcleHide() {
+                HideMessage();
+            }
+            function ExortExcleBar() {
+                $('#export_wait2').show();
+                document.getElementById("btnExport").disabled = true;
+                HideBarExcle();
+                var ss = $("#attendance_table tr").children("td:first").text();
+                if (ss == "No data available in table" || ss == "" || ss == " ") { document.getElementById("demo").innerHTML = "No Data Found."; }
+                else { DownloadExcleCsv(); }
+            }
+            function DownloadExcleCsv() { setupTableExportButton('#attendance_table', 'ConsolidatedAttendance'); }
+
+            function HideBarExcle() {
+                setTimeout(function () { $('#export_wait2').hide(); document.getElementById("btnExport").disabled = false; document.getElementById("demo").innerHTML = ""; }, 1500);
+            }
+
+            function redirectToPage() {
+                window.location = '/HR/Reports/LeavesReportByUser';
+            }
+
+            function ValidateDate(dtValue) {
+                var dtRegex = new RegExp(/\b\d{1,2}[\/-]\d{1,2}[\/-]\d{4}\b/);
+                return dtRegex.test(dtValue);
+            }
+            function searchReport() {
+                // get the entered string
+                var toSearch = $('attendance_table_filter input').val();
+
+                $('#attendance_table').DataTable().search(toSearch);
+                $('#attendance_table').DataTable().draw();
+            }
+
+            popup = function viewImage(image_name) {
+                $('#image_source').attr("src", "/Content/LeaveApps/" + image_name);
+                $('#MidTermModal').modal('show');
+            }
+
+            function initReportDataTable(identifier, url, columns) {
+                var oTable = $(identifier).DataTable({
+                    "searchDelay": 2000,
+                    "scrollY": "300px",
+                    "serverSide": true,
+                    "ajax": {
+                        "type": "POST",
+                        "url": url,
+                        "contentType": 'application/json; charset=utf-8',
+                        'data': function (data) {
+                            if ($('#date_from').val() != "" && $('#date_to').val() != "") {
+                                //var dtVal = $('#date_from').val();
+                                //var dtVal2 = $('#date_to').val();
+                                //if (ValidateDate(dtVal) && ValidateDate(dtVal2)) {
+                                data.employee_id = $('#consolidated-employees').val();
+                                data.from_date = $('#date_from').val();
+                                data.to_date = $('#date_to').val();
+                                //data.to_date = $('#date_to').val();
+                                //}
+                            }
+                            return data = JSON.stringify(data);
+                        }
+                    },
+                    "scrollX": true,
+                    "scrollCollapse": true,
+                    "processing": true,
+                    "paging": true,
+                    "deferRender": true,
+                    "columns": columns,
+                    "order": [0, "desc"],
+                    "iDisplayLength": 100,
+                    "aLengthMenu": [[10, 25, 50, 100, 500], [10, 25, 50, 100, 500]]
+
+                });
+
+                oTable.on("draw", function () {
+                    var keyword = $(identifier + '_filter > label:eq(0) > input').val();
+                    $(identifier).unmark();
+                    $(identifier).mark(keyword, {});
+
+
+
+                    $(identifier + ' tbody tr').click(function (e) {
+                        $('tr.row_selected').removeClass('row_selected');
+                        $(this).addClass('row_selected');
+                    });
+                });
+
+
+                // set the z-index of the 'processing...' overlay
+                // to a great number, so that it may always display
+                // on top of the table. Also set the text color
+                // to black as it is white by default.
+                $(identifier + '_processing').css({
+                    "z-index": "1000",
+                    "color": "rgb(0, 0, 0)"
+                });
+
+
+                // initiate search one second after the user
+                // stops typing.
+                function setSearchDelayOnDataTable(idSelector) {
+                    // remove all events from the search box
+                    $(idSelector + '_filter input').off();
+
+
+                    function customDataTableSearch() {
+
+                        // get the entered string
+                        var toSearch = $(idSelector + '_filter input').val();
+
+                        // do nothing if the string is null.
+                        // I've not tested this, it is just
+                        // in case.
+                        if (toSearch == null) {
+                            return;
+                        }
+
+                        // initiate search programatically.
+                        $(idSelector).DataTable().search(toSearch).draw();
+                    }
+
+                    // this variable holds the timer
+                    var timeout;
+
+                    // register a keypress on the search box
+                    $(idSelector + '_filter input').keypress(function () {
+                        if (timeout != null) {
+                            clearTimeout(timeout);
+                            timeout = null;
+                        }
+
+                        // timeout set to 1 second.
+                        timeout = setTimeout(customDataTableSearch, 1000);
+                    });
+
+                }
+
+                setSearchDelayOnDataTable(identifier);
+
+            }
+
+            function fetchCounter() {
+
+                fDate = $('#consolidate-form').find('[name*="from_date"]').val().split("-").reverse();
+                tDate = $('#consolidate-form').find('[name*="to_date"]').val().split("-").reverse();
+
+                //console.log('1>> ' + fDate + ' - ' + tDate);
+
+                fDate = new Date(fDate[0] + "-" + fDate[1] + "-" + fDate[2]);
+                tDate = new Date(tDate[0] + "-" + tDate[1] + "-" + tDate[2]);
+
+                //console.log('2>> ' + fDate + ' - ' + tDate);
+
+
+
+                if (tDate < fDate) {
+
+                    $('#alert_message').text("The 'To Date' should be greater than 'From Date'.");
+                    $('.bs-example-modal-lg').modal('show');
+
+                    //alert("To Date should be greater than From Date.");
+                    return false;
+                }
+
+                var post_data2 = {
+                    "employee_id": $('#consolidated-employees').val(),
+                    "from_date": $('#date_from').val(),
+                    "to_date": $('#date_to').val(),
+                    "users_type": $('#consolidated_employees_chosen span').text().indexOf("*") > 0 ? 1 : 0
+                    //"users_type": $('#consolidated-employees').text().includes("*") == true ? 1 : 0
+                };
+
+                $.ajax({
+                    cache: false,
+                    type: "POST",
+                    url: "/HR/Reports/LeavesReportByUserCounter",
+                    //"contentType": 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    data: post_data2,
+                    success: function (r) {
+                        //alert(r);
+                        //var info = JSON.stringify(r);
+
+                        //alert('xyz => ' + r.AvailableSickLeaves);
+
+                        $('#strSessionStartDate').text(r.strSessionStartDate);
+                        $('#strSessionEndDate').text(r.strSessionEndDate);
+
+                        $('#AvailedSickLeaves').text(r.AvailedSickLeaves);
+                        $('#AvailedCasualLeaves').text(r.AvailedCasualLeaves);
+                        $('#AvailedAnnualLeaves').text(r.AvailedAnnualLeaves);
+                        $('#AvailedOtherLeaves').text(r.AvailedOtherLeaves);
+                        $('#AvailedLeaveType01').text(r.AvailedLeaveType01);
+                        $('#AvailedLeaveType02').text(r.AvailedLeaveType02);
+                        $('#AvailedLeaveType03').text(r.AvailedLeaveType03);
+                        $('#AvailedLeaveType04').text(r.AvailedLeaveType04);
+                        $('#AvailedLeaveType05').text(r.AvailedLeaveType05);
+                        $('#AvailedLeaveType06').text(r.AvailedLeaveType06);
+                        $('#AvailedLeaveType07').text(r.AvailedLeaveType07);
+                        $('#AvailedLeaveType08').text(r.AvailedLeaveType08);
+                        $('#AvailedLeaveType09').text(r.AvailedLeaveType09);
+                        $('#AvailedLeaveType10').text(r.AvailedLeaveType10);
+                        $('#AvailedLeaveType11').text(r.AvailedLeaveType11);
+
+                        $('#AvailableSickLeaves').text(r.AvailableSickLeaves);
+                        $('#AvailableCasualLeaves').text(r.AvailableCasualLeaves);
+                        $('#AvailableAnnualLeaves').text(r.AvailableAnnualLeaves);
+                        $('#AvailableOtherLeaves').text(r.AvailableOtherLeaves);
+                        $('#AvailableLeaveType01').text(r.AvailableLeaveType01);
+                        $('#AvailableLeaveType02').text(r.AvailableLeaveType02);
+                        $('#AvailableLeaveType03').text(r.AvailableLeaveType03);
+                        $('#AvailableLeaveType04').text(r.AvailableLeaveType04);
+                        $('#AvailableLeaveType05').text(r.AvailableLeaveType05);
+                        $('#AvailableLeaveType06').text(r.AvailableLeaveType06);
+                        $('#AvailableLeaveType07').text(r.AvailableLeaveType07);
+                        $('#AvailableLeaveType08').text(r.AvailableLeaveType08);
+                        $('#AvailableLeaveType09').text(r.AvailableLeaveType09);
+                        $('#AvailableLeaveType10').text(r.AvailableLeaveType10);
+                        $('#AvailableLeaveType11').text(r.AvailableLeaveType11);
+
+                        //alert($('#LT05IsActive').val());
+
+                        if($('#LT05IsActive').val() == "true" && r.AvailableLeaveType01 > 0)
+                            $('#divAvailableLeaveType01').show();
+                        else
+                            $('#divAvailableLeaveType01').hide();
+
+                        if($('#LT06IsActive').val() == "true" && r.AvailableLeaveType02 > 0)
+                            $('#divAvailableLeaveType02').show();
+                        else
+                            $('#divAvailableLeaveType02').hide();
+
+                        if($('#LT07IsActive').val() == "true" && r.AvailableLeaveType03 > 0)
+                            $('#divAvailableLeaveType03').show();
+                        else
+                            $('#divAvailableLeaveType03').hide();
+
+                        if($('#LT08IsActive').val() == "true" && r.AvailableLeaveType04 > 0)
+                            $('#divAvailableLeaveType04').show();
+                        else
+                            $('#divAvailableLeaveType04').hide();
+
+                        if($('#LT09IsActive').val() == "true" && r.AvailableLeaveType05 > 0)
+                            $('#divAvailableLeaveType05').show();
+                        else
+                            $('#divAvailableLeaveType05').hide();
+
+                        if($('#LT10IsActive').val() == "true" && r.AvailableLeaveType06 > 0)
+                            $('#divAvailableLeaveType06').show();
+                        else
+                            $('#divAvailableLeaveType06').hide();
+
+                        if($('#LT11IsActive').val() == "true" && r.AvailableLeaveType07 > 0)
+                            $('#divAvailableLeaveType07').show();
+                        else
+                            $('#divAvailableLeaveType07').hide();
+
+                        if($('#LT12IsActive').val() == "true" && r.AvailableLeaveType08 > 0)
+                            $('#divAvailableLeaveType08').show();
+                        else
+                            $('#divAvailableLeaveType08').hide();
+
+                        if($('#LT13IsActive').val() == "true" && r.AvailableLeaveType09 > 0)
+                            $('#divAvailableLeaveType09').show();
+                        else
+                            $('#divAvailableLeaveType09').hide();
+
+                        if($('#LT14IsActive').val() == "true" && r.AvailableLeaveType10 > 0)
+                            $('#divAvailableLeaveType10').show();
+                        else
+                            $('#divAvailableLeaveType10').hide();
+
+                        if($('#LT15IsActive').val() == "true" && r.AvailableLeaveType11 > 0)
+                            $('#divAvailableLeaveType11').show();
+                        else
+                            $('#divAvailableLeaveType11').hide();
+                    }
+                });
+            }
+
+
+            function clearr() {
+
+                $('#strSessionStartDate').text("-");
+                $('#strSessionEndDate').text("-");
+
+                $('#AvailedSickLeaves').text("0");
+                $('#AvailedCasualLeaves').text("0");
+                $('#AvailedAnnualLeaves').text("0");
+                $('#AvailedOtherLeaves').text("0");
+                $('#AvailedLeaveType01').text("0");
+                $('#AvailedLeaveType02').text("0");
+                $('#AvailedLeaveType03').text("0");
+                $('#AvailedLeaveType04').text("0");
+
+                $('#AvailableSickLeaves').text("0");
+                $('#AvailableCasualLeaves').text("0");
+                $('#AvailableAnnualLeaves').text("0");
+                $('#AvailableOtherLeaves').text("0");
+                $('#AvailableLeaveType01').text("0");
+                $('#AvailableLeaveType02').text("0");
+                $('#AvailableLeaveType03').text("0");
+                $('#AvailableLeaveType04').text("0");
+
+                $('input[type="search"]').focus();
+                $('input[type="search"]').val("");
+                $('#attendance_table').DataTable().search("");
+                $('#attendance_table').DataTable().draw();
+                $('input[type="search"]').blur();
+
+                //document.getElementById("btn-excel-download").disabled = false;
+                $('#export_wait').hide();
+            }
+
+
+            function HideMessage() { setTimeout(function () { $('#export_wait').hide(); document.getElementById("btn-excel-download").disabled = false; }, 5000); }
+
+
+
+            function submitcheck() {
+
+                //$('input[type="search"]').focus();
+                //$('input[type="search"]').val(null);
+
+                //return false;
+                //console.log("search value = " + $('input[type="search"]').val());
+
+                fDate = $('#consolidate-form').find('[name*="from_date"]').val().split("-").reverse();
+                tDate = $('#consolidate-form').find('[name*="to_date"]').val().split("-").reverse();
+
+                //console.log('1>> ' + fDate + ' - ' + tDate);
+
+                fDate = new Date(fDate[0] + "-" + fDate[1] + "-" + fDate[2]);
+                tDate = new Date(tDate[0] + "-" + tDate[1] + "-" + tDate[2]);
+
+                //console.log('2>> ' + fDate + ' - ' + tDate);
+
+
+
+                if (tDate < fDate) {
+
+                    $('#alert_message').text("The 'To Date' should be greater than 'From Date'.");
+                    $('.bs-example-modal-lg').modal('show');
+
+                    //alert("To Date should be greater than From Date.");
+                    return false;
+                }
+
+                searchReport();
+
+                fetchCounter();
+
+                //$('input[type="search"]').blur();
+
+                return true;
+
+            }
+
+            $(document).ready(function () {
+
+                var empCode2= @Html.Raw(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId);
+
+                $.ajax({
+                    url: '/HR/HR/VerfiyDataHandler',
+                    type: "POST",
+                    data: { empId: empCode2 },
+                    dataType: "json",
+
+                    success: function (data) {
+                        if (data.HRExportGridData == false) {
+                            $("#btnExport").hide();
+                        }
+
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+
+                //$('#accordion').accordion("option", "active", 5);
+
+                $(".datepicker").datepicker({ dateFormat: 'dd-mm-yy' });
+
+                $('.hasDatepicker').keydown(function (e) {
+                    var unicode = e.keyCode ? e.keyCode : e.charCode;
+                    if (unicode != 13 && unicode != 8 && unicode != 9) { e.preventDefault(); }
+                });
+
+                $('.hasDatepicker').keydown(function (e) {
+                    var unicode = e.keyCode ? e.keyCode : e.charCode;
+                    if (unicode == 8) { e.preventDefault(); e.stopPropagation(); }
+                });
+                //setActiveLink("Consolidated Report");
+                var present = 0;
+                var absent = 0;
+                var late = 0;
+                var onTime = 0;
+                var earlyGone = 0;
+                //    serializeAndSend();
+                //function serializeAndSend() {
+                //    var obj = {
+                //        employee_id: $('#consolidated-employees').val(),
+                //        from_date: $('#date_from').val(),
+                //        to_date: $('#date_to').val()
+                //    };
+                //    $.ajax({
+                //        url: "graphForConsolidated",
+                //        type: 'POST',
+                //        contentType: 'application/json',
+                //        data: JSON.stringify(obj),
+                //        success: function (data) {
+                //            present = data.dashboardElement.present;
+                //            absent = data.dashboardElement.absent;
+                //            late = data.dashboardElement.late;
+                //            onTime = data.dashboardElement.onTime;
+                //            earlyGone = data.dashboardElement.earlyGone;
+                //            console.log(present + " " + absent + " " + late + " " + earlyGone + " " + onTime);
+                //            loadGraph(present, absent, late, earlyGone, onTime);
+                //        }
+                //    });
+
+                //};
+                var check = false;
+
+                //$("#consolidated-employees").change(function () {
+                //    var status = this.value;
+
+
+                //});
+
+                //
+                //$('#search-consolidated-report').button();
+                $("#search-consolidated-report").click(function (e) {
+
+                    if ($('#consolidated-employees').val() == "") {
+
+                        //$('#alert_message').text("Please select 'User Code'.");
+                        //$('.bs-example-modal-lg').modal('show');
+
+                        //alert("Please select 'From Date'");
+                        //$('#consolidated-employees').focus();
+                        return true;
+                    }
+
+                    if ($('#date_from').val() == "") {
+
+                        $('#alert_message').text("Please select 'From Date'.");
+                        $('.bs-example-modal-lg').modal('show');
+
+                        //alert("Please select 'From Date'");
+                        $('#date_from').focus();
+                        return false;
+                    }
+
+                    if ($('#date_to').val() == "") {
+
+                        $('#alert_message').text("Please select 'To Date'.");
+                        $('.bs-example-modal-lg').modal('show');
+
+                        //alert("Please select 'To Date'");
+                        $('#date_to').focus();
+                        return false;
+                    }
+
+                    submitcheck();
+                    //  serializeAndSend();
+                    e.preventDefault();
+                });
+
+
+                //download excel
+                $("#btn-excel-download").click(function (e) {
+
+                    if ($('#date_from').val() == "") {
+                        alert("Please select 'From Date'");
+                        $('#date_from').focus();
+                        return false;
+                    }
+
+                    if ($('#date_to').val() == "") {
+                        alert("Please select 'To Date'");
+                        $('#date_to').focus();
+                        return false;
+                    }
+
+                    //alert($('#export_wait').html());
+
+                    if ($('#export_wait').html() == "No Data Found.") {
+                        $('#export_wait').html("<img src='/images/loader.gif' style='width: 110px ; margin-left: 34%;' alt='processing'>");
+                    }
+
+                    $('#export_wait').show();
+
+                    var post_data = {
+                        "employee_id": $('#consolidated-employees').val(),
+                        "from_date": $('#date_from').val(),
+                        "to_date": $('#date_to').val(),
+                        "users_type": $('#consolidated-employees').text().includes("*") == true ? 1 : 0
+                    };
+
+                    $("#btn-excel-download").attr("disabled", "disabled");
+
+                    $.ajax({
+                        cache: false,
+                        type: 'post',
+                        url: '/HR/Reports/LeavesReportByUserExcelDownload',
+                        data: post_data,
+                        //contentType: 'application/json;charset=utf-8',
+                        dataType: 'json',
+                        success: function (data) {
+
+                            if (data.FileGuid != "" & data.FileName != "") {
+
+                                $('#export_wait').hide();
+                                $("#btn-excel-download").removeAttr("disabled");
+
+                                //console.log('export done successfully InShaAllah!!!');
+                                //var response = JSON.stringify(data);
+                                //alert(data.FileGuid + ' >> ' + data.FileName);
+
+                                window.location = '/HR/Reports/Download?fileGuid=' + data.FileGuid + '&fileName=' + data.FileName;
+                            }
+                            else {
+                                $('#export_wait').html("No Data Found.");
+                            }
+                        },
+                        error: function (jq) {
+                            console.log('Error: ' + jq.responseText);
+                        }
+
+                    });
+                    //  serializeAndSend();
+                    e.preventDefault();
+                });
+
+                var url = '@Url.Action("LeavesReportByUserDataHandler", "Reports", null, Request.Url.Scheme)';
+
+                var columns = [
+                      { "data": "UsersName" },
+                       { "data": "LeaveTypeText" },
+                       { "data": "FromDateText" },
+                       { "data": "ToDateText" },
+                       { "data": "DaysCount" },
+                       { "data": "LeaveReasonText" },
+                       { "data": "ReasonDetail" },
+                       { "data": "ApproverName" },
+                       { "data": "ApproverDetail" },
+                       { "data": "LeaveStatusText" },
+                       { "data": "AttachmentFilePath" },
+                       { "data": "CreateDateText" },
+                       { "data": "UpdateDateText" }
+                ];
+
+                @*
+                   I did this so that like initDataTables the JS
+            for serverside processing can be used for other tables.
+                NOTE: The names of the columns correspond to the View Model.
+            For example in this example the column names, first_name, last_name
+            etc are taken from ViewModels.Employee
+        *@
+                initReportDataTable('#attendance_table', url, columns);
+                $('#consolidated-employees').ajaxChosen({
+                    dataType: 'json',
+                    type: 'POST',
+                    url: '@Url.Action("dropdown_users", "EmployeeManagement", null, Request.Url.Scheme)'
+                }, {
+                    loadingImg: '@Href("~/Content/ChosenAutoComplete/loading.gif")'
+                });
+            });
+        </script>
+    }

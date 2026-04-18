@@ -1,0 +1,309 @@
+﻿@{
+    ViewBag.Title = "TRMS - Attendance Summary";
+    Layout = "~/Areas/EMP/Views/Shared/_Layout.cshtml";
+
+    string EMP_STD_LEC_LoginUserType = "";
+    if (MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeFunctionSLSID.ToString().Contains("student"))
+    {
+        EMP_STD_LEC_LoginUserType = "STD";
+    }
+    else if (MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeFunctionSLSID.ToString().Contains("lecturer"))
+    {
+        EMP_STD_LEC_LoginUserType = "LEC";
+    }
+    else
+    {
+        EMP_STD_LEC_LoginUserType = "EMP";
+    }
+
+}
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("dashboard.welcome")  <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span></h4>
+                 <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/EMP/EMP/Dashboard">@EMP_STD_LEC_LoginUserType</a></li>
+                    <li class="breadcrumb-item active">Reports</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="mdi mdi-chart-bar"></i> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("attendance.summary.title") </h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-12">
+                            @using (Html.BeginForm("AttendanceSummaryDataHandler", "Reports", FormMethod.Post, new { id = "report-form" }))
+                            {
+                                <div class="row">
+                                    <div class="col-4">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("consloe.from") <span class="text-danger font-14">*</span></label>
+                                        <input type="text" class="form-control datepicker" name="from_date" autocomplete="off" required />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-4">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("consloe.to")<span class="text-danger font-14">*</span></label>
+                                        <input type="text" class="form-control datepicker" name="to_date" autocomplete="off" required />
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12 text-danger">
+                                        @Html.AntiForgeryToken()
+                                        @Html.ValidationSummary()
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <button type="submit" value="Submit" onclick="clearr();" class="btn btn-primary waves-effect waves-light m-t-10">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.search")</button>
+                                        <button type="reset" value="Reset" class="btn btn-primary waves-effect waves-light m-t-10">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.reset")</button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    
+
+                    <div class="row">
+                        <div class="col-12">
+                            <table id="report_table" class="table table-striped table-bordered dataTable dt-responsive nowrap no-footer small" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("monthly.epcode")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblpres")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblLeave")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblAbsent")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lbontime")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("at.late.lbl")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("at.earlyout.lbl")</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row m-t-10">
+                        <div class="col-12">
+                            <button type="submit" id="btnExport" onclick="ExortExcleBar();" class="btn btn-primary waves-effect waves-light">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.expo")</button>
+                            <span id="demo" class="text-danger"></span>
+                            <p id="export_wait2" style="display: none;" class="text-danger"><img src='/images/loader.gif' alt='processing' /></p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End content -->
+
+@section JS {
+    <script type="text/javascript" src="@Href("~/Scripts/chosen.ajaxaddition.jquery.js")"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+
+            var empCode= @Html.Raw(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId);
+
+            $.ajax({
+                url: '/EMP/EMP/DataHandler',
+                type: "POST",
+                data: { empId: empCode },
+                dataType: "json",
+
+                success: function (data) {
+
+
+                    if (data.ExportGridData == false) {
+                        $("#btnExport").hide();
+                    }
+                  
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+
+
+
+            //$('#accordion').accordion("option", "active", 2);
+            //setActiveLink("Attendance Summary");
+            $(".datepicker").datepicker({ dateFormat: 'dd-mm-yy' });
+            /*
+            $('#btnExport').button();
+            $("#btnExport").click(function (e) {
+                $('#report_table').tableExport({ type: 'excel', escape: 'false' });
+                e.preventDefault();
+            });
+            */
+            $('.hasDatepicker').keydown(function (e) {
+                var unicode = e.keyCode ? e.keyCode : e.charCode;
+                if (unicode != 13 && unicode != 8 && unicode != 9) {
+
+                    e.preventDefault();
+                }
+            });
+
+            $('.hasDatepicker').keydown(function (e) {
+                var unicode = e.keyCode ? e.keyCode : e.charCode;
+                if (unicode == 8) { e.preventDefault(); e.stopPropagation(); }
+            });
+            //$("input[type=submit], button").button();
+        });
+        //$("input[type=submit], button").button();
+
+        function checkSubmit(id) {
+
+            fDate = $(id).find('[name*="from_date"]').val().split("-").reverse();
+            tDate = $(id).find('[name*="to_date"]').val().split("-").reverse();
+
+
+            fDate = new Date(fDate[0] + "-" + fDate[1] + "-" + fDate[2]);
+            tDate = new Date(tDate[0] + "-" + tDate[1] + "-" + tDate[2]);
+
+            if (tDate < fDate) {
+                alert("To date should not be greater than from date.");
+                return false;
+            }
+
+            return true;
+        }
+
+        function ExortExcleBar() {
+            $('#export_wait2').show();
+            document.getElementById("btnExport").disabled = true;
+            HideBarExcle();
+            var ss = $("tr").children("td:first").text();
+            if (ss != "No data available in table" || ss == " " || ss == "") { DownloadExcleCsv(); }
+            else { document.getElementById("demo").innerHTML = "No Data Found."; }
+        }
+
+        function DownloadExcleCsv() { setupTableExportButton('#report_table', 'AttendanceSummary'); }
+
+        function HideBarExcle() { setTimeout(function () { $('#export_wait2').hide(); document.getElementById("btnExport").disabled = false; document.getElementById("demo").innerHTML = ""; }, 1500); }
+
+        function clearr() {
+            $('input[type="search"]').focus();
+            $('input[type="search"]').val("");
+            $('#attendance_table').DataTable().search("");
+            $('#attendance_table').DataTable().draw();
+            $('input[type="search"]').blur();
+        }
+
+        function initReportDataTable(identifier, url, columns) {
+            var oTable = $(identifier).DataTable({
+                "searchDelay": 2000,
+                "scrollY": "300px",
+                "serverSide": true,
+                "ajax": {
+                    "type": "POST",
+                    "url": url,
+                    "contentType": 'application/json; charset=utf-8',
+                    'data': function (data) {
+
+                        data.from_date = $('#report-form').find('[name*="from_date"]').val();;
+                        data.to_date = $('#report-form').find('[name*="to_date"]').val();
+                        return data = JSON.stringify(data);
+                    }
+                },
+                "scrollX": true,
+                "scrollCollapse": true,
+                "processing": true,
+                "paging": true,
+                "deferRender": true,
+                "columns": columns,
+                "order": [0, "asc"],
+
+                "iDisplayLength": 500,
+                "aLengthMenu": [[10, 25, 50, 100, 500, 1000], [10, 25, 50, 100, 500, 1000]]
+
+            });
+
+            oTable.on("draw", function () {
+                var keyword = $(identifier + '_filter > label:eq(0) > input').val();
+                $(identifier).unmark();
+                $(identifier).mark(keyword, {});
+
+
+
+                $(identifier + ' tbody tr').click(function (e) {
+                    $('tr.row_selected').removeClass('row_selected');
+                    $(this).addClass('row_selected');
+                });
+            });
+        }
+
+        var url = '@Url.Action("AttendanceSummaryDataHandler", "Report", null, Request.Url.Scheme)';
+        var columns = [
+            { "data": "employeeCode" },
+            { "data": "present" },
+            { "data": "leave" },
+            { "data": "absent" },
+            { "data": "ontime" },
+            { "data": "late" },
+            { "data": "earlyGone" }
+        ];
+
+        initReportDataTable('#report_table', url, columns);
+
+        $('#report-form').on("submit", function (e) {
+
+            if (checkSubmit('#report-form')) {
+                var toSearch = $("#report_table_filter input").val();
+
+                //var fDate = $('#report-form').find('[name*="from_date"]').val();
+                //var tDate = $('#report-form').find('[name*="to_date"]').val();
+                $("#report_table").DataTable().search(toSearch).draw();
+
+            }
+
+
+            e.preventDefault();
+
+        });
+</script>
+}
+
+
+
+

@@ -1,0 +1,409 @@
+﻿@{
+    ViewBag.Title = "TRMS - Shift Management";
+    Layout = "~/Areas/HR/Views/Shared/_Layout.cshtml";
+}
+
+@model List<ViewModels.Shift>
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("dashboard.welcome")  <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span></h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/HR">HR</a></li>
+                    <li class="breadcrumb-item active">Shift Management</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="mdi mdi-calendar-clock"></i> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.smas") </h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    @using (Html.BeginForm("AddShift", "ShiftManagement", FormMethod.Post, new { id = "mngshift_form" }))
+                    {
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.name") <span class="text-danger font-14">*</span></label>
+                                        <input type="text" pattern=".{2,}" title="2 characters minimum" class="form-control" id="sname" name="name"
+                                               oninput="setCustomValidity('');" oninvalid="setCustomValidity('Name should contain at least 2 characters.');" required />
+                                    </div>
+                                </div>
+
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.etime") <span class="text-danger font-14">*</span></label>
+                                        <input type="text" class="form-control timepicker" name="early_time" id="early_time" required>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.stime") <span class="text-danger font-14">*</span></label>
+                                        <input type="text" class="form-control timepicker" name="start_time" id="start_time" required>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.ltime") <span class="text-danger font-14">*</span></label>
+                                        <input type="text" class="form-control timepicker" name="late_time" id="late_time" required>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <div class="col-4">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.halfday") <span class="text-danger font-14">*</span></label>
+                                        <input type="text" class="form-control timepicker" name="half_day" id="half_day" required>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.end") <span class="text-danger font-14">*</span></label>
+                                        <input type="text" class="form-control timepicker" name="shift_end" id="shift_end" required>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.dayend") <span class="text-danger font-14">*</span></label>
+                                        <input type="text" class="form-control timepicker" name="day_end" id="day_end" required>
+                                    </div>
+                                </div>
+
+                                @*<div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Shift Hours <span class="text-danger font-14">*</span></label>
+                                        <input type="text" class="form-control timepicker" name="day_end" id="day_end" required>
+                                    </div>
+                                </div>*@
+
+                            </div>
+
+                            <div class="col-4">
+                                <div class="col-12">
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 text-danger">
+                                @Html.AntiForgeryToken()
+                                @Html.ValidationSummary()
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary waves-effect waves-light">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.add")</button>&nbsp;
+                                <button type="reset" class="btn btn-primary waves-effect waves-light">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.reset")</button>
+                            </div>
+                        </div>
+
+                    }
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+
+                    <div class="row">
+                        <div class="col-12">
+                            <table id="shifts_table" class="table table-striped table-bordered dataTable dt-responsive nowrap no-footer small" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.name")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.etime")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.stime")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.ltime")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.halfday")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.end")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.dayend")</th>
+                                        @*<th>Sheift Hours</th>*@
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("attendance.action")</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (ViewModels.Shift shift in Model)
+                                    {
+                                        <tr data-row="@shift.id">
+                                            <td>@shift.name</td>
+                                            <td>@shift.early_time</td>
+                                            <td>@shift.start_time</td>
+                                            <td>@shift.late_time</td>
+                                            <td>@shift.half_day</td>
+                                            <td>@shift.shift_end</td>
+                                            <td>@shift.day_end</td>
+                                            @*<td>@shift.shift_hours</td>*@
+                                            <td class="dt-center">
+                                                <div>
+                                                    <a href="javascript:void(editShift(@shift.id));">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.edit")</a>
+                                                    <span>/</span>
+                                                    <a href="javascript:void(deleteShift(@shift.id));">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("shift.del")</a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row m-t-10">
+                        <div class="col-12">
+                            <button type="submit" id="btnExport" class="btn btn-primary waves-effect waves-light">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.exportgrid")</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="shifts_modals">
+</div>
+<!-- End content -->
+
+@section JS {
+    <script src="@Url.Content("/Scripts/shiftCRUD.js")" type="text/javascript"></script>
+    <script>
+
+        // helper
+        function convertTo24(time) {
+            var hours = Number(time.match(/^(\d+)/)[1]);
+            var minutes = Number(time.match(/:(\d+)/)[1]);
+            var AMPM = time.match(/\s(.*)$/)[1];
+            if (AMPM == "PM" && hours < 12) hours = hours + 12;
+            if (AMPM == "AM" && hours == 12) hours = hours - 12;
+            var sHours = hours.toString();
+            var sMinutes = minutes.toString();
+            if (hours < 10) sHours = "0" + sHours;
+            if (minutes < 10) sMinutes = "0" + sMinutes;
+
+
+            return sHours + sMinutes;
+        }
+
+
+        function checkShift(id) {
+            var earlyTime = $(id).find('[name*="early_time"]').val();
+            var startTime = $(id).find('[name*="start_time"]').val();
+            var lateTime = $(id).find('[name*="late_time"]').val();
+            var halfDay = $(id).find('[name*="half_day"]').val();
+            var shiftEnd = $(id).find('[name*="shift_end"]').val();
+            var dayEnd = $(id).find('[name*="day_end"]').val();
+
+
+            //if (earlyTime >= startTime) {
+            //    alert("Early Time must be less than the Start Time");
+            //    return false;
+            //} else
+            //    if (startTime >= lateTime) {
+            //        alert("Start Time must be less than the Late Time");
+            //        return false;
+            //    } else
+            //        if (lateTime >= halfDay) {
+            //            alert("Late Time must be less than the Half Day");
+            //            return false;
+            //        } else
+            //            if (halfDay >= shiftEnd) {
+            //                alert("Half Day must be less than the Shift End");
+            //                return false;
+            //            } else
+            //                if (shiftEnd >= dayEnd) {
+            //                    alert("Shift End must be less than the Day End");
+            //                    return false;
+            //                }
+
+            // helper function, eats in all the shift times
+            // and spits out the total number of hours for the shift
+            function countHours(earlyTime, startTime, lateTime, halfDay, shiftEnd, dayEnd) {
+
+                // helper
+                function getString(i) {
+                    return (i < 10) ? "0" + i : "" + i;
+                }
+
+                // populate all possible minutes
+                allPossibleMinutes = [];
+                for (i = 0; i <= 23; i++) {
+                    for (j = 0; j <= 59; j++) {
+                        str = getString(i) + getString(j);
+                        allPossibleMinutes[allPossibleMinutes.length] = str;
+                    }
+                }
+
+                index = 0;
+                // set the index to that of
+                // the earlyTime in the array.
+                for (var i = 0; i < allPossibleMinutes.length; i++) {
+                    if (allPossibleMinutes[i] === convertTo24(earlyTime)) {
+                        index = i;
+                        break;
+                    }
+                }
+
+
+
+                // Now that we have the pointer set to
+                // the early time, we will iterate through the
+                // list to find out the next time, which is startTime
+                // and meanwhile we will count the minutes.
+                totalMinutes = 0;
+                while (allPossibleMinutes[index] != convertTo24(startTime)) {
+
+                    index = (index + 1) % allPossibleMinutes.length;
+                    totalMinutes++;
+                }
+
+
+                // Our pointer is now at shiftStart
+                // Lets keep iterating to our next time which is
+                // lateTime
+                while (allPossibleMinutes[index] != convertTo24(lateTime)) {
+                    //console.log()
+                    index = (index + 1) % allPossibleMinutes.length;
+                    totalMinutes++;
+                }
+
+                // Our pointer is now at lateTime
+                // Lets keep iterating to our next time which is
+                // halfDay
+                while (allPossibleMinutes[index] != convertTo24(halfDay)) {
+                    //console.log()
+                    index = (index + 1) % allPossibleMinutes.length;
+                    totalMinutes++;
+                }
+
+                // Our pointer is now at halfDay
+                // Lets keep iterating to our next time which is
+                // shiftEnd
+                while (allPossibleMinutes[index] != convertTo24(shiftEnd)) {
+                    //console.log()
+                    index = (index + 1) % allPossibleMinutes.length;
+                    totalMinutes++;
+                }
+
+                // Our pointer is now at shiftEnd
+                // Lets keep iterating to our next time which is
+                // dayEnd
+
+                while (allPossibleMinutes[index] != convertTo24(dayEnd)) {
+                    //console.log()
+                    index = (index + 1) % allPossibleMinutes.length;
+                    totalMinutes++;
+                }
+
+
+                return totalMinutes / 60;
+            }
+
+            var totalHours = countHours(earlyTime, startTime, lateTime, halfDay, shiftEnd, dayEnd);
+            if (totalHours < 24.0 && totalHours > 0) {
+                return true;
+            } else {
+
+                var message = "ERROR:\nTotal shift time cannot exceed 24 hours.\nThe current shift starts from " + earlyTime + " and ends at " + dayEnd + ".\nWith a total time of " + totalHours + " hours.";
+                alert(message);
+                return false;
+            }
+        }
+
+        $(document).ready(function () {
+
+            var empCode2= @Html.Raw(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId);
+
+            $.ajax({
+                url: '/HR/HR/VerfiyDataHandler',
+                type: "POST",
+                data: { empId: empCode2 },
+                dataType: "json",
+
+                success: function (data) {
+                    if (data.HRExportGridData == false) {
+                        $("#btnExport").hide();
+                    }
+
+
+
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+
+            initDataTable("#shifts_table");
+
+
+
+            //$('#btnExport').button();
+            $("#btnExport").click(function (e) {
+                setupTableExportButton('#shifts_table', 'ManageShifts');
+                e.preventDefault();
+            });
+            /*
+            $('#btnExport').button();
+            $("#btnExport").click(function (e) {
+                $('#shifts_table').tableExport({ type: 'excel', escape: 'false' });
+                e.preventDefault();
+            });
+            */
+
+
+            deleteShift = initDeleteShiftModal('@Url.Action("DeleteShift", "ShiftManagement", null, Request.Url.Scheme)');
+            editShift = initEditShiftModal('@Url.Action("EditShift", "ShiftManagement", null, Request.Url.Scheme)');
+
+
+            $('#mngshift_form').on("submit", function (e) {
+                if (!checkShift('#mngshift_form')) {
+                    e.preventDefault();
+                }
+            });
+
+
+        });
+
+        $('.timepicker').timepicki();
+
+
+    </script>
+}

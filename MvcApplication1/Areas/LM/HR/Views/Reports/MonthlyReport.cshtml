@@ -1,0 +1,171 @@
+﻿
+
+<h4 style="font-weight: bold;">Monthly Report</h4>
+<div class="row">
+    <div class="form-group col-md-3">
+        
+
+        @using (Html.BeginForm("MonthlyReportDataHandler", "Reports", FormMethod.Post, new { id = "report-form" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary()
+          
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Date of Joining</label>
+                    <input type="text" class="form-control datepicker" name="from_date" style="background-color: #FFF" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Date of Leaving</label>
+                    <input type="text" class="form-control datepicker" name="to_date" style="background-color: #FFF" required>
+                </div>
+            </div>
+          <div class="row">
+                    <div class="col-md-12" style="margin-top:5px">
+                        <button type="submit" value="Submit">Get Report</button>
+                        <button type="reset" value="Reset">Reset</button>
+                    </div>
+                </div>
+        }
+
+    </div>
+
+
+    <div class="col-md-9">
+        <h5 style="font-weight: bold;">Attendance Report</h5>
+
+        <table id="report_table" class="display cell-border" width="100%">
+            <thead>
+
+                <tr>
+                    <th>Employee Code</th>
+                    <th>Present</th>
+                    <th>On Time</th>
+                    <th>Late</th>
+                    <th>Early Gone</th>
+                    <th>Absent</th>
+
+                </tr>
+
+            </thead>
+            <tbody></tbody>
+        </table>
+
+    </div>
+</div>
+
+@section JS {
+<script type="text/javascript" src="@Href("~/Scripts/chosen.ajaxaddition.jquery.js")"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#accordion').accordion("option", "active", 1);
+        $(".datepicker").datepicker({ dateFormat: 'dd-mm-yy' });
+
+        $('.hasDatepicker').keydown(function (e) {
+            var unicode = e.keyCode ? e.keyCode : e.charCode;
+            if (unicode != 13 && unicode != 8 && unicode != 9) {
+
+
+
+                e.preventDefault();
+            }
+        });
+        $("input[type=submit], button").button();
+    });
+    $("input[type=submit], button").button();
+
+    function checkSubmit(id) {
+
+        fDate = $(id).find('[name*="from_date"]').val().split("-").reverse();
+        tDate = $(id).find('[name*="to_date"]').val().split("-").reverse();
+
+
+        fDate = new Date(fDate[0] + "-" + fDate[1] + "-" + fDate[2]);
+        tDate = new Date(tDate[0] + "-" + tDate[1] + "-" + tDate[2]);
+        
+        if (tDate <= fDate) {
+            alert("To date should not be greater than from date.");
+            return false;
+        }
+
+        return true;
+    }
+
+
+
+
+    function initReportDataTable(identifier,url,columns) {
+        var oTable = $(identifier).DataTable({
+            "searchDelay": 2000,
+            "scrollY": "300px",
+            "serverSide": true,
+            "ajax": {
+                "type": "POST",
+                "url": url,
+                "contentType": 'application/json; charset=utf-8',
+                'data': function (data) {
+
+                    data.from_date = $('#report-form').find('[name*="from_date"]').val();;
+                    data.to_date = $('#report-form').find('[name*="to_date"]').val();
+                    return data = JSON.stringify(data);
+                }
+            },
+            "scrollX": true,
+            "scrollCollapse": true,
+            "processing": true,
+            "paging": true,
+            "deferRender": true,
+            "columns": columns,
+            "order": [0, "asc"]
+
+        });
+
+        oTable.on("draw", function () {
+            var keyword = $(identifier + '_filter > label:eq(0) > input').val();
+            $(identifier).unmark();
+            $(identifier).mark(keyword, {});
+
+
+
+            $(identifier + ' tbody tr').click(function (e) {
+                $('tr.row_selected').removeClass('row_selected');
+                $(this).addClass('row_selected');
+            });
+        });
+    }
+
+
+    var url = '@Url.Action("MonthlyReportDataHandler", "Reports", null, Request.Url.Scheme)';
+    var columns = [
+   { "data": "employeeCode" },
+   { "data": "present" },
+   { "data": "ontime" },
+   { "data": "late" },
+   { "data": "earlyGone" },
+   { "data": "absent" }
+    ];
+
+    initReportDataTable('#report_table', url, columns);
+    
+    $('#report-form').on("submit", function (e) {
+
+        if (checkSubmit('#report-form')) {
+            var toSearch = $("#report_table_filter input").val();
+            
+            //var fDate = $('#report-form').find('[name*="from_date"]').val();
+            //var tDate = $('#report-form').find('[name*="to_date"]').val();
+            $("#report_table").DataTable().search(toSearch).draw();
+            
+        }
+
+
+        e.preventDefault(); 
+        
+    });
+    </script>
+    }

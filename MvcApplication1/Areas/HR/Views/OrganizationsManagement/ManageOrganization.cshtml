@@ -1,0 +1,232 @@
+﻿@{
+    ViewBag.Title = "TRMS - Organization Management";
+    Layout = "~/Areas/HR/Views/Shared/_Layout.cshtml";
+}
+
+@using MvcApplication1.ViewModel;
+@model ViewModels.OrganizationView
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("dashboard.welcome")  <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span></h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/HR">HR</a></li>
+                    <li class="breadcrumb-item active">Organization</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="mdi mdi-file-document"></i> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("org.hrorgmanagement") </h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    @using (Html.BeginForm("ManageOrganization", "OrganizationsManagement", FormMethod.Post, new { id = "organization-form", enctype = "multipart/form-data" }))
+                    {
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <input id="id" name="id" value="@Model.Id" type="hidden" />
+
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("org.codetitle")<span class="text-danger font-14">&nbsp;*</span></label>
+                                        <input id="organization_title" name="organization_title" type="text" class="form-control" value="@Model.OrganizationTitle" autocomplete="off" required />
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12 m-t-10">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("org.estbdate")<span class="text-danger font-14">&nbsp;*</span></label>
+                                        <input id="established_date" name="established_date" type="text" value="@Model.EstablishedDateText" class="form-control datepicker" autocomplete="off" required />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("org.campuslimit")<span class="text-danger font-14">&nbsp;*</span></label>
+                                        <select id="campus_limit" name="campus_limit" class="form-control" required>
+                                            <option value="1" @(Model.CampusLimit == 1 ? "selected" : "")>01</option>
+                                            <option value="2" @(Model.CampusLimit == 2 ? "selected" : "")>02</option>
+                                            <option value="3" @(Model.CampusLimit == 3 ? "selected" : "")>03</option>
+                                            <option value="4" @(Model.CampusLimit == 4 ? "selected" : "")>04</option>
+                                            <option value="5" @(Model.CampusLimit == 5 ? "selected" : "")>05</option>
+                                            <option value="6" @(Model.CampusLimit == 6 ? "selected" : "")>06</option>
+                                            <option value="7" @(Model.CampusLimit == 7 ? "selected" : "")>07</option>
+                                            <option value="8" @(Model.CampusLimit == 8 ? "selected" : "")>08</option>
+                                            <option value="9" @(Model.CampusLimit == 9 ? "selected" : "")>09</option>
+                                            <option value="10" @(Model.CampusLimit == 10 ? "selected" : "")>10</option>
+                                            <option value="11" @(Model.CampusLimit == 11 ? "selected" : "")>11</option>
+                                            <option value="12" @(Model.CampusLimit == 12 ? "selected" : "")>12</option>
+                                            <option value="13" @(Model.CampusLimit == 13 ? "selected" : "")>13</option>
+                                            <option value="14" @(Model.CampusLimit == 14 ? "selected" : "")>14</option>
+                                            <option value="15" @(Model.CampusLimit == 15 ? "selected" : "")>15</option>
+                                            <option value="16" @(Model.CampusLimit == 16 ? "selected" : "")>16</option>
+                                            <option value="17" @(Model.CampusLimit == 17 ? "selected" : "")>17</option>
+                                            <option value="18" @(Model.CampusLimit == 18 ? "selected" : "")>18</option>
+                                            <option value="19" @(Model.CampusLimit == 19 ? "selected" : "")>19</option>
+                                            <option value="20" @(Model.CampusLimit == 20 ? "selected" : "")>20</option>
+                                            <option value="21" @(Model.CampusLimit == 21 ? "selected" : "")>21</option>
+                                            <option value="22" @(Model.CampusLimit == 22 ? "selected" : "")>22</option>
+                                            <option value="23" @(Model.CampusLimit == 23 ? "selected" : "")>23</option>
+                                            <option value="24" @(Model.CampusLimit == 24 ? "selected" : "")>24</option>
+                                            <option value="25" @(Model.CampusLimit == 25 ? "selected" : "")>25</option>
+                                            <option value="26" @(Model.CampusLimit == 26 ? "selected" : "")>26</option>
+                                            <option value="27" @(Model.CampusLimit == 27 ? "selected" : "")>27</option>
+                                            <option value="28" @(Model.CampusLimit == 28 ? "selected" : "")>28</option>
+                                            <option value="29" @(Model.CampusLimit == 29 ? "selected" : "")>29</option>
+                                            <option value="30" @(Model.CampusLimit == 30 ? "selected" : "")>30</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("org.uploadlogo")<span class="text-danger font-14">&nbsp;*</span></label>
+                                        <input type="file" id="logo_file_path" name="logo_file_path" class="form-control">
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="col-2">
+                            </div>
+
+                            <div class="col-4">
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("org.weburl")<span class="text-danger font-14">&nbsp;*</span></label>
+                                        <input id="website_url" name="website_url" type="text" value="@Model.WebsiteURL" autocomplete="off" class="form-control" />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.description")</label>
+                                        <textarea id="description" name="description" class="form-control" rows="3" cols="30">@Model.Description</textarea>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("org.currentlogo")</label>
+                                        <div><img src="@Model.Logo" /></div>
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <label><span class="text-danger font-14">&nbsp;*</span> <span class="small">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("org.reqfields")</span></label>
+                            </div>
+                        </div>
+
+                        <div class="row m-t-10">
+                            <div class="col-12 text-danger span_message">
+                                @Html.AntiForgeryToken()
+                                @Html.ValidationSummary()
+                                @ViewBag.Message
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="submit" id="organization_mang" onclick="validateForm()" class="btn btn-primary waves-effect waves-light m-t-10">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("org.updateinfo")</button>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- End content -->
+
+@section JS {
+
+    <script type="text/javascript">
+
+
+        $(document).ready(function () {
+
+            var dateToday = new Date();
+            $(".datepicker").datepicker({ dateFormat: 'dd-mm-yy' }); //minDate: dateToday, beforeShowDay: $.datepicker.noWeekends
+
+            HideSpanMessage();
+            //validateForm();
+
+            $('.hasDatepicker').keydown(function (e) {
+                var unicode = e.keyCode ? e.keyCode : e.charCode;
+                if (unicode != 13 && unicode != 8 && unicode != 9) { e.preventDefault(); }
+            });
+
+            $('.hasDatepicker').keydown(function (e) {
+                var unicode = e.keyCode ? e.keyCode : e.charCode;
+                if (unicode == 8) { e.preventDefault(); e.stopPropagation(); }
+            });
+
+            $("#btnExport").click(function (e) {
+                $('#leave_application_table').tableExport({ type: 'excel', escape: 'false' });
+                e.preventDefault();
+            });
+
+        });
+
+        function validateForm() {
+            var oTitle = $('#organization_title').val();
+            var oEstDate = $('#established_date').val();
+            var oCampusLimit = $('#campus_limit').val();
+            var oWebURL = $('#website_url').val();
+            var oDesc = $('#description').val();
+
+            if (oTitle == "") {
+                $('.span_message').text("'Title' is required");
+                return false;
+            }
+            else if (oEstDate == "") {
+                $('.span_message').text("'Established Date' is required");
+                return false;
+            }
+            else if (oWebURL == "") {
+                $('.span_message').text("'Web URL' is required");
+                return false;
+            }
+            else if (oDesc == "") {
+                $('.span_message').text("'Desc' is required");
+                return false;
+            }
+
+            return true;
+        }
+
+        function HideSpanMessage() {
+            setTimeout(function () { $('.span_message').hide(); }, 5000);
+        }
+    </script>
+
+
+}

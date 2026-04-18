@@ -1,0 +1,158 @@
+﻿@{
+    ViewBag.Title = "TRMS - Change Password";
+    Layout = "~/Areas/LM/Views/Shared/_Layout.cshtml";
+
+    string LM_LEC_STF_LoginUserType = "";
+    if (MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeFunctionSLSID.ToString().Contains("lecturer"))
+    {
+        LM_LEC_STF_LoginUserType = "LEC";
+    }
+    else if (MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeFunctionSLSID.ToString().Contains("staff"))
+    {
+        LM_LEC_STF_LoginUserType = "STF";
+    }
+    else
+    {
+        LM_LEC_STF_LoginUserType = "LM";
+    }
+}
+
+@model BLL.ViewModels.LocalPasswordModel
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("dashboard.welcome") <span class="text-danger">'@LM_LEC_STF_LoginUserType'</span>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("dashboard.LoginID") <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("dashboard.Campus") <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span>]</h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/LM/LM/Dashboard">@LM_LEC_STF_LoginUserType</a></li>
+                    <li class="breadcrumb-item active">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Menu.emp.changepassword")</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="mdi mdi-account-box"></i> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Menu.emp.changepassword") </h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    @if (Request.QueryString["Message"] != null && Request.QueryString["Message"].ToString() == "ChangePasswordSuccess")
+                    {
+                        <div class="form-group row">
+                            <div class="col-10 text-success">
+                                Your password has been changed successfully!!!
+                            </div>
+                        </div>
+                    }
+
+                    @using (Html.BeginForm("Manage", "Account", FormMethod.Post, new { id = "chg_pass" }))
+                    {
+                        <div class="row">
+                            <div class="col-4">
+                                <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("oldpassword") <span class="text-danger font-14">*</span></label>
+                                <input type="password" class="form-control" id="OldPassword" name="OldPassword" required />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-4 m-t-10">
+                                <label class="control-label" for="example-email">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("newpassword") <span class="text-danger font-14">*</span></label>
+                                <input type="password" class="form-control" id="NewPassword" name="NewPassword" required />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-4 m-t-10">
+                                <label class="control-label" for="example-email">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("confirmpassword") <span class="text-danger font-14">*</span></label>
+                                <input type="password" class="form-control" id="ConfirmPassword" name="ConfirmPassword" required />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 text-danger">
+                                @Html.AntiForgeryToken()
+                                @Html.ValidationSummary()
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary waves-effect waves-light">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Menu.emp.changepassword")</button>
+                            </div>
+                        </div>
+                    }
+
+                    <br />
+                    <hr />
+                    @using (Html.BeginForm("Languagechange", "Account", FormMethod.Post, new { id = "chg_pass" }))
+                    {
+
+                        <div class="row m-t-10">
+                            <div class="col-4">
+                                <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("languagechange")<span class="text-danger font-14"></span></label>
+                                <select id="ddl_language" name="ddl_language" class="form-control">
+                                    <option value="En">English</option>
+                                    <option value="Ar">Arabic</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary waves-effect waves-light">Change Langauge</button>
+                            </div>
+                        </div>
+
+                    }
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End content -->
+
+@section JS {
+
+    <script>
+        $(document).ready(function () {
+            //$('#accordion').accordion("option", "active", 0);
+            //setActiveLink("Change Password");
+
+            //$("input[type=submit], button").button();
+
+            $('#chg_pass').on("submit", function () {
+                var password = $("#NewPassword").val();
+                var confirmPassword = $("#ConfirmPassword").val();
+                if (password != confirmPassword) {
+                    alert("Passwords do not match. Re-enter passwords");
+                    return false;
+                } else if (!followsPasswordPolicy(password)) {
+                    alert("Your password must be at least 6 characters long and must contain at least, 1 small letter, 1 capital letter, 1 number, and 1 of the following special characters. ! @@ # $ % ^ & * ( ) _ - ");
+                    return false;
+                }
+
+                return true;
+            });
+        });
+    </script>
+}

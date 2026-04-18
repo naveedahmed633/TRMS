@@ -1,0 +1,479 @@
+﻿
+@{
+    ViewBag.Title = "TRMS - Devices Status Report";
+    Layout = "~/Areas/HR/Views/Shared/_Layout.cshtml";
+}
+
+@model ViewModels.CreateManualAttendance
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">Welcome <span class="text-danger">'HR'</span>! [Login ID: <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & Name: <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span>]</h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/HR">HR</a></li>
+                    <li class="breadcrumb-item active">Reports</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="ti-files"></i> Devices Status Report By Region </h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row m-t-10">
+                        <div class="col-4">
+                            <form id="region-form">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label class="control-label">Region</label>
+
+                                        <select id="device_region_id" name="device_region_id" class="form-control" required>
+                                            <option value="" selected="selected">-- Select a Region --</option>
+                                            <option value="1">Devices - Region 1 (Master)</option>
+                                            <option value="2">Devices - Region 2</option>
+                                            <!--<option value="3">Devices - Region 3</option>-->
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        &nbsp;
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <button type="submit" id="search-region-report" class="btn btn-primary btn-sm">Search</button>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="button" id="refresh-consolidated-report" class="btn btn-primary" onclick="redirectToPage();" value="Refresh" />
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            &nbsp;
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            &nbsp;
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <table id="device_status_table" class="table table-striped table-bordered dataTable dt-responsive nowrap no-footer small" style="width: 140%;">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Last Online</th>
+                                        <th>Device Name</th>
+                                        <th>Location</th>
+                                        <th>IP Address</th>
+                                        <th>Device Status</th>
+                                        <th>Region</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row m-t-10">
+                        <div class="col-12">
+                            <button type="submit" id="btnExport" class="btn btn-primary btn-sm">Export Grid Data</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End content -->
+
+@section JS {
+
+    <script type="text/javascript" src="@Href("~/Scripts/chosen.ajaxaddition.jquery.js")"></script>
+    @*<script type="text/javascript" src="@Href("~/Scripts/GenerateReports.js")"></script>*@
+    @*<script type="text/javascript" src="@Href("~/Scripts/monthpicker.js")"></script>*@
+
+
+    <script>
+
+        function redirectToPage() {
+            //window.location = '/HR/Reports/ReturnBack?returnURL=' + window.location;
+            window.location.reload();
+        }
+
+        // -------------------- added by IR ---------------------
+
+        function validateFormInfo() {
+
+            if ($('#device-status-number').val() == null || $('#device-status-number').val() == "") {
+                alert('Please select a Device Number');
+                //$('#monthly-time-sheet-employees').focus();
+                return false;
+            }
+        }
+
+        //$('#search-region-report').button();
+        $("#search-region-report").click(function (e) {
+
+            if ($('#device_region_id').val() == "") {
+                alert("Please select 'Region'");
+                //$('#consolidated-employees').focus();
+                return false;
+            }
+
+            submitcheck();
+            //  serializeAndSend();
+            e.preventDefault();
+        });
+
+
+        function submitcheck() {
+
+
+            searchReport();
+            return true;
+
+        }
+
+        function GetLastDayOfMonth(m, y) {
+
+            var lastDay = 28;
+
+            if (m == "04" || m == "06" || m == "09" || m == "11") {
+                lastDay = 30;
+            }
+            else if (m == "02") {
+                if ((y % 4) == 0) {
+                    lastDay = 29;
+                }
+                else {
+                    lastDay = 28;
+                }
+            }
+            else {
+                lastDay = 31;
+            }
+
+            return lastDay;
+        }
+
+        function searchReport() {
+            // get the entered string
+            var toSearch = $('device_status_table_filter input').val();
+
+            $('#device_status_table').DataTable().search(toSearch);
+            $('#device_status_table').DataTable().draw();
+        }
+
+        function initReportDataTable(identifier, url, columns) {
+            var oTable = $(identifier).DataTable({
+                "searchDelay": 2000,
+                //"searching" : false,
+                "scrollY": "300px",
+                "serverSide": true,
+                "ajax": {
+                    "type": "POST",
+                    "url": url,
+                    "contentType": 'application/json; charset=utf-8',
+                    'data': function (data) {
+
+                        if ($('#device_region_id').val() != "") {
+                            data.device_region_id = $('#device_region_id').val();
+                        }
+
+                        return data = JSON.stringify(data);
+                    }, error: function (request, error) {
+                        //alert("Session Timeout");
+                        location.reload();
+                    }
+                },
+                //"scrollX": true,
+                //"scrollCollapse": true,
+                //"processing": true,
+                //"paging": true,
+                ////"bInfo": false,
+                //"bPaginate": true,
+                //"sDom": "lfrti",
+                //"deferRender": true,
+                //"columns": columns,
+                //"order": [0, "desc"],
+                //"bLengthChange": false, //to remove count list 10, 20, 100
+                //"iDisplayLength": 3000,
+                //"aLengthMenu": [[500, 1000, 2000, 2500, 3000], [500, 1000, 2000, 2500, 3000]]
+                "scrollX": true,
+                "scrollCollapse": true,
+                "processing": true,
+                "paging": true,
+                "deferRender": true,
+                "columns": columns,
+                "order": [0, "asc"],
+
+                "iDisplayLength": 500,
+                "aLengthMenu": [[10, 25, 50, 100, 500, 1000, 1500], [10, 25, 50, 100, 500, 1000, 1500]]
+            });
+
+            oTable.on("draw", function () {
+                var keyword = $(identifier + '_filter > label:eq(0) > input').val();
+                $(identifier).unmark();
+                $(identifier).mark(keyword, {});
+
+                $(identifier + ' tbody tr').click(function (e) {
+                    $('tr.row_selected').removeClass('row_selected');
+                    $(this).addClass('row_selected');
+                });
+            });
+
+
+            // set the z-index of the 'processing...' overlay
+            // to a great number, so that it may always display
+            // on top of the table. Also set the text color
+            // to black as it is white by default.
+            $(identifier + '_processing').css({
+                "z-index": "1000",
+                "color": "rgb(0, 0, 0)"
+            });
+
+
+            // initiate search one second after the user
+            // stops typing.
+            function setSearchDelayOnDataTable(idSelector) {
+                // remove all events from the search box
+                $(idSelector + '_filter input').off();
+
+
+                function customDataTableSearch() {
+
+                    // get the entered string
+                    var toSearch = $(idSelector + '_filter input').val();
+
+                    // do nothing if the string is null.
+                    // I've not tested this, it is just
+                    // in case.
+                    if (toSearch == null) {
+                        return;
+                    }
+
+                    // initiate search programatically.
+                    $(idSelector).DataTable().search(toSearch).draw();
+                }
+
+                // this variable holds the timer
+                var timeout;
+
+                // register a keypress on the search box
+                $(idSelector + '_filter input').keypress(function () {
+                    if (timeout != null) {
+                        clearTimeout(timeout);
+                        timeout = null;
+                    }
+
+                    // timeout set to 1 second.
+                    timeout = setTimeout(customDataTableSearch, 1000);
+                });
+
+            }
+
+            setSearchDelayOnDataTable(identifier);
+        }
+
+        function setTypeOfReportDropDown() {
+            $('#type-of-report').chosen();
+            $('#type-of-report').on("change", function () {
+                switch ($('#type-of-report').val()) {
+
+                    case "monthly-time-sheet":
+                        $('#monthly-time-sheet').show();
+                        $('#summary-report').hide();
+                        $('#monthly-attendance-register').hide();
+                        break;
+
+                    case "summary-report":
+                        $('#monthly-time-sheet').hide();
+                        $('#summary-report').show();
+                        $('#monthly-attendance-register').hide();
+                        break;
+
+                    case "monthly-attendance-register":
+                        $('#monthly-time-sheet').hide();
+                        $('#summary-report').hide();
+                        $('#monthly-attendance-register').show();
+                        break;
+                }
+            });
+        }
+
+
+        function setEmployeeDropDowns() {
+            $('#device-status-number').ajaxChosen({
+                dataType: 'json',
+                type: 'POST',
+                url: '@Url.Action("ChangeDeviceStatusNumberDataHandler", "Reports", null, Request.Url.Scheme)'
+            }, {
+                loadingImg: '@Href("~/Content/ChosenAutoComplete/loading.gif")'
+            });
+        }
+
+
+        $(document).ready(function () {
+            $('#accordion').accordion("option", "active", 3);
+            $("input[type=submit], button").button();
+            $(".chzn-select").chosen();
+            $(".datepicker").datepicker();
+            setActiveLink("Devices Status Report");
+
+            setEmployeeDropDowns();
+
+            setTypeOfReportDropDown();
+
+
+            //DataTables.NET
+            //search-devicestatus-report
+            //
+
+
+
+            //var fewSeconds = 5;
+            //$('#search-devicestatus-report').click(function () {
+            //    // Ajax request
+            //    var btn = $(this);
+            //    btn.prop('disabled', true); //btn.hide();
+            //    setTimeout(function () {
+            //        btn.prop('disabled', false); //btn.show();
+            //    }, fewSeconds * 1000);
+
+            //});
+
+            $("#btnExport").click(function (e) {
+
+                setupTableExportButton('#device_status_table', 'DevicesStatusReport');
+                e.preventDefault();
+            });
+
+            //download excel
+            $("#btn-excel-download").click(function (e) {
+
+                if ($('#date_from').val() == "") {
+                    alert("Please select 'From Date'");
+                    $('#date_from').focus();
+                    return false;
+                }
+
+                if ($('#date_to').val() == "") {
+                    alert("Please select 'To Date'");
+                    $('#date_to').focus();
+                    return false;
+                }
+
+                //alert($('#export_wait').html());
+
+                if ($('#export_wait').html() == "No Data Found.") {
+                    $('#export_wait').html("<img src='/images/loader.gif' style='width: 110px' alt='processing'>");
+                }
+
+                $('#export_wait').show();
+
+                var post_data = {
+                    "device_number": $('#device-status-number').val(),
+                    "from_date": $('#date_from').val(),
+                    "to_date": $('#date_to').val(),
+                    "device_status_type": $('#device_status_type').val()
+                };
+
+                $("#btn-excel-download").attr("disabled", "disabled");
+
+                $.ajax({
+                    cache: false,
+                    type: 'post',
+                    url: '/SuperAdmin/Reports/DevicesStatusReportExcelDownload',
+                    data: post_data,
+                    //contentType: 'application/json;charset=utf-8',
+                    dataType: 'json',
+                    success: function (data) {
+
+                        if (data.FileGuid != "" & data.FileName != "") {
+
+                            $('#export_wait').hide();
+                            $("#btn-excel-download").removeAttr("disabled");
+
+                            //console.log('export done successfully InShaAllah!!!');
+                            //var response = JSON.stringify(data);
+                            //alert(data.FileGuid + ' >> ' + data.FileName);
+
+                            window.location = '/SuperAdmin/Reports/Download?fileGuid=' + data.FileGuid + '&fileName=' + data.FileName;
+                        }
+                        else {
+                            $('#export_wait').html("No Data Found.");
+                        }
+                    },
+                    error: function (jq) {
+                        console.log('Error: ' + jq.responseText);
+                    }
+
+                });
+                //  serializeAndSend();
+                e.preventDefault();
+            });
+
+             var url = '@Url.Action("DevicesStatusRegionReportDataHandler", "Reports", null, Request.Url.Scheme)';
+
+            var columns = [
+                    { "data": "L_ID", "width": "10%" },
+                    { "data": "C_EventTime", "width": "12%" },
+                    { "data": "C_Name", "width": "20%" },
+                    { "data": "C_Office", "width": "22%" },
+                    { "data": "C_IPAddr", "width": "10%" },
+                    {
+                        "data": "L_Detail",
+                        "width": "20%",
+                        render: function (status_id) {
+
+                            if (status_id == "Connected") {
+                                return '<span class="badge label-table badge-success">Online</span>';
+                            }
+                            else {
+                                return '<span class="badge label-table badge-danger">Offline</span>';
+                            }
+                        },
+                        defaultContent: "No image"
+                    },
+                      { "data": "C_Place", "width": "10%" }
+            ];
+
+            initReportDataTable('#device_status_table', url, columns);
+
+        });
+
+    </script>
+}

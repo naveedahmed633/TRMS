@@ -1,0 +1,179 @@
+﻿@{
+    ViewBag.Title = "TRMS - Program Shifts Management";
+    Layout = "~/Areas/HR/Views/Shared/_Layout.cshtml";
+}
+
+@model List<ViewModels.Function>
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">Welcome <span class="text-danger">'HR'</span>! [Login ID: <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & Name: <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span>]</h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/HR">HR</a></li>
+                    <li class="breadcrumb-item active">Employee Portal</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="ti-files"></i> Program Shifts Management </h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-4">
+
+                            @using (Html.BeginForm("AddProgramShift", "EmployeeManagement"))
+                            {
+                                <div class="row">
+                                    <div class="col-12">
+
+                                        <input type="hidden" id="id" name="id" />
+
+                                        <label class="control-label">Program Shift Name <span class="text-danger font-14">*</span></label>
+                                        <input type="text" pattern=".{2,}" title="2 characters minimum" class="form-control" id="program_shift_name" name="program_shift_name"
+                                               oninput="setCustomValidity('');" oninvalid="setCustomValidity('Name should contain at least 2 characters.');" autocomplete="off" required />
+                                    </div>
+                                </div>
+
+
+                                <div class="row m-t-10">
+                                    <div class="col-12 text-danger">
+                                        @Html.AntiForgeryToken()
+                                        @Html.ValidationSummary()
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary waves-effect waves-light m-t-10">Add Program Shift</button>
+                                        <button type="reset" value="Reset" class="btn btn-primary waves-effect waves-light m-t-10">Reset</button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                  
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <div class="panel-body">
+                   
+                    <div class="row">
+                        <div class="col-12 m-b-10">
+                            <h3>Current Program Shifts</h3>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <table id="pshift_table" class="table table-striped table-bordered dataTable dt-responsive nowrap no-footer small" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Program Shift</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row m-t-10">
+                        <div class="col-12">
+                            <button type="submit" id="btnExport" class="btn btn-primary waves-effect waves-light">Export Grid Data</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- End content -->
+
+@section JS {
+
+
+    <script>
+        $(document).ready(function () {
+            var empCode2= @Html.Raw(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId);
+
+            $.ajax({
+                url: '/HR/HR/VerfiyDataHandler',
+                type: "POST",
+                data: { empId: empCode2 },
+                dataType: "json",
+
+                success: function (data) {
+                    if (data.HRExportGridData == false) {
+                        $("#btnExport").hide();
+                    }
+
+
+
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+
+            //$('#btnExport').button();
+            $("#btnExport").click(function (e) {
+                setupTableExportButton('#pshift_table', 'PShifts');
+                e.preventDefault();
+            });
+
+
+            /*
+            $('#btnExport').button();
+            $("#btnExport").click(function (e) {
+                $('#pshift_table').tableExport({ type: 'excel', escape: 'false' });
+                e.preventDefault();
+            });
+            */
+
+
+            var url = '@Url.Action("ProgramShiftDataHandler", "EmployeeManagement", null, Request.Url.Scheme)';
+
+            var columns = [
+                      { "data": "Id" },
+                      { "data": "ProgramShiftName" },
+                      { "data": "actions" }
+
+            ];
+            initServerSideTable('#pshift_table', url, columns, 100);//10, 25, 50, 100, 500, 1000, 1500
+            editProgramShift = initEditModal("#modals", '@Url.Action("UpdateProgramShift", "EmployeeManagement", null, Request.Url.Scheme)', "P-Shift");
+            deleteProgramShift = initDeleteModal("#modals", '@Url.Action("RemoveProgramShift", "EmployeeManagement", null, Request.Url.Scheme)', "P-Shift");
+        });
+</script>
+}

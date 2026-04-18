@@ -1,0 +1,287 @@
+﻿@{
+    ViewBag.Title = "Add Contractual Staff";
+}
+
+<style>
+    input:valid {
+  color: green;
+}
+input:invalid {
+  color: red;
+}
+    </style>
+
+<div class="row">
+    <div class="form-group col-md-3">
+        <h5 style="font-weight: bold;">Add Contractual Staff</h5>
+        @using (Html.BeginForm("addContractualStaff", "ManageEmployees", FormMethod.Post, new { id = "contractualStaff-form" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary()
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Employee Name</label>
+                    <input type="text" class="form-control " id="employee_name" name="employee_name" maxlength="50" required>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Employee Code</label>
+                    <input type="text" class="form-control " pattern="^[0-9]*$" id="employee_code" name="employee_code" maxlength="6" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Email</label>
+                    <input type="email" class="form-control " id="email" name="email" maxlength="50" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Address</label>
+                    <input type="text" class="form-control " id="address" name="address" maxlength="50">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Date of Joining</label>
+                    <input type="text" class="form-control datepicker" name="date_of_joining" style="background-color: #FFF" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Date of Leaving</label>
+                    <input type="text" class="form-control datepicker" name="date_of_leaving" style="background-color: #FFF">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Mobile No</label>
+                    <input type="text" pattern="^[0-9]*$" class="form-control " id="mobile_no" maxlength="11" name="mobile_no">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Company</label>
+                    <input type="text" class="form-control " id="company" name="company" maxlength="50" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Region</label>
+                    <input type="text" class="form-control " id="region" maxlength="50" name="region">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Location</label>
+                    <input type="text" class="form-control " id="location" maxlength="50" name="location">
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Group</label>
+                    <input type="text" class="form-control " id="grade" maxlength="50" name="grade">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Function</label>
+                    <input type="text" class="form-control " id="function" maxlength="50" name="function">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Designation</label>
+                    <input type="text" class="form-control " id="designation" maxlength="50" name="designation">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Department</label>
+                    <input type="text" class="form-control " id="department" maxlength="50" name="department">
+                </div>
+            </div>
+
+    <br><br>
+            <div class="row">
+                <div class="col-md-12" style="margin-top:5px">
+                    <button id="save" type="submit" value="Submit">Save Contractual Staff</button>
+                </div>
+            </div>
+
+        }
+        <br><br><br><br><br><br><br>
+    </div>
+
+    <div style="margin-bottom:5px" class="col-md-9">
+        <br><br>
+        <table id="employee-table" class="display cell-border" width="100%">
+            <thead>
+
+                <tr>
+                    <th>Employee Name</th>
+                    <th>Employee Code</th>
+                    <th>Company Name</th>
+                    <th>Department</th>
+                    <th>Email</th>
+                    <th>Designation</th>
+                    <th>Location</th>
+                    <th>Region</th>
+                </tr>
+
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button type="submit" id="btnExport" style="margin-top:5px">Export Grid Data</button>
+    </div>
+    @using (Html.BeginForm("DownloadCSVFile", "ManageEmployees", FormMethod.Post, new { id = "download-form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary()
+
+        <div class="col-md-4" style="margin-top:5px">
+            <button id="btnDownload" type="submit" value="Submit">Download File</button>
+        </div>
+
+    }
+
+
+    @using (Html.BeginForm("UploadFile", "ManageEmployees", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary()
+
+        <div class="row">
+            <div class="col-md-4">
+                <label class="btn btn-primary" for="my-file-selector" style="margin-left: 15px">
+                    <input id="my-file-selector" onchange="alertFilename()" type="file" name="file" value="alert" accept=".csv" style="display:none; ">
+                    Click to select file
+                </label>
+                <h3 class="label" style="font-size:medium; color:black" id="file-name"></h3>
+            </div>
+
+            <div class="col-md-4" style="margin-top:5px">
+                <button id="btnUpload" type="submit" value="Submit">Upload File</button>
+                
+                <label class="label" style="font-size:medium; font-style: italic; color:black"> @ViewBag.Message</label>
+                <label class="label" style="font-size:medium; font-style: italic; color:red"> @ViewBag.Message1</label>
+            </div>
+        </div>
+    }
+</div>
+
+
+
+@section JS {
+    <script type="text/javascript" src="@Href("~/Scripts/chosen.ajaxaddition.jquery.js")"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $('#accordion').accordion("option", "active", 1);
+            setActiveLink("Add Contractual Staff");
+            $(".datepicker").datepicker({ dateFormat: 'dd-mm-yy' });
+            //setActiveLink("Manual Attendance");
+            $(".chzn-select").chosen();
+            //  $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+            $("input[type=submit], button").button();
+
+            var url = '@Url.Action("EmployeeDataHandler", "ManageEmployees", null, Request.Url.Scheme)';
+
+            var columns = [
+                  { "data": "employee_name" },
+                  { "data": "employee_code" },
+                  { "data": "company" },
+                  { "data": "department" },
+                  { "data": "email" },
+                  { "data": "designation" },
+                  { "data": "location" },
+                  { "data": "region" }
+            ];
+            initServerSideTable('#employee-table', url, columns);
+        });
+
+        setupTableExportButton('#employee-table', 'ContractualStaff');
+        $('#contractualStaff-form').on("submit", function (e) {
+
+            if (!checkSubmit('#contractualStaff-form')) {
+                e.preventDefault();
+            }
+        });
+        function alertFilename() {
+            var thefile = document.getElementById('my-file-selector');
+            var name = thefile.value.split('fakepath');
+            console.log(name);
+            document.getElementById('file-name').innerHTML = name[1];
+        }
+        function checkSubmit(id) {
+
+            jDate = $(id).find('[name*="date_of_joining"]').val().split("-").reverse();
+            lDate = $(id).find('[name*="date_of_leaving"]').val().split("-").reverse();
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth() + 1; //January is 0!
+            var yyyy = today.getFullYear();
+
+            if (dd < 10) {
+                dd = '0' + dd
+            }
+
+            if (mm < 10) {
+                mm = '0' + mm
+            }
+
+            today = new Date(parseInt(yyyy) + '-' + parseInt(mm) + '-' + parseInt(dd));
+            
+            var numbers = /^[0-9]+$/;
+            empcode = $(id).find('[name*="employee_code"]').val();
+
+            jDate = new Date(parseInt(jDate[0]), parseInt(jDate[1]) - 1, parseInt(jDate[2]));
+            lDate = new Date(parseInt(lDate[0]), parseInt(lDate[1]) - 1, parseInt(lDate[2]));
+            
+            if (jDate >= lDate) {
+                alert("Joining Date must be before of Leaving Date");
+               // console.log("todays attendance :" + today + "Date of leaving :" + lDate);
+                return false;
+            }
+            else
+            {
+                
+                if (today >= lDate) {
+                    alert("Leaving date must be greater than today's date");
+                    return false;
+                }
+                var number = parseInt(empcode);
+
+                if (isNaN(number)) {
+                    alert('Please input numeric characters only');
+                    return false;
+                }
+                else {
+                   
+                    return true;
+
+                }
+
+            }
+
+
+
+
+
+            return true;
+        }
+
+    </script>
+}

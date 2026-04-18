@@ -1,0 +1,214 @@
+﻿@{
+    ViewBag.Title = "TRMS - HR Dashboard";
+    Layout = "~/Areas/HR/Views/Shared/_Layout.cshtml";
+}
+
+@model ViewModels.DashboardData
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">Welcome <span class="text-danger">'HR'</span>! [Login ID: <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & Name: <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span>]</h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/HR">HR</a></li>
+                    <li class="breadcrumb-item active">HR Dashboard</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h4 class="text-right"><i class="mdi mdi-account-box"></i>HR Dashboard</h4>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="card-box">
+                                <h1 class="m-t-0 header-title">Upcoming Holidays</h1>
+                                <table class="table dataTable dt-responsive nowra">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Holiday Title</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.dashboardHolidays != null && Model.dashboardHolidays.Count > 0)
+                                        {
+                                            int counter = 0, a = 0;
+                                            string className = "table-success";
+                                            foreach (var i in Model.dashboardHolidays)
+                                            {
+                                                if ((counter % 2) == 0)
+                                                {
+                                                    if (a == 0)
+                                                    {
+                                                        className = "table-warning";
+                                                        a++;
+                                                    }
+                                                    else if (a == 1)
+                                                    {
+                                                        className = "table-success";
+                                                        a++;
+                                                    }
+                                                    else
+                                                    {
+                                                        className = "table-info";
+                                                        a = 0;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    className = "";
+                                                }
+
+                                        <tr class="@className">
+                                            <td>@i.holiday_date</td>
+                                            <td>@i.holiday_title</td>
+                                        </tr>
+
+                                                counter++;
+                                            }
+                                        }
+                                        else
+                                        {
+                                        <tr class="">
+                                            <td colspan="2" class="text-danger">No Data Found</td>
+                                        </tr>
+                                        }
+
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <!-- end row -->
+                    <!-- table row -->
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="card-box">
+                                <h1 class="m-t-0 header-title">Events</h1>
+
+
+                                <!--<div style="overflow-y: scroll; height: 250px;">-->
+
+                                <table class="table dataTable dt-responsive nowrap">
+                                    <thead>
+                                        <tr>
+                                            <th>Employee Code</th>
+                                            <th>Employee Name</th>
+                                            <th>Day/Date</th>
+                                            <th>Event Type</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        @if (Model.dashboardEvents != null && Model.dashboardEvents.Count > 0)
+                                        {
+                                            int counter = 0, a = 0;
+                                            string classTitle = "", className = "table-success";
+
+                                            foreach (var i in Model.dashboardEvents)
+                                            {
+                                                if ((counter % 2) == 0)
+                                                {
+                                                    if (a == 0)
+                                                    {
+                                                        className = "table-success";
+                                                        a++;
+                                                    }
+                                                    else if (a == 1)
+                                                    {
+                                                        className = "table-info";
+                                                        a++;
+                                                    }
+                                                    else
+                                                    {
+                                                        className = "table-warning";
+                                                        a = 0;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    className = "";
+                                                }
+
+                                                if (i.event_title.Contains("Birthday"))
+                                                {
+                                                    classTitle = "text-danger h4";
+                                                }
+                                                else
+                                                {
+                                                    classTitle = "";
+                                                }
+
+                                                <tr class="@className">
+                                                    <th scope="row">@i.employee_code</th>
+                                                    <td>@i.employee_name</td>
+                                                    <td>@i.event_date</td>
+                                                    <td class="@classTitle">@i.event_title</td>
+                                                </tr>
+
+                                                counter++;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr class="">
+                                                <td colspan="4" class="text-danger">No Data Found</td>
+                                            </tr>
+                                        }
+
+                                    </tbody>
+                                </table>
+                                <!-- </div>-->
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End content -->
+@section JS {
+
+    <script type="text/javascript">
+        jQuery(document).ready(function ($) {
+
+
+        });
+
+
+
+
+    </script>
+
+}
+

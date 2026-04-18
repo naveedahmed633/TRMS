@@ -1,0 +1,149 @@
+﻿@{
+    Layout = null;
+
+    string EMP_STD_LEC_LoginUserType = "";
+    if (MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeFunctionSLSID.ToString().Contains("student"))
+    {
+        EMP_STD_LEC_LoginUserType = "STD";
+    }
+    else if (MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeFunctionSLSID.ToString().Contains("lecturer"))
+    {
+        EMP_STD_LEC_LoginUserType = "LEC";
+    }
+    else
+    {
+        EMP_STD_LEC_LoginUserType = "EMP";
+    }
+}
+
+@model BLL.PdfReports.MonthlyTimeSheetData
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <link href="~/favicon.png" rel="shortcut icon" type="image/x-icon" />
+
+    <!-- Section CSS -->
+
+
+
+    <link href="@Href("~/Content/ui-darkness/jquery-ui-1.9.2.custom.css")" rel="stylesheet"> <!-- JQuery UI theme -->
+    <link href="@Href("~/Content/datatables.min.css")" rel="stylesheet" /> <!-- CSS for DataTables -->
+    <link href="@Href("~/Content/Site.css")" rel="stylesheet"> <!-- custom Stylesheet -->
+    <style>
+        .leftcol {
+            padding: 1em;
+        }
+
+        .verticalLine {
+            background-color: #000;
+            height: 2px;
+            width: 100%;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 2px;
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body style="background-color:#ffffff; font-family:Arial;">
+
+
+
+    <div id="gen-rep">
+        <div class="leftcol">
+            <div class="row">
+                <div class="col-md-6" style="float:left">
+                    <img src="@Href("~/images/bams-logo-pdf.png")" alt="logo" />
+                </div>
+                <div class="col-md-6" style="margin-left:90%">
+                    <p>Date: @DateTime.Now.ToShortDateString()</p>
+                    <p>Time: @DateTime.Now.ToString("hh:mm tt")</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="verticalLine"></div>
+
+        <div class="leftcol" style="font-weight:bold">
+            <p>Name: @Model.employeeName</p>
+            <p>Employee Code: @Model.employeeCode</p>
+            <p>Year: @Model.year</p>
+            <p>Month: @Model.month</p>
+        </div>
+
+        <table id="attreport_table" class="display cell-border" style="width:100%">
+            <thead style="background-color:#cecece">
+
+                <tr>
+                    <th>Date</th>
+                    <th>Time In</th>
+                    <th>Remarks IN</th>
+                    <th>Time Out</th>
+                    <th>Remarks OUT</th>
+                    <th>Final Remarks</th>
+                </tr>
+
+            </thead>
+            <tbody>
+
+                @foreach (BLL.PdfReports.MonthlyTimeSheetLog log in @Model.logs)
+                {
+                    {
+                        log.finalRemarks = log.finalRemarks + ((log.hasManualAttendance) ? "*" : "");
+                    }
+                    <tr>
+                        <td>@log.date</td>
+                        <td>@log.timeIn</td>
+                        <td>@log.remarksIn</td>
+                        <td>@log.timeOut</td>
+                        <td>@log.remarksOut</td>
+                        <td>@log.finalRemarks</td>
+                    </tr>
+                }
+
+
+            </tbody>
+        </table>
+
+        <div class="row">
+            <div class="col-md-4">
+                <h4>Summary:</h4>
+                <table style="width:100%">
+                    <tr><th>Present:</th><td>@Model.totalPresent</td></tr>
+                    <tr><th>Late:</th><td>@Model.totalLate</td></tr>
+                    <tr><th>Absent:</th><td>@Model.totalAbsent</td></tr>
+                    <tr><th>Early Out:</th><td>@Model.totalEarlyOut</td></tr>
+                    <tr><th>Total Days:</th><td>@Model.totalDays</td></tr>
+                </table>
+            </div>
+        </div>
+
+
+        <br>
+        <p>This is a computer generated report, signature is not required.</p>
+        <div class="verticalLine"></div>
+    </div>
+
+
+
+
+
+    @{// SECTION for Javascript
+    // Keeping JS as the end of the page decreases apparent load time.
+    }
+    <script src="@Url.Content("/Scripts/jquery-1.10.2.min.js")" type="text/javascript"></script> <!-- Jquery -->
+    <script src="@Url.Content("/Scripts/jquery-ui-1.9.2.custom.js")" type="text/javascript"></script> <!-- Jquery UI Theme -->
+    <script src="@Url.Content("/Scripts/datatables.min.js")" type="text/javascript"></script> <!-- DataTables JS -->
+
+
+</body>
+
+</html>

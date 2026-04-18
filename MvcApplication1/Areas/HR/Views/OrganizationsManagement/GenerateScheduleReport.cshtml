@@ -1,0 +1,515 @@
+﻿@{
+    ViewBag.Title = "TRMS - Generate Schedule Report";
+    Layout = "~/Areas/HR/Views/Shared/_Layout.cshtml";
+}
+
+@model ViewModels.OrganizationCampusRoomCourseScheduleView
+
+<style>
+    .monthPicker {
+        z-index: 1000;
+    }
+</style>
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">Welcome <span class="text-danger">'HR'</span>! [Login ID: <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & Name: <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span>]</h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/HR">HR</a></li>
+                    <li class="breadcrumb-item active">Student Portal</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="ti-files"></i> Generate Schedule Report </h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+
+                    @using (Html.BeginForm("GenerateScheduleReport", "OrganizationsManagement", FormMethod.Post, new { id = "schedule-report-form" }))
+                    {
+                        <div class="row">
+                            <div class="col-5">
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label class="control-label">From Date <span class="text-danger font-14">*</span></label>
+                                        <input id="schedule-from-date" type="text" name="from_date" class="form-control datepicker" autocomplete="off" required />
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label class="control-label">To Date <span class="text-danger font-14">*</span></label>
+                                        <input id="schedule-to-date" type="text" name="to_date" class="form-control datepicker" autocomplete="off" required />
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label class="control-label">Shift</label>
+                                        <select id="shift-id" name="shift_id" class="form-control" required>
+                                            @if (Model.list_shift != null)
+                                            {
+                                                foreach (ViewModels.OrganizationProgramShiftView item in Model.list_shift)
+                                                {
+                                                    <option value="@item.Id">@item.ProgramShiftName</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="col-1">
+
+
+
+
+
+                            </div>
+
+                            <div class="col-5">
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label class="control-label">Campus</label>
+                                        <select id="schedule-campus-id" name="campus_id" class="form-control" required>
+                                            @if (Model.list_campus != null)
+                                            {
+                                                foreach (ViewModels.OrganizationCampusView item in Model.list_campus)
+                                                {
+                                                    <option value="@item.Id">@item.CampusCode</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                                <div class="row">
+                                    <div class="col-12 m-t-15">
+                                        <label class="control-label">Program</label>
+                                        <select id="program-id" name="program_id" class="form-control" required>
+                                            @if (Model.list_program != null)
+                                            {
+                                                foreach (ViewModels.OrganizationProgramView item in Model.list_program)
+                                                {
+                                                    <option value="@item.Id">@item.ProgramCode</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12 m-t-15">
+                                        <label class="control-label">Room</label>
+                                        <select id="schedule-room-id" name="room_id" class="form-control" required>
+                                            @if (Model.list_room != null)
+                                            {
+                                                foreach (ViewModels.OrganizationCampusBuildingRoomView item in Model.list_room)
+                                                {
+                                                    <option value="@item.Id">@item.RoomCode</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                            <div class="col-1">
+
+
+
+
+
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 text-danger">
+                                @Html.AntiForgeryToken()
+                                @Html.ValidationSummary()
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="submit" id="search-consolidated-report" onclick="clearr();" class="btn btn-primary waves-effect waves-light m-t-10">Download PDF</button>
+                                <button type="button" class="btn btn-primary waves-effect waves-light m-t-10" onclick="redirectToPage();">Reset</button>
+                                <span class="text-danger">
+                                    @if (ViewData["PDFNoDataFound"] != null && ViewData["PDFNoDataFound"].ToString() != "")
+                                    {
+                                        @ViewData["PDFNoDataFound"]
+                                    }
+                                </span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- End content -->
+<!-- Custom Modal -->
+<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="mySmallModalLabel">Message Alert</h4>
+            </div>
+            <div class="modal-body">
+                <span id="alert_message"></span>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+@section JS {
+
+    <script type="text/javascript" src="@Href("~/Scripts/chosen.ajaxaddition.jquery.js")"></script>
+    @*<script type="text/javascript" src="@Href("~/Scripts/GenerateReports.js")"></script>*@
+    @*<script type="text/javascript" src="@Href("~/Scripts/monthpicker.js")"></script>*@
+
+
+    <script>
+
+        function redirectToPage() {
+            window.location.reload();
+        }
+
+        // -------------------- added by IR ---------------------
+
+        //$("#btnShow").click(function () {
+        //    if ($("#from").val().length == 0 || $("#to").val().length == 0) {
+        //        alert('All fields are required');
+        //    }
+        //    else {
+        //        alert('Selected Month Range :' + $("#from").val() + ' to ' + $("#to").val());
+        //    }
+        //});
+
+
+        function validateFormInfo() {
+
+            if ($('#schedule-room-id').val() == null || $('#schedule-room-id').val() == "") {
+
+                $('#alert_message').text("Please select an Employee Id");
+                $('.bs-example-modal-sm').modal('show');
+
+                //alert('Please select an Employee Id');
+                //$('#schedule-room-id').focus();
+
+                return false;
+            }
+            if ($('#schedule-from-date').val() == "" || $('#schedule-from-date').val() == null) {
+
+                $('#alert_message').text("Please select a Month");
+                $('.bs-example-modal-sm').modal('show');
+
+                //alert('Please select a Month.');
+                return false;
+            }
+
+            $('#pdf-no-data-found').val("");
+            $('#pdf-no-data-found').text("");
+
+            $('#export_wait').show();
+            myFunction();
+
+        }
+
+        $("#schedule-report-form").submit(function (e) {
+            document.getElementById("generate-monthly-time-sheet").disabled = true;
+            return true;
+        });
+
+        function clearr() {
+            $('input[type="search"]').focus();
+            $('input[type="search"]').val("");
+
+            if ($('#schedule-room-id').val() != null) {
+                $('#schedule_report_table').DataTable().search("");
+                $('#schedule_report_table').DataTable().draw();
+            }
+
+            $('input[type="search"]').blur();
+
+        }
+
+        function HideMessage() { setTimeout(function () { $('#pdf-no-data-found').hide(); }, 5000); }
+
+
+        function myFunction() {
+            setTimeout(function () { $('#export_wait').hide(); document.getElementById("generate-monthly-time-sheet").disabled = false; }, 1500);
+        }
+
+        function ExortExcleBar() {
+            $('#export_wait2').show();
+            document.getElementById("btnExport").disabled = true;
+            HideBarExcle();
+            var ss = $("tr").children("td:first").text();
+            if (ss == "No data available in table" || ss == "" || ss == " ") { document.getElementById("demo").innerHTML = "No Data Found."; }
+            else { DownloadExcleCsv(); }
+        }
+
+        function DownloadExcleCsv() { setupTableExportButton('#schedule_report_table', 'ScheduleReport'); }
+
+        function HideBarExcle() {
+            setTimeout(function () { $('#export_wait2').hide(); document.getElementById("btnExport").disabled = false; document.getElementById("demo").innerHTML = ""; }, 1500);
+        }
+
+        function submitcheck() {
+
+            var fDate = $('[name="month"]').val();
+            var tDate = $('[name="month"]').val();
+
+            var lastDay = GetLastDayOfMonth(fDate.split("-")[1], fDate.split("-")[0]);
+
+            fDate = fDate.replace("-", "-01-");
+            tDate = tDate.replace("-", "-" + lastDay + "-");
+
+            //console.log('1>> ' + fDate + ' - ' + tDate);
+
+            fDate = fDate.split("-").reverse()
+            tDate = tDate.split("-").reverse();
+
+            //console.log('2>> ' + fDate + ' - ' + tDate);
+
+            fDate = new Date(fDate[0] + "-" + fDate[1] + "-" + fDate[2]);
+            tDate = new Date(tDate[0] + "-" + tDate[1] + "-" + tDate[2]);
+
+            //console.log('3>> ' + fDate + ' - ' + tDate);
+
+            //return false;
+
+            if (tDate < fDate) {
+
+                $('#alert_message').text("The 'To Date' should be greater than 'From Date'.");
+                $('.bs-example-modal-sm').modal('show');
+
+                //alert("The 'To Date' should be greater than 'From Date'.");
+                return false;
+            }
+
+            searchReport();
+            return true;
+
+        }
+
+        function GetLastDayOfMonth(m, y) {
+
+            var lastDay = 28;
+
+            if (m == "04" || m == "06" || m == "09" || m == "11") {
+                lastDay = 30;
+            }
+            else if (m == "02") {
+                if ((y % 4) == 0) {
+                    lastDay = 29;
+                }
+                else {
+                    lastDay = 28;
+                }
+            }
+            else {
+                lastDay = 31;
+            }
+
+            return lastDay;
+        }
+
+        function searchReport() {
+            // get the entered string
+            var toSearch = $('schedule_report_table_filter input').val();
+
+            $('#schedule_report_table').DataTable().search(toSearch);
+            $('#schedule_report_table').DataTable().draw();
+        }
+
+
+        function setTypeOfReportDropDown() {
+            $('#type-of-report').chosen();
+            $('#type-of-report').on("change", function () {
+                switch ($('#type-of-report').val()) {
+                    case "monthly-time-sheet":
+
+                        $('#monthly-time-sheet').show();
+                        $('#summary-report').hide();
+                        $('#monthly-attendance-register').hide();
+
+                        break;
+                    case "summary-report":
+
+                        $('#monthly-time-sheet').hide();
+                        $('#summary-report').show();
+                        $('#monthly-attendance-register').hide();
+
+                        break;
+                    case "monthly-attendance-register":
+
+                        $('#monthly-time-sheet').hide();
+                        $('#summary-report').hide();
+                        $('#monthly-attendance-register').show();
+
+                        break;
+                }
+            });
+        }
+
+
+        @*function setEmployeeDropDowns() {
+            $('#schedule-room-id').ajaxChosen({
+                dataType: 'json',
+                type: 'POST',
+                url: '@Url.Action("ChangeEmployeePasswordDataHandler", "EmployeeManagement", null, Request.Url.Scheme)'
+            }, {
+                loadingImg: '@Href("~/Content/ChosenAutoComplete/loading.gif")'
+            });
+        }*@
+
+        $(document).ready(function () {
+            var empCode= @Html.Raw(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId);
+
+            $.ajax({
+                url: '/HR/HR/VerfiyDataHandler',
+                type: "POST",
+                data: { empId: empCode },
+                dataType: "json",
+
+                success: function (data) {
+
+                    if (data.HRExportGridData == false) {
+                        $("#btnExport").hide();
+                    }
+                    if (data.HRExportPDF == false) {
+                        $("#generate-monthly-time-sheet").hide();
+                    }
+
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+
+
+            //$('#accordion').accordion("option", "active", 5);
+            //$("input[type=submit], button").button();
+            //$(".chzn-select").chosen();
+            //$(".datepicker").datepicker();
+            //setActiveLink("Monthly Time Sheet");
+            HideMessage();
+            ////setEmployeeDropDowns();
+
+
+            $(".datepicker").datepicker({ dateFormat: 'dd-mm-yy' });
+
+            $('.hasDatepicker').keydown(function (e) {
+                var unicode = e.keyCode ? e.keyCode : e.charCode;
+                if (unicode != 13 && unicode != 8 && unicode != 9) { e.preventDefault(); }
+            });
+
+            $('.hasDatepicker').keydown(function (e) {
+                var unicode = e.keyCode ? e.keyCode : e.charCode;
+                if (unicode == 8) { e.preventDefault(); e.stopPropagation(); }
+            });
+            setTypeOfReportDropDown();
+
+            //DataTables.NET
+            //search-consolidated-report
+            //generate-monthly-time-sheet
+
+            //var fewSeconds = 5;
+            //$('#search-consolidated-report').click(function () {
+            //    // Ajax request
+            //    var btn = $(this);
+            //    btn.prop('disabled', true); //btn.hide();
+            //    setTimeout(function () {
+            //        btn.prop('disabled', false); //btn.show();
+            //    }, fewSeconds * 1000);
+
+            //});
+
+
+            //$('#search-consolidated-report').button();
+            $("#search-consolidated-report").click(function (e) {
+
+                //$('input[type="search"]').focus();
+                //$('input[type="search"]').val("");
+
+                //alert('values >> ' + $('#schedule-room-id').val() + ' >> ' + $('#schedule-from-date').val());
+
+
+
+                //<select id="schedule-room-id"
+
+                //        <input id="schedule-from-date" type="text" name="month" class="form-control monthPicker" required />
+
+
+
+
+                if ($('#schedule-from-date').val() == "" || $('#schedule-from-date').val() == null) {
+
+                    $('#alert_message').text("Please select a Month");
+                    $('.bs-example-modal-sm').modal('show');
+
+                    //alert('Please select a Month.');
+                    return false;
+                }
+
+                if ($('#schedule-room-id').val() == "" || $('#schedule-room-id').val() == null) {
+
+                    $('#alert_message').text("Please select an Employee Id");
+                    $('.bs-example-modal-sm').modal('show');
+
+                    //alert('Please select an Employee Id.');
+                    return false;
+                }
+
+                $('#pdf-no-data-found').val("");
+                $('#pdf-no-data-found').text("");
+
+                submitcheck();
+                //  serializeAndSend();
+                e.preventDefault();
+
+                //$('input[type="search"]').blur();
+
+            });
+
+
+
+
+        });
+
+    </script>
+}

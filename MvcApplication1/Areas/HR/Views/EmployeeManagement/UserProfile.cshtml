@@ -1,0 +1,1126 @@
+﻿@{
+    ViewBag.Title = "TRMS - User Profile";
+    Layout = "~/Areas/HR/Views/Shared/_Layout.cshtml";
+}
+
+@model MvcApplication1.Areas.HR.Controllers.User_ProfileData
+
+@{
+    //Titles - Leave Types
+    string TitleLeaves = "", TitleLeave01 = "", TitleLeave02 = "", TitleLeave03 = "", TitleLeave04 = "", TitleLeave05 = "", TitleLeave06 = "", TitleLeave07 = "", TitleLeave08 = "";
+    string LTCS = "", TitleLeave09 = "", TitleLeave10 = "", TitleLeave11 = "", TitleLeave12 = "", TitleLeave13 = "", TitleLeave14 = "", TitleLeave15 = "";
+
+    bool LT01IsActive = false, LT02IsActive = false, LT03IsActive = false, LT04IsActive = false, LT05IsActive = false, LT06IsActive = false, LT07IsActive = false, LT08IsActive = false;
+    bool LT09IsActive = false, LT10IsActive = false, LT11IsActive = false, LT12IsActive = false, LT13IsActive = false, LT14IsActive = false, LT15IsActive = false;
+
+    int LT01DCount = 0, LT02DCount = 0, LT03DCount = 0, LT04DCount = 0, LT05DCount = 0, LT06DCount = 0, LT07DCount = 0, LT08DCount = 0;
+    int LT09DCount = 0, LT10DCount = 0, LT11DCount = 0, LT12DCount = 0, LT13DCount = 0, LT14DCount = 0, LT15DCount = 0;
+
+    int LT01MCount = 0, LT02MCount = 0, LT03MCount = 0, LT04MCount = 0, LT05MCount = 0, LT06MCount = 0, LT07MCount = 0, LT08MCount = 0;
+    int LT09MCount = 0, LT10MCount = 0, LT11MCount = 0, LT12MCount = 0, LT13MCount = 0, LT14MCount = 0, LT15MCount = 0;
+
+    BLL.PdfReports.LeavesTypesTitles leavesTitles = new BLL.PdfReports.LeavesTypesTitles();
+    TitleLeaves = leavesTitles.getLeavesTypesTitles();
+    if (TitleLeaves != null && TitleLeaves.Contains(','))
+    {
+        string[] strSplit = TitleLeaves.Split(',');
+        if (strSplit != null && strSplit.Length > 0)
+        {
+            TitleLeave01 = strSplit[0].ToString(); TitleLeave02 = strSplit[1].ToString(); TitleLeave03 = strSplit[2].ToString(); TitleLeave04 = strSplit[3].ToString();
+            TitleLeave05 = strSplit[4].ToString(); TitleLeave06 = strSplit[5].ToString(); TitleLeave07 = strSplit[6].ToString(); TitleLeave08 = strSplit[7].ToString();
+            TitleLeave09 = strSplit[8].ToString(); TitleLeave10 = strSplit[9].ToString(); TitleLeave11 = strSplit[10].ToString(); TitleLeave12 = strSplit[11].ToString();
+            TitleLeave13 = strSplit[12].ToString(); TitleLeave14 = strSplit[13].ToString(); TitleLeave15 = strSplit[14].ToString();
+        }
+    }
+    else
+    {
+        TitleLeave01 = "Sick"; TitleLeave02 = "Casual"; TitleLeave03 = "Annual"; TitleLeave04 = "Other";
+        TitleLeave05 = "Tour"; TitleLeave06 = "Visit"; TitleLeave07 = "Meeting"; TitleLeave08 = "Maternity";
+        TitleLeave09 = "A"; TitleLeave10 = "B"; TitleLeave11 = "C"; TitleLeave12 = "D";
+        TitleLeave13 = "E"; TitleLeave14 = "F"; TitleLeave15 = "G";
+    }
+
+    //BLL.PdfReports.LeavesTypesTitles leavesTitles = new BLL.PdfReports.LeavesTypesTitles();
+    LTCS = leavesTitles.getLeavesTypesCountsStatus();
+    if (LTCS != null && LTCS.Contains(','))
+    {
+        string[] strSplit = LTCS.Split(',');
+        if (strSplit != null && strSplit.Length > 0)
+        {
+            //LT01DCount = int.Parse(strSplit[0].Split('-')[0].ToString()); LT02DCount = int.Parse(strSplit[1].Split('-')[0].ToString()); LT03DCount = int.Parse(strSplit[0].Split('-')[0].ToString()); LT04DCount = int.Parse(strSplit[3].Split('-')[0].ToString());
+            //LT05DCount = int.Parse(strSplit[4].Split('-')[0].ToString()); LT06DCount = int.Parse(strSplit[5].Split('-')[0].ToString()); LT07DCount = int.Parse(strSplit[6].Split('-')[0].ToString()); LT08DCount = int.Parse(strSplit[7].Split('-')[0].ToString());
+            //LT09DCount = int.Parse(strSplit[8].Split('-')[0].ToString()); LT10DCount = int.Parse(strSplit[9].Split('-')[0].ToString()); LT11DCount = int.Parse(strSplit[10].Split('-')[0].ToString()); LT12DCount = int.Parse(strSplit[11].Split('-')[0].ToString());
+            //LT13DCount = int.Parse(strSplit[12].Split('-')[0].ToString()); LT14DCount = int.Parse(strSplit[13].Split('-')[0].ToString()); LT15DCount = int.Parse(strSplit[14].Split('-')[0].ToString());
+
+            LT01MCount = int.Parse(strSplit[0].Split('-')[1].ToString()); LT02MCount = int.Parse(strSplit[1].Split('-')[1].ToString()); LT03MCount = int.Parse(strSplit[1].Split('-')[1].ToString()); LT04MCount = int.Parse(strSplit[3].Split('-')[1].ToString());
+            LT05MCount = int.Parse(strSplit[4].Split('-')[1].ToString()); LT06MCount = int.Parse(strSplit[5].Split('-')[1].ToString()); LT07MCount = int.Parse(strSplit[6].Split('-')[1].ToString()); LT08MCount = int.Parse(strSplit[7].Split('-')[1].ToString());
+            LT09MCount = int.Parse(strSplit[8].Split('-')[1].ToString()); LT10MCount = int.Parse(strSplit[9].Split('-')[1].ToString()); LT11MCount = int.Parse(strSplit[10].Split('-')[1].ToString()); LT12MCount = int.Parse(strSplit[11].Split('-')[1].ToString());
+            LT13MCount = int.Parse(strSplit[12].Split('-')[1].ToString()); LT14MCount = int.Parse(strSplit[13].Split('-')[1].ToString()); LT15MCount = int.Parse(strSplit[14].Split('-')[1].ToString());
+
+            LT01IsActive = strSplit[0].Split('-')[2].ToString() == "True" ? true : false; LT02IsActive = strSplit[1].Split('-')[2].ToString() == "True" ? true : false; LT03IsActive = strSplit[2].Split('-')[2].ToString() == "True" ? true : false; LT04IsActive = strSplit[3].Split('-')[2].ToString() == "True" ? true : false;
+            LT05IsActive = strSplit[4].Split('-')[2].ToString() == "True" ? true : false; LT06IsActive = strSplit[5].Split('-')[2].ToString() == "True" ? true : false; LT07IsActive = strSplit[6].Split('-')[2].ToString() == "True" ? true : false; LT08IsActive = strSplit[7].Split('-')[2].ToString() == "True" ? true : false;
+            LT09IsActive = strSplit[8].Split('-')[2].ToString() == "True" ? true : false; LT10IsActive = strSplit[9].Split('-')[2].ToString() == "True" ? true : false; LT11IsActive = strSplit[10].Split('-')[2].ToString() == "True" ? true : false; LT12IsActive = strSplit[11].Split('-')[2].ToString() == "True" ? true : false;
+            LT13IsActive = strSplit[12].Split('-')[2].ToString() == "True" ? true : false; LT14IsActive = strSplit[13].Split('-')[2].ToString() == "True" ? true : false; LT15IsActive = strSplit[14].Split('-')[2].ToString() == "True" ? true : false;
+        }
+    }
+}
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">Welcome <span class="text-danger">'HR'</span>! [Login ID: <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & Name: <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span>]</h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/HR">HR</a></li>
+                    <li class="breadcrumb-item active">Employee Portal</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-xl-3 col-lg-4">
+            <div class="text-center card-box">
+                <div class="member-card">
+                    <div class="thumb-xl member-thumb m-b-10 center-block">
+                        @if (Model.emp_vm.photograph != null && Model.emp_vm.photograph.ToString() != "")
+                        {
+                            <img src="/Content/UserDocs/@Model.emp_vm.photograph" class="rounded-circle img-thumbnail" alt="profile-image">
+                        }
+                        else
+                        {
+                            <img src="/images/users/user.png" class="rounded-circle img-thumbnail" alt="profile-image">
+                        }
+
+                    </div>
+
+                    <div class="">
+                        <h3 class="m-b-5">@Model.emp_vm.first_name @Model.emp_vm.last_name</h3>
+                        @if (Model.emp_vm.access_group_id == 1)
+                        {
+                            <p class="text-muted h4">User Type: HR</p>
+                        }
+                        else if (Model.emp_vm.access_group_id == 2)
+                        {
+                            <p class="text-muted h4">User Type: LM</p>
+                        }
+                        else if (Model.emp_vm.access_group_id == 3)
+                        {
+                            <p class="text-muted h4">User Type: EMP</p>
+                        }
+                        else if (Model.emp_vm.access_group_id == 4)
+                        {
+                            <p class="text-muted h4">User Type: SLM</p>
+                        }
+                        else
+                        {
+                            <p class="text-muted h4">User Type: N/A</p>
+                        }
+
+                    </div>
+
+                    <!--<button type="button" class="btn btn-success btn-sm w-sm waves-effect m-t-10 waves-light">Print Profile</button>
+                    <button type="button" class="btn btn-danger btn-sm w-sm waves-effect m-t-10 waves-light" style="display: none;">Deactivate</button>-->
+
+
+                    <div class="text-left m-t-40">
+                        <p class="text-muted font-13"><strong>First Name:</strong> <span class="m-l-15">@Model.emp_vm.first_name</span></p>
+
+                        <p class="text-muted font-13"><strong>Last Name:</strong> <span class="m-l-15">@Model.emp_vm.last_name</span></p>
+
+                        <p class="text-muted font-13"><strong>Doc. No.:</strong> <span class="m-l-15">@Model.emp_vm.cnic_no</span></p>
+
+                        <p class="text-muted font-13"><strong>Mobile:</strong><span class="m-l-15">@Model.emp_vm.mobile_no</span></p>
+
+                        <p class="text-muted font-13"><strong>Email:</strong> <span class="m-l-15">@Model.emp_vm.email</span></p>
+
+                    </div>
+
+                    <ul class="social-links list-inline m-t-30">
+                        <li class="list-inline-item">
+                            <a title="" data-placement="top" data-toggle="tooltip" class="tooltips" href="" data-original-title="Facebook"><i class="fa fa-facebook"></i></a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a title="" data-placement="top" data-toggle="tooltip" class="tooltips" href="" data-original-title="Twitter"><i class="fa fa-twitter"></i></a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a title="" data-placement="top" data-toggle="tooltip" class="tooltips" href="" data-original-title="Skype"><i class="fa fa-skype"></i></a>
+                        </li>
+                    </ul>
+
+                </div>
+
+            </div> <!-- end card-box -->
+
+            <div class="card-box">
+                <h4 class="m-t-0 m-b-20 header-title">Skills</h4>
+
+                <div class="p-b-10">
+                    <p id="Skill_Sets"></p>
+
+                </div>
+            </div>
+
+            <div class="card-box d-none">
+                <h4 class="m-t-0 m-b-20 header-title">Leaves Allocated</h4>
+
+                <div class="p-b-10">
+
+                    <div class="progress progress-sm">
+                        <label for="AlL">@TitleLeave01 Leaves Allocated: </label>
+                        <label class="text-primary">@Model.emp_vm.sick_leaves</label>
+                    </div>
+
+                    <div class="progress progress-sm">
+                        <label for="AlL">@TitleLeave02 Leaves Allocated: </label>
+                        <label class="text-primary">@Model.emp_vm.casual_leaves</label>
+                    </div>
+
+                    <div class="progress progress-sm mb-0">
+                        <label for="AlL">@TitleLeave03 Leaves Allocated: </label>
+                        <label class="text-primary">@Model.emp_vm.annual_leaves</label>
+                    </div>
+
+                    <div class="progress progress-sm mb-0">
+                        <label for="AlL">@TitleLeave04 Leaves Allocated: </label>
+                        <label class="text-primary">@Model.emp_vm.other_leaves</label>
+                    </div>
+
+                    <div class="progress progress-sm">
+                        <label for="AlL">@TitleLeave05 Leaves Allocated: </label>
+                        <label class="text-primary">@Model.emp_vm.leave_type01</label>
+                    </div>
+
+                    <div class="progress progress-sm">
+                        <label for="AlL">@TitleLeave06 Leaves Allocated: </label>
+                        <label class="text-primary">@Model.emp_vm.leave_type02</label>
+                    </div>
+
+                    <div class="progress progress-sm mb-0">
+                        <label for="AlL">@TitleLeave07 Leaves Allocated: </label>
+                        <label class="text-primary">@Model.emp_vm.leave_type03</label>
+                    </div>
+
+                    <div class="progress progress-sm mb-0">
+                        <label for="AlL">@TitleLeave08 Leaves Allocated: </label>
+                        <label class="text-primary">@Model.emp_vm.leave_type04</label>
+                    </div>
+
+                    <div class="progress progress-sm">
+                        <label for="AlL">@TitleLeave09 Leaves Allocated: </label>
+                        <label class="text-primary">@Model.emp_vm.leave_type05</label>
+                    </div>
+
+                    <div class="progress progress-sm">
+                        <label for="AlL">@TitleLeave10 Leaves Allocated: </label>
+                        <label class="text-primary">@Model.emp_vm.leave_type06</label>
+                    </div>
+
+                    <div class="progress progress-sm mb-0">
+                        <label for="AlL">@TitleLeave11 Leaves Allocated: </label>
+                        <label class="text-primary">@Model.emp_vm.leave_type07</label>
+                    </div>
+
+                    <div class="progress progress-sm mb-0">
+                        <label for="AlL">@TitleLeave12 Leaves Allocated: </label>
+                        <label class="text-primary">@Model.emp_vm.leave_type08</label>
+                    </div>
+
+                    <div class="progress progress-sm">
+                        <label for="AlL">@TitleLeave13 Leaves Allocated: </label>
+                        <label class="text-primary">@Model.emp_vm.leave_type09</label>
+                    </div>
+
+                    <div class="progress progress-sm">
+                        <label for="AlL">@TitleLeave14 Leaves Allocated: </label>
+                        <label class="text-primary">@Model.emp_vm.leave_type10</label>
+                    </div>
+
+                    <div class="progress progress-sm mb-0">
+                        <label for="AlL">@TitleLeave15 Leaves Allocated: </label>
+                        <label class="text-primary">@Model.emp_vm.leave_type11</label>
+                    </div>
+
+                </div>
+            </div>
+
+        </div> <!-- end col -->
+
+
+        <div class="col-lg-8 col-xl-9">
+            <div class="">
+                <div class="card-box">
+                    <ul class="nav nav-tabs tabs-bordered">
+                        <li class="nav-item">
+                            <a href="#settings" data-toggle="tab" aria-expanded="true" class="nav-link active">
+                                Personal Info
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#orginfo" data-toggle="tab" aria-expanded="false" class="nav-link">
+                                Org Info
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#skill" data-toggle="tab" aria-expanded="false" class="nav-link">
+                                Leaves
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#profile" data-toggle="tab" aria-expanded="false" class="nav-link">
+                                Doucments
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#empPer" data-toggle="tab" aria-expanded="false" class="nav-link">
+                                Employee Evaluation
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#home" data-toggle="tab" aria-expanded="false" class="nav-link">
+                                @if (@Model.team_employee != null)
+                                {
+                                    <text>Team</text>
+                                }
+                                else
+                                {
+                                    <text>About</text>
+                                }
+                            </a>
+                        </li>
+
+
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane" id="home">
+
+                            @if (@Model.team_employee != null)
+                            {
+                                <table width="100%" border="1" cellpadding="3">
+                                    <tr class="label-info" style="background-color: #eee; text-align: center;">
+                                        <td>S.No.</td>
+                                        <td>Employee Code</td>
+                                        <td>Name</td>
+                                        <td>Department</td>
+                                        <td>Designation</td>
+                                    </tr>
+
+                                    @{ int counter = 1; }
+                                    @foreach (var tm in @Model.team_employee)
+                                    {
+                                        <tr>
+                                            <td>@counter</td>
+                                            <td style="text-align: center;">@tm.employee_code</td>
+                                            <td>@tm.first_name @tm.last_name</td>
+                                            <td>@tm.department_name</td>
+                                            <td>@tm.designation_name</td>
+                                        </tr>
+
+                                        counter = counter + 1;
+                                    }
+
+                                </table>
+                            }
+
+
+                            <div class="m-t-5">
+                                @if (@Model.team_employee != null)
+                                {
+                                    <form id="teamPDF" method="post" action="/HR/EmployeeManagement/UserProfile">
+                                        <input type="hidden" name="lm_code" value="@Model.emp_vm.employee_code" />
+                                        <button id="btnExportPDF" type="submit" class="btn btn-primary">Export PDF</button>
+                                    </form>
+                                }
+                            </div>
+
+                            <div class="m-t-5">
+                                &nbsp;
+                            </div>
+
+
+                            <p>
+
+                                @if (@Model.emp_vm.description != null && @Model.emp_vm.description != "")
+                                {
+                                    <lable class="text-dark h4">Description</lable>
+                                    <div>@Model.emp_vm.description</div>
+                                }
+                                else
+                                {
+                                    <div>N/A</div>
+                                }
+
+                            </p>
+
+                            <div class="m-t-30 d-none">
+                                <h5>Experience</h5>
+
+                                <div class="p-t-10">
+                                    <h6 class="text-primary m-b-5">Lead designer / Developer</h6>
+                                    <p class="">websitename.com</p>
+                                    <p><b>2010-2015</b></p>
+
+                                    <p class="text-muted font-13 m-b-0">
+                                        Lorem Ipsum is simply dummy text
+                                        of the printing and typesetting industry. Lorem Ipsum has
+                                        been the industry's standard dummy text ever since the
+                                        1500s, when an unknown printer took a galley of type and
+                                        scrambled it to make a type specimen book.
+                                    </p>
+                                </div>
+
+                                <hr>
+
+                                <div class="">
+                                    <h6 class="text-primary m-b-5">Senior Graphic Designer</h6>
+                                    <p class="">coderthemes.com</p>
+                                    <p><b>2007-2009</b></p>
+
+                                    <p class="text-muted font-13">
+                                        Lorem Ipsum is simply dummy text
+                                        of the printing and typesetting industry. Lorem Ipsum has
+                                        been the industry's standard dummy text ever since the
+                                        1500s, when an unknown printer took a galley of type and
+                                        scrambled it to make a type specimen book.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="tab-pane" id="profile">
+                            <div class="row">
+
+
+
+                                <div class="col-sm-4">
+                                    <div class="gal-detail thumb">
+                                        @if (Model.emp_vm.file_01 != null && Model.emp_vm.file_01.ToString() != "")
+                                        {
+                                            <a class='waves-effect waves-light text-danger text-center' href="javascript:void(popup('@Model.emp_vm.file_01'));"><img src="~/Content/UserDocs/@Model.emp_vm.file_01" class="thumb-img" alt="work-thumbnail" /></a>
+                                        }
+                                        else
+                                        {
+                                            <a href="#" class="image-popup" title="Screenshot-2">
+                                                <img src="/images/slip.png" class="thumb-img" alt="work-thumbnail">
+                                            </a>
+                                        }
+                                        <h4 class="text-center">CNIC</h4>
+                                        <div class="ga-border"></div>
+                                        <p class="text-muted text-center"><small>image</small></p>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-4">
+                                    <div class="gal-detail thumb">
+                                        @if (Model.emp_vm.file_02 != null && Model.emp_vm.file_02.ToString() != "")
+                                        {
+                                            <a class='waves-effect waves-light text-danger text-center' href="javascript:void(popup('@Model.emp_vm.file_02'));"><img src="~/Content/UserDocs/@Model.emp_vm.file_02" class="thumb-img" alt="work-thumbnail" /></a>
+                                        }
+                                        else
+                                        {
+                                            <a href="#" class="image-popup" title="Screenshot-2">
+                                                <img src="/images/slip.png" class="thumb-img" alt="work-thumbnail">
+                                            </a>
+                                        }
+                                        <h4 class="text-center">Qualification/Degree</h4>
+                                        <div class="ga-border"></div>
+                                        <p class="text-muted text-center"><small>image</small></p>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-4">
+                                    <div class="gal-detail thumb">
+                                        @if (Model.emp_vm.file_03 != null && Model.emp_vm.file_03.ToString() != "")
+                                        {
+                                            <a class='waves-effect waves-light text-danger text-center' href="javascript:void(popup('@Model.emp_vm.file_03'));"><img src="~/Content/UserDocs/@Model.emp_vm.file_03" class="thumb-img" alt="work-thumbnail" /></a>
+                                        }
+                                        else
+                                        {
+                                            <a href="#" class="image-popup" title="Screenshot-2">
+                                                <img src="/images/slip.png" class="thumb-img" alt="work-thumbnail">
+                                            </a>
+                                        }
+                                        <h4 class="text-center">Experience Certificate</h4>
+                                        <div class="ga-border"></div>
+                                        <p class="text-muted text-center"><small>image</small></p>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="gal-detail thumb">
+                                        @if (Model.emp_vm.file_04 != null && Model.emp_vm.file_04.ToString() != "")
+                                        {
+                                            <a class='waves-effect waves-light text-danger text-center' href="javascript:void(popup('@Model.emp_vm.file_04'));"><img src="~/Content/UserDocs/@Model.emp_vm.file_04" class="thumb-img" alt="work-thumbnail" /></a>
+                                        }
+                                        else
+                                        {
+                                            <a href="#" class="image-popup" title="Screenshot-2">
+                                                <img src="/images/slip.png" class="thumb-img" alt="work-thumbnail">
+                                            </a>
+                                        }
+                                        <h4 class="text-center">Driving License</h4>
+                                        <div class="ga-border"></div>
+                                        <p class="text-muted text-center"><small>image</small></p>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-4">
+                                    <div class="gal-detail thumb">
+                                        @if (Model.emp_vm.file_05 != null && Model.emp_vm.file_05.ToString() != "")
+                                        {
+                                            <a class='waves-effect waves-light text-danger text-center' href="javascript:void(popup('@Model.emp_vm.file_05'));"><img src="~/Content/UserDocs/@Model.emp_vm.file_05" class="thumb-img" alt="work-thumbnail" /></a>
+                                        }
+                                        else
+                                        {
+                                            <a href="#" class="image-popup" title="Screenshot-2">
+                                                <img src="/images/slip.png" class="thumb-img" alt="work-thumbnail">
+                                            </a>
+                                        }
+                                        <h4 class="text-center">Other Upload</h4>
+                                        <div class="ga-border"></div>
+                                        <p class="text-muted text-center"><small>image</small></p>
+                                    </div>
+                                </div>
+
+                                <!-- Fee SLips <div class="col-sm-4">
+                                    <div class="gal-detail thumb">
+                                        <a href="#" class="image-popup" title="Screenshot-2">
+                                            <img src="/images/slip.png" class="thumb-img" alt="work-thumbnail">
+                                        </a>
+                                        <h4 class="text-center">Fee Slip - Feb 2018</h4>
+                                        <div class="ga-border"></div>
+                                        <p class="text-muted text-center"><small>Photography</small></p>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-4">
+                                    <div class="gal-detail thumb">
+                                        <a href="#" class="image-popup" title="Screenshot-2">
+                                            <img src="/images/slip.png" class="thumb-img" alt="work-thumbnail">
+                                        </a>
+                                        <h4 class="text-center">Fee Slip - Jan 2018</h4>
+                                        <div class="ga-border"></div>
+                                        <p class="text-muted text-center"><small>Photography</small></p>
+                                    </div>
+                                </div> -->
+
+                            </div>
+                        </div>
+                        <div class="tab-pane active" id="settings">
+
+                            <div class="row">
+
+                                <div class="col-5">
+
+                                    <form role="form">
+
+                                        <div class="form-group">
+                                            <label for="FirstName">First Name: </label>
+                                            <label class="text-primary">@Model.emp_vm.first_name</label>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="LastName">Last Name: </label>
+                                            <label class="text-primary">@Model.emp_vm.last_name</label>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="LastName">Father Name: </label>
+                                            <label class="text-primary">@Model.emp_vm.father_name</label>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="DateOfJoining">Date of Birth: </label>
+                                            <label class="text-primary">@Model.emp_vm.date_of_birth</label>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="MobileNumber">Mobile Number: </label>
+                                            <label class="text-primary">@Model.emp_vm.mobile_no</label>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="Email">Email: </label>
+                                            <label class="text-primary">@Model.emp_vm.email</label>
+                                        </div>
+
+
+                                    </form>
+
+                                </div>
+
+                                <div class="col-7">
+
+                                    <form role="form">
+
+                                        <div class="form-group">
+                                            <label for="EC-1">Emergency Contact 1: </label>
+                                            <label class="text-primary">@Model.emp_vm.emergency_contact_01</label>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="EC-2">Emergency Contact 2: </label>
+                                            <label class="text-primary">@Model.emp_vm.emergency_contact_02</label>
+                                        </div>
+
+
+
+
+                                    </form>
+
+                                </div>
+
+                            </div>
+
+
+                        </div>
+                        <div class="tab-pane" id="skill">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label for="SkL">@TitleLeave01 Leaves Allocated: </label>
+                                        <label class="text-primary">@Model.emp_vm.sick_leaves</label>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="ClL">@TitleLeave02 Leaves Allocated: </label>
+                                        <label class="text-primary">@Model.emp_vm.casual_leaves</label>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="AlL">@TitleLeave03 Leaves Allocated: </label>
+                                        <label class="text-primary">@Model.emp_vm.annual_leaves</label>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="OlL">@TitleLeave04 Leaves Allocated: </label>
+                                        <label class="text-primary">@Model.emp_vm.other_leaves</label>
+                                    </div>
+
+                                    @{
+
+                                        if (LT01IsActive)
+                                        {
+                                            if (Model.emp_vm.leave_type01 > 0)
+                                            {
+                                                <div class="form-group">
+                                                    <label for="LT01">@TitleLeave05 Leaves Allocated: </label>
+                                                    <label class="text-primary">@Model.emp_vm.leave_type01</label>
+                                                </div>
+                                            }
+                                        }
+                                    }
+
+                                    @{
+
+                                        if (LT02IsActive)
+                                        {
+                                            if (Model.emp_vm.leave_type02 > 0)
+                                            {
+                                                <div class="form-group">
+                                                    <label for="LT02">@TitleLeave06 Leaves Allocated: </label>
+                                                    <label class="text-primary">@Model.emp_vm.leave_type02</label>
+                                                </div>
+
+                                            }
+                                        }
+                                    }
+
+                                    @{
+
+                                        if (LT03IsActive)
+                                        {
+                                            if (Model.emp_vm.leave_type03 > 0)
+                                            {
+
+                                                <div class="form-group">
+                                                    <label for="LT03">@TitleLeave07 Leaves Allocated: </label>
+                                                    <label class="text-primary">@Model.emp_vm.leave_type03</label>
+                                                </div>
+
+                                            }
+                                        }
+                                    }
+
+                                    @{
+
+                                        if (LT04IsActive)
+                                        {
+                                            if (Model.emp_vm.leave_type04 > 0)
+                                            {
+                                                <div class="form-group">
+                                                    <label for="LT04">@TitleLeave08 Leaves Allocated: </label>
+                                                    <label class="text-primary">@Model.emp_vm.leave_type04</label>
+                                                </div>
+
+                                            }
+                                        }
+                                    }
+
+
+
+                                </div>
+
+                                <div class="col-6">
+
+
+                                    @{
+
+                                        if (LT05IsActive)
+                                        {
+                                            if (Model.emp_vm.leave_type05 > 0)
+                                            {
+                                                <div class="form-group">
+                                                    <label for="SkL">@TitleLeave09 Leaves Allocated: </label>
+                                                    <label class="text-primary">@Model.emp_vm.leave_type05</label>
+                                                </div>
+                                            }
+                                        }
+                                    }
+
+                                    @{
+
+                                        if (LT06IsActive)
+                                        {
+                                            if (Model.emp_vm.leave_type06 > 0)
+                                            {
+                                                <div class="form-group">
+                                                    <label for="ClL">@TitleLeave10 Leaves Allocated: </label>
+                                                    <label class="text-primary">@Model.emp_vm.leave_type06</label>
+                                                </div>
+                                            }
+                                        }
+                                    }
+
+                                    @{
+
+                                        if (LT07IsActive)
+                                        {
+                                            if (Model.emp_vm.leave_type07 > 0)
+                                            {
+                                                <div class="form-group">
+                                                    <label for="AlL">@TitleLeave11 Leaves Allocated: </label>
+                                                    <label class="text-primary">@Model.emp_vm.leave_type07</label>
+                                                </div>
+                                            }
+                                        }
+                                    }
+
+                                    @{
+
+                                        if (LT08IsActive)
+                                        {
+                                            if (Model.emp_vm.leave_type08 > 0)
+                                            {
+                                                <div class="form-group">
+                                                    <label for="OlL">@TitleLeave12 Leaves Allocated: </label>
+                                                    <label class="text-primary">@Model.emp_vm.leave_type08</label>
+                                                </div>
+                                            }
+                                        }
+                                    }
+
+                                    @{
+
+                                        if (LT09IsActive)
+                                        {
+                                            if (Model.emp_vm.leave_type09 > 0)
+                                            {
+                                                <div class="form-group">
+                                                    <label for="LT01">@TitleLeave13 Leaves Allocated: </label>
+                                                    <label class="text-primary">@Model.emp_vm.leave_type09</label>
+                                                </div>
+                                            }
+                                        }
+                                    }
+
+                                    @{
+
+                                        if (LT10IsActive)
+                                        {
+                                            if (Model.emp_vm.leave_type10 > 0)
+                                            {
+                                                <div class="form-group">
+                                                    <label for="LT02">@TitleLeave14 Leaves Allocated: </label>
+                                                    <label class="text-primary">@Model.emp_vm.leave_type10</label>
+                                                </div>
+                                            }
+                                        }
+                                    }
+
+                                    @{
+
+                                        if (LT11IsActive)
+                                        {
+                                            if (Model.emp_vm.leave_type11 > 0)
+                                            {
+                                                <div class="form-group">
+                                                    <label for="LT03">@TitleLeave15 Leaves Allocated: </label>
+                                                    <label class="text-primary">@Model.emp_vm.leave_type11</label>
+                                                </div>
+                                            }
+                                        }
+                                    }
+
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="empPer">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label for="SkL">Personality / Demeanor: </label>
+                                        @if (@Model.emp_eva != null && @Model.emp_eva.Count > 0)
+                                        {
+
+                                            <label class="text-primary"> @Model.emp_eva[0].personality</label>}
+                                        else
+                                        {
+                                            <label class="text-primary">0</label>
+                                        }
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="ClL">Communication Skills: </label>
+                                        @if (@Model.emp_eva != null && @Model.emp_eva.Count > 0)
+                                        {
+                                            <label class="text-primary">@Model.emp_eva[0].communicationSkills</label>}
+                                        else
+                                        {
+                                            <label class="text-primary">0</label>
+                                        }
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="AlL">	Attendance & Promptness: </label>
+                                        @if (@Model.emp_eva != null && @Model.emp_eva.Count > 0)
+                                        {
+                                            <label class="text-primary">@Model.emp_eva[0].attendancePromptness</label>}
+                                        else
+                                        {
+                                            <label class="text-primary">0</label>
+                                        }
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="AlL">	Imitative: </label>
+                                        @if (@Model.emp_eva != null && @Model.emp_eva.Count > 0)
+                                        {
+                                            <label class="text-primary">@Model.emp_eva[0].imitative</label>
+                                        }
+                                        else
+                                        {
+                                            <label class="text-primary">0</label>
+                                        }
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="AlL">	Organization & Time-Awareness: </label>
+                                        @if (@Model.emp_eva != null && @Model.emp_eva.Count > 0)
+                                        {
+                                            <label class="text-primary">@Model.emp_eva[0].organizationAwareness</label>
+                                        }
+                                        else
+                                        {
+                                            <label class="text-primary">0</label>
+                                        }
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="AlL">	Self-Control: </label>
+                                        @if (@Model.emp_eva != null && @Model.emp_eva.Count > 0)
+                                        {
+                                            <label class="text-primary">@Model.emp_eva[0].selfControl</label>
+                                        }
+                                        else
+                                        {
+                                            <label class="text-primary">0</label>
+                                        }
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="AlL">	Proficiency: </label>
+                                        @if (@Model.emp_eva != null && @Model.emp_eva.Count > 0)
+                                        {
+                                            <label class="text-primary">@Model.emp_eva[0].proficiency</label>
+                                        }
+                                        else
+                                        {
+                                            <label class="text-primary">0</label>
+                                        }
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="AlL">		Project Management: </label>
+                                        @if (@Model.emp_eva != null && @Model.emp_eva.Count > 0)
+                                        {
+                                            <label class="text-primary">@Model.emp_eva[0].projectManagement</label>
+                                        }
+                                        else
+                                        {
+                                            <label class="text-primary">0</label>
+                                        }
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="AlL">Attention to Detail: </label>
+                                        @if (@Model.emp_eva != null && @Model.emp_eva.Count > 0)
+                                        {
+                                            <label class="text-primary">@Model.emp_eva[0].attentionDetail</label>
+                                        }
+                                        else
+                                        {
+                                            <label class="text-primary">0</label>
+                                        }
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="AlL">Client Interaction: </label>
+                                        @if (@Model.emp_eva != null && @Model.emp_eva.Count > 0)
+                                        {
+                                            <label class="text-primary">@Model.emp_eva[0].clientInteraction</label>
+                                        }
+                                        else
+                                        {
+                                            <label class="text-primary">0</label>
+                                        }
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="AlL">Creativity: </label>
+                                        @if (@Model.emp_eva != null && @Model.emp_eva.Count > 0)
+                                        {
+                                            <label class="text-primary">@Model.emp_eva[0].creativity</label>
+                                        }
+                                        else
+                                        {
+                                            <label class="text-primary">0</label>
+                                        }
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="AlL">Business Skills: </label>
+                                        @if (@Model.emp_eva != null && @Model.emp_eva.Count > 0)
+                                        {
+                                            <label class="text-primary">@Model.emp_eva[0].businessSkill</label>
+                                        }
+                                        else
+                                        {
+                                            <label class="text-primary">0</label>
+                                        }
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="AlL">Achivement: </label>
+                                        @if (@Model.emp_eva != null && @Model.emp_eva.Count > 0)
+                                        {
+                                            <label class="text-primary">@Model.emp_eva[0].achievement</label>
+                                        }
+                                        else
+                                        {
+                                            <label class="text-primary">0</label>
+                                        }
+                                    </div>
+
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label for="SkL">Total Marks Allotted:  </label>
+                                        <label class="text-primary">65</label>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="ClL">Total Marks Obtained: </label>
+                                        @if (@Model.emp_eva != null && @Model.emp_eva.Count > 0)
+                                        {
+                                            <label class="text-primary">@Model.emp_eva[0].total</label>
+                                        }
+                                        else
+                                        {
+                                            <label class="text-primary">0</label>
+                                        }
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="AlL">	Performance Result : </label>
+                                        @if (@Model.emp_eva != null && @Model.emp_eva.Count > 0)
+                                        {
+                                            <label class="text-primary">@Model.emp_eva[0].result</label>
+                                        }
+                                        else
+                                        {
+                                            <label class="text-primary">-</label>
+                                        }
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="tab-pane" id="orginfo">
+
+                            <div class="row">
+
+                                <div class="col-6">
+                                    <form role="form">
+                                        <div class="form-group">
+                                            <label for="EmpCode">Employee Code: </label>
+                                            <label class="text-primary">@Model.emp_vm.employee_code</label>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="DateOfJoining">Access Group: </label>
+                                            <label class="text-primary">@Model.emp_vm.access_group_name</label>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="DateOfJoining">Date of Joining: </label>
+                                            <label class="text-primary">@Model.emp_vm.date_of_joining</label>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="DateOfJoining">Type of Employment: </label>
+                                            <label class="text-primary">@Model.emp_vm.type_of_employment_name</label>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="FingerRegistered">Finger Registered: </label>
+                                            <label class="text-primary">
+                                                @Model.emp_vm.is_finger_registered
+                                            </label>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="CardsAssigned">Card(s) Assigned: </label>
+                                            <div class="text-primary">
+                                                @Html.Raw(Model.emp_vm.cards_list)
+                                            </div>
+                                        </div>
+
+
+
+
+
+
+
+                                    </form>
+                                </div>
+
+                                <div class="col-6">
+                                    <form role="form">
+
+                                        <div class="form-group">
+                                            <label for="CampusCode">Campus Code: </label>
+                                            <label class="text-primary">@Model.emp_vm.campus_code</label>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="CampusName">Institute Name: </label>
+                                            <label class="text-primary">@Model.emp_vm.campus_name</label>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="EmpCode">Department: </label>
+                                            <label class="text-primary">@Model.emp_vm.department_name</label>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="DateOfJoining">Designation: </label>
+                                            <label class="text-primary">@Model.emp_vm.designation_name</label>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="DateOfJoining">Location: </label>
+                                            <label class="text-primary">@Model.emp_vm.location_name</label>
+                                        </div>
+
+
+                                    </form>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- end col -->
+        </div>
+        <!-- end row -->
+    </div>
+    <!-- End content -->
+
+
+    <div id="MidTermModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MidTermModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="CenterModalLabel">View</h4>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="image_source" src="~/Images/no-image.png" width="300" />
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Close</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+
+    <!-- Custom Modal -->
+    <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="mySmallModalLabel">Message Alert</h4>
+                </div>
+                <div class="modal-body">
+                    <span id="alert_message"></span>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    @section JS {
+        <script>
+            $(document).ready(function () {
+
+                var empCode = @Html.Raw(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId);
+
+                $.ajax({
+                    url: '/HR/HR/VerfiyDataHandler',
+                    type: "POST",
+                    data: { empId: empCode },
+                    dataType: "json",
+
+                    success: function (data) {
+
+                        if (data.HRDownloadExcel == false) {
+                            $("#btn-excel-download").hide();
+                        }
+                        if (data.HRExportGridData == false) {
+                            $("#btnExport").hide();
+                        }
+                        if (data.HRExportPDF == false) {
+                            $("#btn-pdf-download").hide();
+                        }
+
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+
+
+
+
+                var present =  @Html.Raw(Json.Encode(Model.emp_vm.g_skills_set));
+                present = present.replace(/,/g, '<hr>');
+                console.log(present);
+                $("#Skill_Sets").html(present);
+
+            });
+
+            popup = function viewImage(image_name) {
+                $('#image_source').attr("src", "/Content/UserDocs/" + image_name);
+                $('#MidTermModal').modal('show');
+            }
+
+        </script>
+    }

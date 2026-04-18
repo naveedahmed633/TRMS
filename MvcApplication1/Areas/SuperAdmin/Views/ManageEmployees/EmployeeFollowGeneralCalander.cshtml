@@ -1,0 +1,100 @@
+﻿@{
+    ViewBag.Title = "TRMS - Employee Follow Group Calendar";
+    Layout = "~/Areas/SuperAdmin/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">Welcome <span class="text-danger">'SuperAdmin'</span>! [Login ID: <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & Name: <span class="text-success">@User.Identity.Name</span>]</h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/SuperAdmin">SuperAdmin</a></li>
+                    <li class="breadcrumb-item active">Employee Follow Group Calendar</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="ti-files"></i> Employee Follow Group Calendar </h3>
+                        </div>
+                        <div class="pull-right">
+                            <h6>
+                                <strong>@DateTime.Now.ToString("f")</strong>
+                            </h6>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-6">
+
+                            <div class="list-group ScrollStyle">
+                                @foreach (var item in Model)
+                                {
+                                    <div class="list-group-item">
+                                        <i class="pull-right">@item.group_name</i>
+
+                                        <div class="h3">
+                                            @item.first_name @item.last_name
+                                        </div>
+                                        <ul>
+                                            <li class="mdi mdi-calendar d-inline-block">
+                                                <a href="@Url.Action("Calendar", "ManageEmployees", new { group_id = @item.group_id })">
+                                                    Group Calender
+                                                </a>
+                                            </li>
+                                            <li class="mdi mdi-calendar d-inline-block pull-right">
+                                                <a class="pull-right" href="@Url.Action("ManageEmployeeCalendar", "ManageEmployees", new { employee_id = @item.id })">
+                                                    Employee Calender
+                                                </a>
+                                            </li>
+                                        </ul>
+
+                                    </div>
+                                }
+                            </div>
+
+                        </div>
+
+                        <div class="col-6">
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End content -->
+
+@section JS {
+
+    <script>
+        $(document).ready(function () {
+            //code here
+        });
+    </script>
+
+}
+
+
+
+
+
+

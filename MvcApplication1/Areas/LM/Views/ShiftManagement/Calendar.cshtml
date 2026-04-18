@@ -1,0 +1,148 @@
+﻿@{
+    ViewBag.Title = "TRMS - Group Calendar";
+    Layout = "~/Areas/LM/Views/Shared/_LayoutCalendar.cshtml";
+
+    string LM_LEC_STF_LoginUserType = "";
+    if (MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeFunctionSLSID.ToString().Contains("lecturer"))
+    {
+        LM_LEC_STF_LoginUserType = "LEC";
+    }
+    else if (MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeFunctionSLSID.ToString().Contains("staff"))
+    {
+        LM_LEC_STF_LoginUserType = "STF";
+    }
+    else
+    {
+        LM_LEC_STF_LoginUserType = "LM";
+    }
+}
+
+
+<div class="row">
+    <div class="form-group col-md-12">
+        @*<h5 style="font-weight: bold;">Calendar</h5>*@
+
+        <div class="row">
+            <div class="col-12 text-right">
+                <a id="btnBack1" class="btn btn-default" href="javascript: history.go(-1)">Back</a>
+            </div>
+        </div>
+
+        <div class="row" style="background-color:#eee;padding:55px;margin:15px;border-radius:25px;padding-bottom:10px">
+            <h4 style="font-weight: bold; text-align:center;">Group Calendar</h4>
+            <div id="calendar"></div>
+        </div>
+        <form id="calendar_edit_form" style="margin:15px">
+  
+            <div class="row">
+                <div class="col-md-3">
+
+                    <label class="control-label">General Shift</label>
+
+                    <select class="form-control" id="general-shift">
+                        <option value="-2" selected="selected" disabled="disabled">Select Shift</option>
+                    </select>
+
+
+                    <label class="control-label">Shifts Specific to Week Days</label>
+                    <select class="form-control" id="day">
+                        <option value="-2" selected="selected" disabled="disabled">Select Day</option>
+                        <option value='0'>Sunday</option>
+                        <option value='1'>Monday</option>
+                        <option value='2'>Tuesday</option>
+                        <option value='3'>Wednesday</option>
+                        <option value='4'>Thursday</option>
+                        <option value='5'>Friday</option>
+                        <option value='6'>Saturday</option>
+                    </select>
+                    <select class="form-control" id="day-shift">
+                        <option value="-2" selected="selected" disabled="disabled">Select Shift</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                </div>
+
+                <div class="col-md-3">
+                    <h3>Legends</h3>
+                    <ul>
+                        <li><span style="background-color: black; width: 38px; height:25px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>&nbsp;&nbsp;<span>Shift Time Assigned (on mouse-over)</span></li>
+                        <li>&nbsp;</li>
+                        <li><span style="background-color: red; width: 38px; height:25px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>&nbsp;&nbsp;<span>Holiday</span></li>
+                        <li>&nbsp;</li>
+                        <li><span style="background-color: blue; width: 38px; height:25px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>&nbsp;&nbsp;<span>Gazatted Holiday</span></li>
+                    </ul>
+                </div>
+
+            </div>
+
+
+
+            <div class="row">
+                <div class="col-md-3">
+                    <button type="submit" value="Submit" class="btn btn-primary waves-effect waves-light m-t-10" id="submit_calendar_button">Save Calander</button>
+                </div>
+                <div class="col-6">
+                    &nbsp;
+                </div>
+                <div class="col-3 text-right">
+                    <a id="btnBack2" class="btn btn-default" href="javascript: history.go(-1)">Back</a>
+                </div>
+
+            </div>
+
+        </form>
+
+
+    </div>
+
+</div>
+
+
+@section JS {
+    <script src="@Url.Content("/CSCAL/groupCalendar.js")"></script>
+    <script>
+
+
+
+        $(document).ready(function () {
+
+            var empCode2= @Html.Raw(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId);
+            $.ajax({
+                url: '/LM/LM/VerfiyDataHandler',
+                type: "POST",
+                data: { empId: empCode2 },
+                dataType: "json",
+
+                success: function (data) {
+                    if (data.LMExportGridData == false) {
+                        $("#btnExport").hide();
+                    } if (data.LMDownloadExcel == false) {
+                        $("#btn-excel-download").hide();
+                    }
+
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+
+
+            $('#accordion').accordion("option", "active", 2);
+            $("input[type=submit], button").button();
+            $(".datepicker").datepicker({
+                dateFormat: "dd-mm-yy"
+            });
+            setActiveLink("Calendar");
+
+
+
+
+
+
+        });
+
+
+    </script>
+
+}

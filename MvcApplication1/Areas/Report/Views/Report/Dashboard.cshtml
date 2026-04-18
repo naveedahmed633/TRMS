@@ -1,0 +1,221 @@
+﻿
+@{
+    ViewBag.Title = "TRMS - Dashboard";
+    Layout = "~/Areas/REPORT/Views/Shared/_Layout.cshtml";
+}
+
+@using MvcApplication1.ViewModel;
+@model ViewModels.DashboardData
+
+<style>
+    #chartLeavesManager {
+        height: 280px;
+    }
+
+    #circle1 {
+        width: 12px;
+        height: 12px;
+        background-color: #3bafda;
+        display: inline-block;
+        border-radius: 50%;
+    }
+
+    #circle2 {
+        margin-left: 10px;
+        width: 12px;
+        height: 12px;
+        background: #f76397;
+        display: inline-block;
+        border-radius: 50%;
+    }
+
+    #circle3 {
+        margin-left: 10px;
+        width: 12px;
+        height: 12px;
+        background: #00b19d;
+        display: inline-block;
+        border-radius: 50%;
+    }
+</style>
+
+@{
+    //Present - Leave - Absent
+    string pr_chart_color_a = "#66bb6a ", pr_chart_color_b = "#7266ba", pr_chart_color_c = "#ee6e73";
+    //Ontime - Late - OutTime - Earlyout
+    string pn_chart_color_d = "#29b6f6", pn_chart_color_e = "#ffc107", pn_chart_color_f = "#f76397", pn_chart_color_g = "#FFFF6F";
+}
+
+
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">Welcome <span class="text-danger">'REPORT'</span> User! Username: @User.Identity.Name (@Model.supervisorName)</h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/REPORT/REPORT/Dashboard">REPORT</a></li>
+                    <li class="breadcrumb-item active">Dashboard</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="mdi mdi-account-box"></i>Dashboard</h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+
+                    @{
+                        //ViewBag.CounterPercent = "P=" + perPresent + ",L=" + perLeave + ",A=" + perAbsent + ",O=" + perOnTime + ",T=" + perLate + ",E=" + perEarlyGone;
+
+                        string perPresent = "0", perLeave = "0", perAbsent = "0", perOnTime = "0", perLate = "0", perOutTime = "0", perEarlyGone = "0";
+
+                        if (Model.dashboardAttendanceChart != null && Model.dashboardAttendanceChart != "")
+                        {
+                            string strCounterPercent = Model.dashboardAttendanceChart.ToString();
+                            string[] strMain = strCounterPercent.Split(',');
+
+                            if (strMain.Length == 7)
+                            {
+                                string[] strInner0 = strMain[0].Split('=');
+                                string[] strInner1 = strMain[1].Split('=');
+                                string[] strInner2 = strMain[2].Split('=');
+                                string[] strInner3 = strMain[3].Split('=');
+                                string[] strInner4 = strMain[4].Split('=');
+                                string[] strInner5 = strMain[5].Split('=');
+                                string[] strInner6 = strMain[6].Split('=');
+
+                                perPresent = strInner0[1].ToString();
+                                perLeave = strInner1[1].ToString();
+                                perAbsent = strInner2[1].ToString();
+                                perOnTime = strInner3[1].ToString();
+                                perLate = strInner4[1].ToString();
+                                perOutTime = strInner5[1].ToString();
+                                perEarlyGone = strInner6[1].ToString();
+                            }
+                        }
+                    }
+
+                    <!-- chart1 row -->
+                    <div class="row">
+                        <div class="col-lg-4 col-md-4">
+                            <div class="widget-simple-chart text-right card-box" style="background-color: #E0F1E2; border: 1px #66BB6A dotted;">
+                                <div class="circliful-chart" data-dimension="90" data-text="@perPresent%" data-width="5" data-fontsize="22" data-percent="@perPresent" data-fgcolor="@pr_chart_color_a" data-bgcolor="#ebeff2"></div>
+                                <h3 class="m-t-10" style="color:@pr_chart_color_a" title="@Model.dashboardElement.present">Present</h3>
+                                <p class="text-dark m-b-10">in @DateTime.Now.ToString("MMM yyyy")</p>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 col-md-4">
+                            <div class="widget-simple-chart text-right card-box" style="background-color: #DCD6ED; border: 1px #7866BA dotted;">
+                                <div class="circliful-chart" data-dimension="90" data-text="@perLeave%" data-width="5" data-fontsize="22" data-percent="@perLeave" data-fgcolor="@pr_chart_color_b" data-bgcolor="#ebeff2"></div>
+                                <h3 class="m-t-10" style="color:@pr_chart_color_b" title="@Model.dashboardElement.leave">Leave</h3>
+                                <p class="text-dark m-b-10">in @DateTime.Now.ToString("MMM yyyy")</p>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 col-md-4">
+                            <div class="widget-simple-chart text-right card-box" style="background-color: #FBDDDE; border: 1px #EE6E73 dotted;">
+                                <div class="circliful-chart" data-dimension="90" data-text="@perAbsent%" data-width="5" data-fontsize="22" data-percent="@perAbsent" data-fgcolor="@pr_chart_color_c" data-bgcolor="#ebeff2"></div>
+                                <h3 class="m-t-10" style="color:@pr_chart_color_c" title="@Model.dashboardElement.absent">Absent</h3>
+                                <p class="text-dark m-b-10">in @DateTime.Now.ToString("MMM yyyy")</p>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- end row -->
+                    <!-- chart2 row -->
+                    <div class="row">
+
+                        @*<div class="col-lg-3 col-md-3">
+                                <div class="widget-simple-chart text-right card-box" style="background-color: #E0F5FE">
+                                    <div class="circliful-chart" data-dimension="90" data-text="@perOnTime%" data-width="5" data-fontsize="22" data-percent="@perOnTime" data-fgcolor="@pn_chart_color_d" data-bgcolor="#ebeff2"></div>
+                                    <h3 class="m-t-10" style="color:@pn_chart_color_d" title="@Model.dashboardElement.onTime">On Time</h3>
+                                    <p class="text-dark m-b-10">in @DateTime.Now.ToString("MMM yyyy")</p>
+                                </div>
+                            </div>*@
+
+                        <div class="col-lg-6 col-md-6">
+                            <div class="widget-simple-chart text-right card-box" style="background-color: #FFF5D9; border: 1px #FFC107 dotted;">
+                                <!-- FFF5D9 -->
+                                <div class="circliful-chart" data-dimension="90" data-text="@perLate%" data-width="5" data-fontsize="22" data-percent="@perLate" data-fgcolor="@pn_chart_color_e" data-bgcolor="#ebeff2"></div>
+                                <h3 class="m-t-10" style="color:@pn_chart_color_e" title="@Model.dashboardElement.late">Late</h3>
+                                <p class="text-dark m-b-10">in @DateTime.Now.ToString("MMM yyyy")</p>
+                            </div>
+                        </div>
+
+                        @*<div class="col-lg-3 col-md-3">
+                                <div class="widget-simple-chart text-right card-box" style="background-color: #FFFFC6">
+                                    <div class="circliful-chart" data-dimension="90" data-text="@perOutTime%" data-width="5" data-fontsize="22" data-percent="@perOutTime" data-fgcolor="@pn_chart_color_g" data-bgcolor="#ebeff2"></div>
+                                    <h3 class="m-t-10" style="color:@pn_chart_color_g" title="@Model.dashboardElement.outTime">Exit</h3>
+                                    <p class="text-dark m-b-10">in @DateTime.Now.ToString("MMM yyyy")</p>
+                                </div>
+                            </div>*@
+
+                        <div class="col-lg-6 col-md-6">
+                            <div class="widget-simple-chart text-right card-box" style="background-color: #FEE7EF; border: 1px #F76397 dotted;">
+                                <div class="circliful-chart" data-dimension="90" data-text="@perEarlyGone%" data-width="5" data-fontsize="22" data-percent="@perEarlyGone" data-fgcolor="@pn_chart_color_f" data-bgcolor="#ebeff2"></div>
+                                <h3 class="m-t-10" style="color:@pn_chart_color_f" title="@Model.dashboardElement.earlyGone">Early Out</h3>
+                                <p class="text-dark m-b-10">in @DateTime.Now.ToString("MMM yyyy")</p>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- end row -->
+
+                    <div class="row d-none">
+                        <div class="col-md-3 col-sm-4 col-xs-6 tile_stats_count">
+                            <span class="h3"><i class="mdi mdi-account-plus"></i> Present</span>
+                            <div class="h1">@Model.dashboardElement.present</div>
+                            <span class="h5"><i class="text-dark"></i>For Last 30 Days</span>
+                        </div>
+                        <div class="col-md-3 col-sm-4 col-xs-6 tile_stats_count">
+                            <span class="h3"><i class="fa fa-clock-o"></i> Late</span>
+                            <div class="h1">@Model.dashboardElement.late</div>
+                            <span class="h5"><i class="text-dark"></i>For Last 30 Days</span>
+                        </div>
+                        <div class="col-md-3 col-sm-4 col-xs-6 tile_stats_count">
+                            <span class="h3"><i class="mdi mdi-account-minus"></i> Absent</span>
+                            <div class="h1">@Model.dashboardElement.absent</div>
+                            <span class="h5"><i class="text-dark"></i>For Last 30 Days</span>
+                        </div>
+                        <div class="col-md-3 col-sm-4 col-xs-6 tile_stats_count">
+                            <span class="h3"><i class="fa fa-clock-o"></i> Early Out</span>
+                            <div class="h1">@Model.dashboardElement.earlyGone</div>
+                            <span class="h5"><i class="text-dark"></i>For Last 30 Days</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End content -->
+
+@section JS {
+    <script>
+        $(document).ready(function () {
+            //code here
+        });
+    </script>
+}

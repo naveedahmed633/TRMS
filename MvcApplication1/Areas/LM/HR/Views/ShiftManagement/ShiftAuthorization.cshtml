@@ -1,0 +1,73 @@
+﻿
+<h4 style="font-weight: bold;">Shift Management</h4>
+<div class="row">
+    
+
+    <div class="form-group col-md-12">
+        <h5 style="font-weight: bold;">Shift Authorization</h5>
+        <table id="shift_table" class="display">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Edit/Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Function 1</td>
+                    <td> This is function 1</td>
+                    <td> This is function 1</td>
+                </tr>
+                <tr>
+                    <td>Function 2</td>
+                    <td> This is function 2</td>
+                    <td> This is function 1</td>
+                </tr>
+                <tr>
+                    <td>Function 3</td>
+                    <td> This is function 3</td>
+                    <td> This is function 1</td>
+                </tr>
+                <tr>
+                    <td>Function 4</td>
+                    <td> This is function 4</td>
+                    <td> This is function 1</td>
+                </tr>
+                <tr>
+                    <td>Function 5</td>
+                    <td> This is function 5</td>
+                    <td> This is function 1</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>  
+    
+    <div class="form-group col-md-3">
+              <div class="row">
+                <div class="col-md-12" style="margin-top:5px">
+                    <button type="submit" value="Submit">Authorise Shift</button>
+                </div>
+            </div>
+
+        </div>
+
+</div>
+</div>
+
+
+@section JS {
+    <script>
+        $(document).ready(function () {
+            $('#accordion').accordion("option", "active", 2);
+            setActiveLink("Authorize Shift");
+            $("input[type=submit], button").button();
+
+
+            initDataTable("#shift_table");
+        });
+
+
+
+    </script>
+}

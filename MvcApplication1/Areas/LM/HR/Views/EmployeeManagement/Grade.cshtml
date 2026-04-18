@@ -1,0 +1,103 @@
+﻿@model List<ViewModels.Grades>
+
+
+<h4 style="font-weight: bold;">Employee Management</h4>
+<div class="row">
+    <div class="form-group col-md-3">
+        <h5 style="font-weight: bold;">Register Grade</h5>
+        @using (Html.BeginForm("AddGrade", "EmployeeManagement"))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary()
+            <div class="row">
+
+                <div class="col-md-12">
+                    <label class="control-label">Grade Name</label>
+                    <input type="text" pattern=".{2,}" title="2 characters minimum" class="form-control" id="fname" name="name"
+                           oninput="setCustomValidity('');" oninvalid="setCustomValidity('Name should contain at least 2 characters.');" required />
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-12">
+                    <label class="control-label">Description</label>
+                    <textarea class="form-control" name="description"></textarea>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12" style="margin-top:5px">
+                    <button type="submit" value="Submit">Add Grade</button>
+
+                    <button type="reset" value="Reset">Reset</button>
+
+                </div>
+            </div>
+        }
+    </div>
+    <div class="col-md-9">
+        <h5 style="font-weight: bold;">Current Grades</h5>
+        <table id="grade_table" class="display cell-border compact">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Grade Name</th>
+                    <th>Grade Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (ViewModels.Grades grade in Model)
+                {
+                    <tr data-row="@grade.id">
+                        <td>@grade.id</td>
+                        <td>@grade.name</td>
+                        <td>@grade.description</td>
+                        <td class="dt-center">
+                            <div>
+                                <a href="javascript:void(editGrade(@grade.id,'@grade.name','@grade.description'));">Edit</a>
+                                <span>/</span>
+                                <a href="javascript:void(deleteGrade(@grade.id));">Delete</a>
+                            </div>
+
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+        <button type="submit" id="btnExport" style="margin-top:5px">Export excel</button>
+
+    </div>
+</div>
+
+
+@section JS {
+    <script>
+        $(document).ready(function () {
+            $('#accordion').accordion("option", "active", 1);
+            $("input[type=submit], button").button();
+            initDataTable("#grade_table");
+
+
+
+            setupTableExportButton('#grade_table', '#btnExport', 'Grades');
+
+            /*
+            $('#btnExport').button();
+            $("#btnExport").click(function (e) {
+                $('#grade_table').tableExport({ type: 'excel', escape: 'false' });
+                e.preventDefault();
+            });
+            */
+
+
+            editGrade = initEditModal("#modals", '@Url.Action("UpdateGrade", "EmployeeManagement", null, Request.Url.Scheme)', "Grade");
+            deleteGrade = initDeleteModal("#modals", '@Url.Action("RemoveGrade", "EmployeeManagement", null, Request.Url.Scheme)', "Grade");
+            setActiveLink("Manage Grades");
+
+
+        });
+    </script>
+}

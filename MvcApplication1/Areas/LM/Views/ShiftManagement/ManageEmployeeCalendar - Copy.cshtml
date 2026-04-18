@@ -1,0 +1,126 @@
+﻿@{
+    ViewBag.Title = "TRMS - Employee Calendar";
+    Layout = "~/Areas/LM/Views/Shared/_LayoutCalendar.cshtml";
+
+    string LM_LEC_STF_LoginUserType = "";
+    if (MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeFunctionSLSID.ToString().Contains("lecturer"))
+    {
+        LM_LEC_STF_LoginUserType = "LEC";
+    }
+    else if (MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeFunctionSLSID.ToString().Contains("staff"))
+    {
+        LM_LEC_STF_LoginUserType = "STF";
+    }
+    else
+    {
+        LM_LEC_STF_LoginUserType = "LM";
+    }
+}
+
+@model List<ViewModels.Employee>
+
+<div class="row">
+    <div class="form-group col-md-12">
+
+
+        <form id="calendar_edit_form" style="margin:15px">
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="control-label">Select Employee</label>
+
+                    <select class="form-control" id="select-employee">
+
+                        <option value="-2" selected="selected" disabled="disabled">Select Employee</option>
+
+                        @foreach (ViewModels.Employee emp in Model)
+                        {
+                            <option value="@emp.id">@emp.employee_code - @emp.first_name @emp.last_name</option>
+                        }
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-3">
+                    <button class="btn btn-primary btn-sm waves-effect waves-light m-t-10" style="margin-top: 10px !important;padding-bottom: 15px !important;height: 35px !important;" id="save_calendar_button">Save Calendar</button>
+                </div>
+                <div class="col-3">
+                    &nbsp;
+                </div>
+                <div class="col-3 text-right">
+                    <a id="btnBack" class="btn btn-default" href="javascript: history.go(-1)">Back</a>
+                </div>
+            </div>
+
+
+        </form>
+
+
+
+
+        <h5 id="calendar_title" style="font-weight: bold;"></h5>
+        <div class="row" style="background-color:#eee;padding:55px;margin:15px;border-radius:25px;padding-bottom:10px">
+            <div id="calendar"></div>
+        </div>
+
+
+
+
+    </div>
+
+</div>
+
+
+@section JS {
+    <script src="@Url.Content("/CSCAL/employeeCalendar.js")"></script>
+    <script>
+
+        $(document).ready(function () {
+
+            var empCode2= @Html.Raw(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId);
+            $.ajax({
+                url: '/LM/LM/VerfiyDataHandler',
+                type: "POST",
+                data: { empId: empCode2 },
+                dataType: "json",
+
+                success: function (data) {
+                    if (data.LMExportGridData == false) {
+                        $("#btnExport").hide();
+                    } if (data.LMDownloadExcel == false) {
+                        $("#btn-excel-download").hide();
+                    }
+
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+
+
+            $('#accordion').accordion("option", "active", 1);
+            $("#save_calendar_button").button();
+            $(".datepicker").datepicker({
+                dateFormat: "dd-mm-yy"
+            });
+            setActiveLink("Manage Employee Calendar");
+
+            $('#select-employee').chosen().change(function () {
+                // set a global flag to true.
+                SELECTED_EMPLOYEE = $(this).val();
+
+                loadEmployeeCalendar();
+
+            });
+
+
+
+
+
+
+        });
+
+
+    </script>
+
+}

@@ -1,0 +1,633 @@
+﻿@{
+    ViewBag.Title = "TRMS - Employee Calendar";
+    Layout = "~/Areas/LM/Views/Shared/_LayoutCalendar.cshtml";
+
+    string LM_LEC_STF_LoginUserType = "";
+    if (MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeFunctionSLSID.ToString().Contains("lecturer"))
+    {
+        LM_LEC_STF_LoginUserType = "LEC";
+    }
+    else if (MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeFunctionSLSID.ToString().Contains("staff"))
+    {
+        LM_LEC_STF_LoginUserType = "STF";
+    }
+    else
+    {
+        LM_LEC_STF_LoginUserType = "LM";
+    }
+}
+
+@model ViewModels.employees_shifts
+
+<div class="row">
+    <div class="form-group col-md-12">
+
+
+        <div id="calendar_edit_form" style="margin:15px">
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="control-label">Select Employee</label>
+
+                    <select class="form-control" id="select-employee">
+
+                        <option value="-2" selected="selected" disabled="disabled">Select Employee</option>
+
+                        @foreach (ViewModels.Employee emp in Model.list_employee)
+                        {
+                            <option value="@emp.id">@emp.employee_code - @emp.first_name @emp.last_name</option>
+                        }
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-3">
+                    <button class="btn btn-primary btn-sm waves-effect waves-light" style="margin-top: 10px !important;padding-bottom: 15px !important;height: 35px !important;" id="save_calendar_button">Save Calendar</button>
+                </div>
+
+                <div class="col-md-3 m-t-20">
+                    @*@if (ViewBag.Message != null && ViewBag.Message.ToString().Contains("Success"))*@
+                    @if (Request.QueryString["result"] != null && Request.QueryString["result"].ToString() != "")
+                    {
+                        if (Request.QueryString["result"].ToString().Contains("Success"))
+                        {
+                            <label class="label msg" style="font-size:medium;  color:green;">@Request.QueryString["result"].ToString()</label>
+                        }
+                        else
+                        {
+                            <label class="label msg" style="font-size:medium;  color:red;">@Request.QueryString["result"].ToString()</label>
+                        }
+                    }
+                </div>
+
+                <div class="col-md-3 text-right">
+                    <a id="btnBack" class="btn btn-default" href="javascript: history.go(-1)">Back</a>
+                </div>
+            </div>
+
+
+        </div>
+
+        <h5 id="calendar_title" style="font-weight: bold;"></h5>
+        <div class="row" style="background-color:#eee;padding:55px;margin:15px;border-radius:25px;padding-bottom:10px">
+            <div id="calendar"></div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <hr />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                @using (Html.BeginForm("UploadFile", "ShiftManagement", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary()
+
+                    <div class="row">
+
+                        <div class="col-md-2 h4">
+                            &nbsp;Using File Upload:
+                        </div>
+
+
+                        <div class="col-md-2">
+                            <label class="btn btn-primary" for="my-file-selector">
+                                <input id="my-file-selector" onchange="alertFilename()" type="file" name="file" value="alert" accept=".csv" style="display:none;">
+                                Click to select file
+                            </label>
+                            <h3 class="label" id="file-name"></h3>
+                        </div>
+
+                        <div class="col-md-2">
+                            <button id="btnUpload" type="submit" value="Submit" class="btn btn-danger waves-effect waves-light">Upload File</button>
+                        </div>
+
+
+                        <div class="col-md-2">
+                            <label class="control-label">Download:</label>
+
+                            <a href="~/Uploads/calendar.csv" class="btn btn-default waves-effect waves-light">Sample File</a>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="row">
+                                <div class="col-md-4 text-right">
+                                    <label class="control-label">View Shift:</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <select class="form-control" id="view_shift_names">
+
+                                        @foreach (ViewModels.Shift shf in Model.list_shift)
+                                        {
+                                            <option value="@shf.id">@shf.name</option>
+                                        }
+
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                }
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <hr />
+            </div>
+        </div>
+
+        <form id="calendar_replicate_form">
+            <div class="row">
+
+                <div class="col-md-2 h4">
+                    &nbsp;Using Replication:
+                </div>
+
+                <div class="col-md-3">
+                    <label class="control-label">Select Employee</label>
+
+                    <select class="form-control" id="rep_employee_id">
+
+                        @*<option value="-1" selected="selected">ALL Team Employees</option>*@
+
+                        @foreach (ViewModels.Employee emp in Model.list_employee)
+                        {
+                            <option value="@emp.id">@emp.employee_code - @emp.first_name @emp.last_name</option>
+                        }
+
+                    </select>
+
+                </div>
+
+
+                <div class="col-md-3">
+                    <label class="control-label">Select Duration <span class="text-danger font-14">*</span></label>
+                    <select class="form-control" id="rep_month_id">
+                        <option value="1">@DateTime.Now.AddMonths(-1).ToString("MMMM yyyy") to @DateTime.Now.ToString("MMMM yyyy")</option>
+                        <option value="2">@DateTime.Now.ToString("MMMM yyyy") to @DateTime.Now.AddMonths(1).ToString("MMMM yyyy")</option>
+                    </select>
+                </div>
+
+
+                <div class="col-md-2">
+                    <div class="control-label">&nbsp;</div>
+                    <button id="replicate_calendar_button" type="submit" value="Submit" class="btn btn-success waves-effect waves-light">Process Now</button>
+                </div>
+
+                <div class="col-md-2">
+                    &nbsp;
+                </div>
+
+            </div>
+        </form>
+
+        <div class="row">
+            <div class="col-md-12">
+                <hr />
+            </div>
+        </div>
+        <form id="calendar_replicate_emp_to_emp">
+            <div class="row">
+
+                <div class="col-md-2 h4">
+                    &nbsp;Using Replication Emp To Emp:
+                </div>
+
+                <div class="col-md-2">
+                    <label class="control-label">Select Employee From</label>
+
+                    <select class="form-control" id="rep_employee_id_from">
+
+                        @*<option value="-1" selected="selected">ALL Team Employees</option>*@
+
+                        @foreach (ViewModels.Employee emp in Model.list_employee)
+                        {
+                            <option value="@emp.id">@emp.employee_code - @emp.first_name @emp.last_name</option>
+                        }
+
+                    </select>
+
+                </div>
+                <div class="col-md-2">
+                    <label class="control-label">Select Employeeto</label>
+
+                    <select class="form-control" id="rep_employee_id_to">
+
+                        @*<option value="-1" selected="selected">ALL Team Employees</option>*@
+
+                        @foreach (ViewModels.Employee emp in Model.list_employee)
+                        {
+                            <option value="@emp.id">@emp.employee_code - @emp.first_name @emp.last_name</option>
+                        }
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-2">
+                    <label class="control-label">Select Month <span class="text-danger font-14">*</span></label>
+                    <select class="form-control" id="rep_month_id_emp_to_emp">
+                        @*<option value="1">@DateTime.Now.AddMonths(-1).ToString("MMMM yyyy") to @DateTime.Now.ToString("MMMM yyyy")</option>
+        <option value="2">@DateTime.Now.ToString("MMMM yyyy") to @DateTime.Now.AddMonths(1).ToString("MMMM yyyy")</option>*@
+                        <option value="1">@DateTime.Now.ToString("MMMM yyyy")</option>
+                        <option value="2">@DateTime.Now.AddMonths(1).ToString("MMMM yyyy")</option>
+                    </select>
+                </div>
+
+
+                <div class="col-md-2">
+                    <div class="control-label">&nbsp;</div>
+                    <button id="replicate_calendar_button_emp_to_emp" type="submit" value="Submit" class="btn btn-success waves-effect waves-light">Replicate Now</button>
+                </div>
+
+                <div class="col-md-2">
+                    &nbsp;
+                </div>
+
+            </div>
+        </form>
+
+        <div class="row">
+            <div class="col-md-12">
+                <hr />
+            </div>
+        </div>
+
+        <form id="calendar_report_form" action="/LM/ShiftManagement/ManageEmployeeCalendar" method="post">
+            <div class="row">
+
+                <div class="col-md-2 h4">
+                    &nbsp;Download PDF:
+                </div>
+
+                <div class="col-md-2">
+                    <label class="control-label">Select Employee <span class="text-danger font-14">*</span></label>
+
+                    <select class="form-control" id="rpt_employee_id" name="rpt_employee_id">
+
+                        @*<option value="-2" selected="selected" disabled="disabled">Select Employee</option>*@
+                        <option value="-1" selected="selected">ALL Team Employee</option>
+                        @foreach (ViewModels.Employee emp in Model.list_employee)
+                        {
+                            <option value="@emp.id">@emp.employee_code - @emp.first_name @emp.last_name</option>
+                        }
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-2">
+                    <label class="control-label">Date From <span class="text-danger font-14">*</span></label>
+                    <input id="rpt_date_from" type="text" class="form-control datepicker" autocomplete="off" name="rpt_date_from" required />
+                </div>
+
+                <div class="col-md-2">
+                    <label class="control-label">Date To <span class="text-danger font-14">*</span></label>
+                    <input id="rpt_date_to" type="text" class="form-control datepicker" autocomplete="off" name="rpt_date_to" required />
+                </div>
+
+                @*<div class="col-md-3">
+                    <label class="control-label">Select Shift <span class="text-danger font-14">*</span></label>
+                    <select class="form-control" id="shift_employee">
+
+                        <option value="-2" selected="selected" disabled="disabled">-- Select One --</option>
+
+                        @foreach (ViewModels.Shift shf in Model.list_shift)
+                        {
+                            <option value="@shf.id">@shf.name</option>
+                        }
+
+                    </select>
+                </div>*@
+
+                <div class="col-md-4">
+                    <div class="control-label">&nbsp;</div>
+                    <button id="report_calendar_button" class="btn btn-primary btn-sm waves-effect waves-light">Download Now</button>
+                </div>
+
+            </div>
+        </form>
+
+
+        <form id="calendar_date_form" style="display: none;">
+            <div class="row">
+
+                <div class="col-md-3">
+                    <label class="control-label">Select Employee <span class="text-danger font-14">*</span></label>
+
+                    <select class="form-control" id="employee_id">
+
+                        <option value="-2" selected="selected" disabled="disabled">Select Employee</option>
+
+                        @foreach (ViewModels.Employee emp in Model.list_employee)
+                        {
+                            <option value="@emp.id">@emp.employee_code - @emp.first_name @emp.last_name</option>
+                        }
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-2">
+                    <label class="control-label">Date From <span class="text-danger font-14">*</span></label>
+                    <input id="date_from" type="text" class="form-control datepicker" autocomplete="off" name="time_in_from" required />
+                </div>
+
+                <div class="col-md-2">
+                    <label class="control-label">Date To <span class="text-danger font-14">*</span></label>
+                    <input id="date_to" type="text" class="form-control datepicker" autocomplete="off" name="time_in_to" required />
+                </div>
+
+
+                <div class="col-md-3">
+                    <label class="control-label">Select Shift <span class="text-danger font-14">*</span></label>
+                    <select class="form-control" id="shift_employee">
+
+                        <option value="-2" selected="selected" disabled="disabled">-- Select One --</option>
+
+                        @foreach (ViewModels.Shift shf in Model.list_shift)
+                        {
+                            <option value="@shf.id">@shf.name</option>
+                        }
+
+                    </select>
+                </div>
+
+                <div class="col-md-2 p-t-10">
+                    <button id="date_calendar_button" class="btn btn-primary btn-sm waves-effect waves-light">Save Calendar</button>
+                </div>
+
+
+            </div>
+
+
+        </form>
+
+
+    </div>
+
+</div>
+
+
+@section JS {
+    <script src="@Url.Content("/CSCAL/employeeCalendar.js")"></script>
+    <script>
+
+        function alertFilename() {
+            var thefile = document.getElementById('my-file-selector');
+            document.getElementById('file-name').innerHTML = thefile.value;
+        }
+
+        $(document).ready(function () {
+
+            var empCode2= @Html.Raw(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId);
+            $.ajax({
+                url: '/LM/LM/VerfiyDataHandler',
+                type: "POST",
+                data: { empId: empCode2 },
+                dataType: "json",
+
+                success: function (data) {
+                    if (data.LMExportGridData == false) {
+                        $("#btnExport").hide();
+                    } if (data.LMDownloadExcel == false) {
+                        $("#btn-excel-download").hide();
+                    }
+
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+
+
+            $('#accordion').accordion("option", "active", 1);
+            $("#save_calendar_button").button();
+            $(".datepicker").datepicker({
+                dateFormat: "dd-mm-yy"
+            });
+            setActiveLink("Manage Employee Calendar");
+
+            $('#select-employee').chosen().change(function () {
+                // set a global flag to true.
+                SELECTED_EMPLOYEE = $(this).val();
+
+                loadEmployeeCalendar();
+
+            });
+
+            $('#replicate_calendar_button').click(function () {
+
+                var r = confirm("Are you sure you want to perform Replication Process?");
+                if (r == false) {
+                    return false;
+                }
+
+                var emp_id = $('#rep_employee_id').val();
+                var mon_id = $('#rep_month_id').val();
+
+                $.ajax({
+                    contentType: 'application/json',
+                    type: 'POST',
+                    url: "/LM/ShiftManagement/replicateEmployeeCalendar",
+                    data: JSON.stringify({
+                        employee_id: emp_id,
+                        month_id: mon_id
+                    }),
+                    success: function (data) {
+                        console.log(data);
+                        if (data.success == true) {
+                            $('#toast').html('Calendar Saved');
+                            $('#toast').stop().fadeIn(400).delay(3000).fadeOut(400);
+                        } else {
+                            $('#toast').html('There was an error. the database server might be down.');
+                            $('#toast').stop().fadeIn(400).delay(3000).fadeOut(400);
+                        }
+
+                    },
+                    error: function (event) {
+
+                    },
+                    complete: function (data) {
+                    },
+                    dataType: 'text json'
+                });
+
+
+
+
+            });
+            $('#replicate_calendar_button_emp_to_emp').click(function () {
+                var emp_to = $('#rep_employee_id_to').val();
+                var emp_from = $('#rep_employee_id_from').val();
+                
+                if (emp_from == emp_to) {
+                    alert("Emp to Emp replication can't process on same Employees")
+                    $('#rep_employee_id_from').focus();
+                    return false;
+                }
+                var mon_id = $('#rep_month_id_emp_to_emp').val();
+                    var r = confirm("Are you sure you want to perform Replication Process?");
+                    if (r == false) {
+                        return false;
+                    }
+
+
+
+                    $.ajax({
+                        contentType: 'application/json',
+                        type: 'POST',
+                        url: "/LM/ShiftManagement/replicate_Employee_Calendar_EmpToEmp",
+                        data: JSON.stringify({
+                            employee_idfrom: emp_from,
+                            employee_idto: emp_to,
+                            month_id: mon_id
+                        }),
+                        success: function (data) {
+                            console.log(data);
+                            if (data.success == true) {
+                                $('#toast').html('Calendar Saved');
+                                $('#toast').stop().fadeIn(400).delay(3000).fadeOut(400);
+                            } else {
+                                $('#toast').html('There was an error. the database server might be down.');
+                                $('#toast').stop().fadeIn(400).delay(3000).fadeOut(400);
+                            }
+
+                        },
+                        error: function (event) {
+
+                        },
+                        complete: function (data) {
+                        },
+                        dataType: 'text json'
+                    });
+
+                
+
+
+            });
+
+            $('#date_calendar_button').click(function () {
+
+                alert('test');
+
+                var emp_id = $('#employee_id').val();
+                var dt_from = $('#date_from').val();
+                var dt_to = $('#date_to').val();
+                var emp_sh = $('#shift_employee').val();
+                var employeeCalendarArray = [];
+                var employeeCalendarOverrides = {};
+
+                if (dt_from == "") {
+                    alert("'From Date' is required.");
+                    return false;
+                }
+
+                if (dt_to == "") {
+                    alert("'To Date' is required.");
+                    return false;
+                }
+
+                //var fdate = new Date($('#date_from').val().substring(6, 11), $('#date_from').val().substring(3, 5), $('#date_from').val().substring(0, 2));
+                //var fdate = new Date(dt_from.substring(6, 4), dt_from.substring(3, 2), dt_from.substring(0, 2));
+
+                var fdate = new Date(dt_from.substring(6, 11), parseInt(dt_from.substring(3, 5)) - 1, dt_from.substring(0, 2));
+                var tdate = new Date(dt_to.substring(6, 11), parseInt(dt_to.substring(3, 5)) - 1, dt_to.substring(0, 2));
+
+                alert(fdate);
+                alert(tdate);
+
+                var diff_date = tdate.getDate() - fdate.getDate() + 1;
+
+                alert(diff_date);
+
+                for (var i = 0; i < diff_date; i++) {
+
+                    employeeCalendarOverrides = {};
+
+                    var rundate = new Date();
+                    rundate.setDate(fdate.getDate() + i);
+
+
+                    //var fdate = new Date(dt_from.substring(6, 11), parseInt(dt_from.substring(3, 5)) - 1, dt_from.substring(0, 2));
+
+                    console.log(rundate);
+
+                    var pDate = 0, pMon = 0, pYear = 0;
+
+                    pDate = pad(rundate.getDate(), 2);      // 0010
+                    alert(pDate);
+
+                    pMon = pad((rundate.getMonth() + 1), 2);      // 0010
+                    //alert(pMon);
+
+                    employeeCalendarOverrides = {
+                        date: (pMon + "/" + pDate + "/" + rundate.getFullYear()),
+                        type: ".",
+                        reason: ".",
+                        shift: emp_sh
+                    };
+
+                    employeeCalendarArray.push(employeeCalendarOverrides);
+                }
+
+            /*
+                public string date { get; set; }
+                public string type { get; set; }
+                public string reason { get; set; }
+                public string shift { get; set; }
+             */
+
+                //return false;
+
+                $.ajax({
+                    contentType: 'application/json',
+                    type: 'POST',
+                    url: "/LM/ShiftManagement/addOrUpdateEmpCalendar",
+                    data: JSON.stringify({
+                        employee_id: emp_id,
+                        overrides: employeeCalendarArray
+                    }),
+                    success: function (data) {
+                        console.log(data);
+                        if (data.success == true) {
+                            $('#toast').html('Calendar Saved');
+                            $('#toast').stop().fadeIn(400).delay(3000).fadeOut(400);
+                        } else {
+                            $('#toast').html('There was an error. the database server might be down.');
+                            $('#toast').stop().fadeIn(400).delay(3000).fadeOut(400);
+                        }
+
+                    },
+                    error: function (event) {
+
+                    },
+                    complete: function (data) {
+                    },
+                    dataType: 'text json'
+                });
+
+
+
+
+            });
+
+
+        });
+
+
+        function pad(n, width, z) {
+            z = z || '0';
+            n = n + '';
+            return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+        }
+
+    </script>
+
+}

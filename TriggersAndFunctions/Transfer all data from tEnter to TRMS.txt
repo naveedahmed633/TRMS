@@ -1,0 +1,6 @@
+INSERT INTO TimeTune.dbo.HaTransits (C_Name, C_Unique, C_Date, C_Time, L_UID, L_TID, active)
+SELECT C_Name, C_Unique, CONVERT(datetime, dbo.getDateString2(C_Date), 120) as C_Date,
+dbo.getDateString(C_Time), L_UID, L_TID, 1 AS active
+FROM UNIS.dbo.tEnter
+WHERE L_UID > -1
+AND CONVERT(datetime, dbo.getDateString2(C_Date), 120) <= CONVERT(datetime, GETDATE(), 120);

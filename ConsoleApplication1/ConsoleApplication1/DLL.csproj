@@ -1,0 +1,262 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\EntityFramework.6.4.4\build\EntityFramework.props" Condition="Exists('..\..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{562BD271-4AAC-40DC-A128-B04DEE56E717}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DLL</RootNamespace>
+    <AssemblyName>DLL</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto, Version=1.8.9.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
+      <HintPath>..\..\packages\BouncyCastle.1.8.9\lib\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="EPPlus, Version=7.0.8.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EPPlus.7.0.8\lib\net462\EPPlus.dll</HintPath>
+    </Reference>
+    <Reference Include="EPPlus.Interfaces, Version=6.1.1.0, Culture=neutral, PublicKeyToken=a694d7f3b0907a61, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EPPlus.Interfaces.6.1.1\lib\net462\EPPlus.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="EPPlus.System.Drawing, Version=6.1.1.0, Culture=neutral, PublicKeyToken=2308d35469c9bac0, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EPPlus.System.Drawing.6.1.1\lib\net462\EPPlus.System.Drawing.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp, Version=5.5.13.3, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\iTextSharp.5.5.13.3\lib\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IO.RecyclableMemoryStream, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.IO.RecyclableMemoryStream.3.0.0\lib\netstandard2.0\Microsoft.IO.RecyclableMemoryStream.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.ComponentModel.Annotations.5.0.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Commons.cs" />
+    <Compile Include="DbAccess.cs" />
+    <Compile Include="Migrations\201810010941223_Test.cs" />
+    <Compile Include="Migrations\201810010941223_Test.Designer.cs">
+      <DependentUpon>201810010941223_Test.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\AccessGroup.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\AttendanceRemarksRegister.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\AuditTrail.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\ConsolidatedAttendance.cs" />
+    <Compile Include="Models\ConsolidatedAttendancesArchive.cs" />
+    <Compile Include="Models\Context.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\ContractualStaff.cs" />
+    <Compile Include="Models\CS_AttendanceLog.cs" />
+    <Compile Include="Models\CS_PersistentLog.cs" />
+    <Compile Include="Models\DateTimeSpan.cs" />
+    <Compile Include="Models\Demo1.cs" />
+    <Compile Include="Models\Demo2.cs" />
+    <Compile Include="Models\Demo3.cs" />
+    <Compile Include="Models\DemoClass01.cs" />
+    <Compile Include="Models\DemoClass02.cs" />
+    <Compile Include="Models\AccessCodeValue.cs" />
+    <Compile Include="Models\Department.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\PositionStatus.cs" />
+    <Compile Include="Models\SiteStatus.cs" />
+    <Compile Include="Models\LeaveValidity.cs" />
+    <Compile Include="Models\PermissionReport.cs" />
+    <Compile Include="Models\GeoPhencingTerminal.cs" />
+    <Compile Include="Models\ExemptedEmployee.cs" />
+    <Compile Include="Models\LogMessage.cs" />
+    <Compile Include="Models\CMS_ClassSchedule.cs" />
+    <Compile Include="Models\OrganizationCampusType.cs" />
+    <Compile Include="Models\OrganizationCourseAttendance.cs" />
+    <Compile Include="Models\OrganizationProgramShift.cs" />
+    <Compile Include="Models\Gender.cs" />
+    <Compile Include="Models\StateProvince.cs" />
+    <Compile Include="Models\OrganizationCampusProgram.cs" />
+    <Compile Include="Models\OrganizationProgramCourseEnrollment.cs" />
+    <Compile Include="Models\OrganizationProgramCourse.cs" />
+    <Compile Include="Models\OrganizationProgramType.cs" />
+    <Compile Include="Models\OrganizationProgramCategory.cs" />
+    <Compile Include="Models\OrganizationProgram.cs" />
+    <Compile Include="Models\OrganizationCampusRoomCourseSchedule.cs" />
+    <Compile Include="Models\OrganizationCampusBuildingRoom.cs" />
+    <Compile Include="Models\OrganizationCampusBuilding.cs" />
+    <Compile Include="Models\OrganizationCampus.cs" />
+    <Compile Include="Models\OrgInformation.cs" />
+    <Compile Include="Models\Designation.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\Employee.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\EmployeeEvaluation.cs" />
+    <Compile Include="Models\EmployeeForgotPassword.cs" />
+    <Compile Include="Models\Function.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\FutureManualAttendance.cs" />
+    <Compile Include="Models\GeneralCalendar.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\GeneralCalendarOverride.cs" />
+    <Compile Include="Models\HaTransitsUnique.cs" />
+    <Compile Include="Models\ManualAttLog.cs" />
+    <Compile Include="Models\Organization.cs" />
+    <Compile Include="Models\PermissionSuperAdmin.cs" />
+    <Compile Include="Models\StringResource.cs" />
+    <Compile Include="Models\UserTracking.cs" />
+    <Compile Include="Models\PermissionLM.cs" />
+    <Compile Include="Models\PermissionHR.cs" />
+    <Compile Include="Models\PermissionUser.cs" />
+    <Compile Include="Models\Grade.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\Group.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\GroupCalendar.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\GroupCalendarOverride.cs" />
+    <Compile Include="Models\HaTransit.cs" />
+    <Compile Include="Models\BankName.cs" />
+    <Compile Include="Models\Letter.cs" />
+    <Compile Include="Models\LoanStatusType.cs" />
+    <Compile Include="Models\LoanType.cs" />
+    <Compile Include="Models\PaymentStatusType.cs" />
+    <Compile Include="Models\PaymentModeType.cs" />
+    <Compile Include="Models\Loan.cs" />
+    <Compile Include="Models\PayrollAmount.cs" />
+    <Compile Include="Models\Payroll.cs" />
+    <Compile Include="Models\LeaveApplication.cs" />
+    <Compile Include="Models\LeaveApprover.cs" />
+    <Compile Include="Models\LeaveReason.cs" />
+    <Compile Include="Models\LeaveSession.cs" />
+    <Compile Include="Models\LeaveStatus.cs" />
+    <Compile Include="Models\LeaveType.cs" />
+    <Compile Include="Models\Location.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\ManualAttendance.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\ManualGroupShiftAssigned.cs" />
+    <Compile Include="Models\PersistentAttendanceLog.cs" />
+    <Compile Include="Models\Region.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\Remark.cs" />
+    <Compile Include="Models\Shift.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\ShiftToGroupRegister.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\SkillsSets.cs" />
+    <Compile Include="Models\SLM.cs" />
+    <Compile Include="Models\Terminals.cs" />
+    <Compile Include="Models\TypeOfEmployment.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201810010941223_Test.resx">
+      <DependentUpon>201810010941223_Test.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Models\Context_Edit.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\EntityFramework.6.4.4\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('..\..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\EntityFramework.6.4.4\build\EntityFramework.targets'))" />
+  </Target>
+  <Import Project="..\..\packages\EntityFramework.6.4.4\build\EntityFramework.targets" Condition="Exists('..\..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

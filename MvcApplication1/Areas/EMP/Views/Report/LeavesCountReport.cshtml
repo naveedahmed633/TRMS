@@ -1,0 +1,1163 @@
+﻿@{
+    ViewBag.Title = "TRMS - Leaves Count Report";
+    Layout = "~/Areas/EMP/Views/Shared/_Layout.cshtml";
+
+    string EMP_STD_LEC_LoginUserType = "";
+    if (MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeFunctionSLSID.ToString().Contains("student"))
+    {
+        EMP_STD_LEC_LoginUserType = "STD";
+    }
+    else if (MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeFunctionSLSID.ToString().Contains("lecturer"))
+    {
+        EMP_STD_LEC_LoginUserType = "LEC";
+    }
+    else
+    {
+        EMP_STD_LEC_LoginUserType = "EMP";
+    }
+}
+
+@model List<ViewModels.LeaveApplicationInfo>
+
+    @{
+        //Titles - Leave Types
+        string TitleLeaves = "", TitleLeave01 = "", TitleLeave02 = "", TitleLeave03 = "", TitleLeave04 = "", TitleLeave05 = "", TitleLeave06 = "", TitleLeave07 = "", TitleLeave08 = "";
+        string LTCS = "", TitleLeave09 = "", TitleLeave10 = "", TitleLeave11 = "", TitleLeave12 = "", TitleLeave13 = "", TitleLeave14 = "", TitleLeave15 = "";
+        BLL.PdfReports.LeavesTypesTitles leavesTitles = new BLL.PdfReports.LeavesTypesTitles();
+        TitleLeaves = leavesTitles.getLeavesTypesTitles();
+        if (TitleLeaves != null && TitleLeaves.Contains(','))
+        {
+            string[] strSplit = TitleLeaves.Split(',');
+            if (strSplit != null && strSplit.Length > 0)
+            {
+                TitleLeave01 = strSplit[0].ToString(); TitleLeave02 = strSplit[1].ToString(); TitleLeave03 = strSplit[2].ToString(); TitleLeave04 = strSplit[3].ToString();
+                TitleLeave05 = strSplit[4].ToString(); TitleLeave06 = strSplit[5].ToString(); TitleLeave07 = strSplit[6].ToString(); TitleLeave08 = strSplit[7].ToString();
+                TitleLeave09 = strSplit[8].ToString(); TitleLeave10 = strSplit[9].ToString(); TitleLeave11 = strSplit[10].ToString(); TitleLeave12 = strSplit[11].ToString();
+                TitleLeave13 = strSplit[12].ToString(); TitleLeave14 = strSplit[13].ToString(); TitleLeave15 = strSplit[14].ToString();
+            }
+        }
+        else
+        {
+            TitleLeave01 = "Sick"; TitleLeave02 = "Casual"; TitleLeave03 = "Annual"; TitleLeave04 = "Other";
+            TitleLeave05 = "Tour"; TitleLeave06 = "Visit"; TitleLeave07 = "Meeting"; TitleLeave08 = "Maternity";
+            TitleLeave09 = "A"; TitleLeave10 = "B"; TitleLeave11 = "C"; TitleLeave12 = "D";
+            TitleLeave13 = "E"; TitleLeave14 = "F"; TitleLeave15 = "G";
+        }
+
+        bool LT01IsActive = false, LT02IsActive = false, LT03IsActive = false, LT04IsActive = false, LT05IsActive = false, LT06IsActive = false, LT07IsActive = false, LT08IsActive = false;
+        bool LT09IsActive = false, LT10IsActive = false, LT11IsActive = false, LT12IsActive = false, LT13IsActive = false, LT14IsActive = false, LT15IsActive = false;
+
+        int LT01DCount = 0, LT02DCount = 0, LT03DCount = 0, LT04DCount = 0, LT05DCount = 0, LT06DCount = 0, LT07DCount = 0, LT08DCount = 0;
+        int LT09DCount = 0, LT10DCount = 0, LT11DCount = 0, LT12DCount = 0, LT13DCount = 0, LT14DCount = 0, LT15DCount = 0;
+
+        int LT01MCount = 0, LT02MCount = 0, LT03MCount = 0, LT04MCount = 0, LT05MCount = 0, LT06MCount = 0, LT07MCount = 0, LT08MCount = 0;
+        int LT09MCount = 0, LT10MCount = 0, LT11MCount = 0, LT12MCount = 0, LT13MCount = 0, LT14MCount = 0, LT15MCount = 0;
+
+        //BLL.PdfReports.LeavesTypesTitles leavesTitles = new BLL.PdfReports.LeavesTypesTitles();
+        LTCS = leavesTitles.getLeavesTypesCountsStatus();
+        if (LTCS != null && LTCS.Contains(','))
+        {
+            string[] strSplit = LTCS.Split(',');
+            if (strSplit != null && strSplit.Length > 0)
+            {
+                //LT01DCount = int.Parse(strSplit[0].Split('-')[0].ToString()); LT02DCount = int.Parse(strSplit[1].Split('-')[0].ToString()); LT03DCount = int.Parse(strSplit[0].Split('-')[0].ToString()); LT04DCount = int.Parse(strSplit[3].Split('-')[0].ToString());
+                //LT05DCount = int.Parse(strSplit[4].Split('-')[0].ToString()); LT06DCount = int.Parse(strSplit[5].Split('-')[0].ToString()); LT07DCount = int.Parse(strSplit[6].Split('-')[0].ToString()); LT08DCount = int.Parse(strSplit[7].Split('-')[0].ToString());
+                //LT09DCount = int.Parse(strSplit[8].Split('-')[0].ToString()); LT10DCount = int.Parse(strSplit[9].Split('-')[0].ToString()); LT11DCount = int.Parse(strSplit[10].Split('-')[0].ToString()); LT12DCount = int.Parse(strSplit[11].Split('-')[0].ToString());
+                //LT13DCount = int.Parse(strSplit[12].Split('-')[0].ToString()); LT14DCount = int.Parse(strSplit[13].Split('-')[0].ToString()); LT15DCount = int.Parse(strSplit[14].Split('-')[0].ToString());
+
+                LT01MCount = int.Parse(strSplit[0].Split('-')[1].ToString()); LT02MCount = int.Parse(strSplit[1].Split('-')[1].ToString()); LT03MCount = int.Parse(strSplit[1].Split('-')[1].ToString()); LT04MCount = int.Parse(strSplit[3].Split('-')[1].ToString());
+                LT05MCount = int.Parse(strSplit[4].Split('-')[1].ToString()); LT06MCount = int.Parse(strSplit[5].Split('-')[1].ToString()); LT07MCount = int.Parse(strSplit[6].Split('-')[1].ToString()); LT08MCount = int.Parse(strSplit[7].Split('-')[1].ToString());
+                LT09MCount = int.Parse(strSplit[8].Split('-')[1].ToString()); LT10MCount = int.Parse(strSplit[9].Split('-')[1].ToString()); LT11MCount = int.Parse(strSplit[10].Split('-')[1].ToString()); LT12MCount = int.Parse(strSplit[11].Split('-')[1].ToString());
+                LT13MCount = int.Parse(strSplit[12].Split('-')[1].ToString()); LT14MCount = int.Parse(strSplit[13].Split('-')[1].ToString()); LT15MCount = int.Parse(strSplit[14].Split('-')[1].ToString());
+
+                LT01IsActive = strSplit[0].Split('-')[2].ToString() == "True" ? true : false; LT02IsActive = strSplit[1].Split('-')[2].ToString() == "True" ? true : false; LT03IsActive = strSplit[2].Split('-')[2].ToString() == "True" ? true : false; LT04IsActive = strSplit[3].Split('-')[2].ToString() == "True" ? true : false;
+                LT05IsActive = strSplit[4].Split('-')[2].ToString() == "True" ? true : false; LT06IsActive = strSplit[5].Split('-')[2].ToString() == "True" ? true : false; LT07IsActive = strSplit[6].Split('-')[2].ToString() == "True" ? true : false; LT08IsActive = strSplit[7].Split('-')[2].ToString() == "True" ? true : false;
+                LT09IsActive = strSplit[8].Split('-')[2].ToString() == "True" ? true : false; LT10IsActive = strSplit[9].Split('-')[2].ToString() == "True" ? true : false; LT11IsActive = strSplit[10].Split('-')[2].ToString() == "True" ? true : false; LT12IsActive = strSplit[11].Split('-')[2].ToString() == "True" ? true : false;
+                LT13IsActive = strSplit[12].Split('-')[2].ToString() == "True" ? true : false; LT14IsActive = strSplit[13].Split('-')[2].ToString() == "True" ? true : false; LT15IsActive = strSplit[14].Split('-')[2].ToString() == "True" ? true : false;
+            }
+        }
+    }
+
+
+    <style>
+        .b_absent {
+            border: 1px solid red;
+            border-radius: 10px;
+            background-color: #fff;
+            padding: 5px;
+        }
+
+
+        .b_sick {
+            border: 1px solid #52b1aa;
+            border-radius: 10px;
+            background-color: #edfdfc;
+            padding: 5px;
+        }
+
+        .b_casual {
+            border: 1px solid #7266ba;
+            border-radius: 10px;
+            background-color: #e6e4f7;
+            padding: 5px;
+        }
+
+
+        .b_annual {
+            border: 1px solid #f25350;
+            border-radius: 10px;
+            background-color: #ffe5e5;
+            padding: 5px;
+        }
+
+        .b_other {
+            border: 1px solid #f25350;
+            border-radius: 10px;
+            background-color: #ffe5e5;
+            padding: 5px;
+        }
+    </style>
+    <!-- Start content -->
+    <div class="container-fluid">
+        <!-- Page-Title -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="page-title-box">
+                    <h4 class="page-title">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("dashboard.welcome")  <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span></h4>
+                    <ol class="breadcrumb float-right">
+                        <li class="breadcrumb-item"><a href="/EMP/EMP/Dashboard">@EMP_STD_LEC_LoginUserType</a></li>
+                        <li class="breadcrumb-item active">Leaves</li>
+                    </ol>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page-Content -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card-box">
+                    <!-- <div class="panel-heading">
+                        <h4>Invoice</h4>
+                    </div> -->
+                    <div class="panel-body">
+                        <div class="clearfix">
+                            <div class="pull-left">
+                                <h3 class="text-right"><i class="ti-files"></i> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leaves") </h3>
+                            </div>
+                            <div class="pull-right small text-muted">
+                                @DateTime.Now.ToString("f")
+                            </div>
+                        </div>
+
+                        <hr>
+                        <input id="LT01IsActive" type="hidden" value="@LT01IsActive.ToString().ToLower()" /><input id="LT02IsActive" type="hidden" value="@LT02IsActive.ToString().ToLower()" /><input id="LT03IsActive" type="hidden" value="@LT03IsActive.ToString().ToLower()" /><input id="LT04IsActive" type="hidden" value="@LT04IsActive.ToString().ToLower()" />
+                        <input id="LT05IsActive" type="hidden" value="@LT05IsActive.ToString().ToLower()" /><input id="LT06IsActive" type="hidden" value="@LT06IsActive.ToString().ToLower()" /><input id="LT07IsActive" type="hidden" value="@LT07IsActive.ToString().ToLower()" /><input id="LT08IsActive" type="hidden" value="@LT08IsActive.ToString().ToLower()" />
+                        <input id="LT09IsActive" type="hidden" value="@LT09IsActive.ToString().ToLower()" /><input id="LT10IsActive" type="hidden" value="@LT10IsActive.ToString().ToLower()" /><input id="LT11IsActive" type="hidden" value="@LT11IsActive.ToString().ToLower()" /><input id="LT12IsActive" type="hidden" value="@LT12IsActive.ToString().ToLower()" />
+                        <input id="LT13IsActive" type="hidden" value="@LT13IsActive.ToString().ToLower()" /><input id="LT14IsActive" type="hidden" value="@LT14IsActive.ToString().ToLower()" /><input id="LT15IsActive" type="hidden" value="@LT15IsActive.ToString().ToLower()" />
+
+                        <div class="d-none row">
+                            <div class="col-4">
+
+                                <form id="attendance-form">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <label class="control-label">Date From <span class="text-danger font-14">*</span></label>
+                                            <input id="from_date" type="text" class="form-control datepicker" autocomplete="off" name="time_in_from" style="background-color: #FFF" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="row m-t-10">
+                                        <div class="col-12">
+                                            <label class="control-label">Date To <span class="text-danger font-14">*</span></label>
+                                            <input id="to_date" type="text" class="form-control datepicker" autocomplete="off" name="time_in_to" style="background-color: #FFF" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <button type="submit" id="search-consolidated-report" onclick="clearr();" class="btn btn-primary waves-effect waves-light m-t-10">Search</button>&nbsp;
+                                            <button type="submit" id="btn-excel-download" onclick="HideBarr();" class="btn btn-primary waves-effect waves-light m-t-10">Download Excel</button>
+                                            <span id="export_wait" style="display: none;" class="text-danger"><img src='/images/loader.gif' alt='processing' /></span>
+                                        </div>
+                                    </div>
+                                </form>
+
+                            </div>
+
+                            <div class="form-group col-3">
+                            </div>
+                            <div class="form-group col-5" style="font-style: italic;">
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="row">
+
+                            <div class="col-12">
+
+                                <form method="post" action="/EMP/Report/LeavesCountReport">
+                                    <span style="display: inline-block;">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leavesss")  <span class="text-danger font-14">*</span></span>
+                                    <span style="display: inline-block;">
+                                        <select id="session_year" name="session_year" class="form-control">
+                                            @{
+                                                if (ViewBag.SessionYearsList != null)
+                                                {
+                                                    foreach (int i in ViewBag.SessionYearsList as System.Collections.ArrayList)
+                                                    {
+                                                        <option value="@i" @{ if (ViewBag.SelectedSessionYear.ToString() == i.ToString()) { <text> selected</text> } }>Session @i</option>
+        }
+    }
+                                            }
+                                        </select>
+                                    </span>
+                                    <span style="display: inline-block;">
+                                        <button value="Submit" class="btn btn-primary">Submit</button>
+                                    </span>
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                        <hr />
+
+                        <div class="row">
+                            <div class="col-6">
+                                &nbsp;
+                            </div>
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-6" style="overflow: auto; height: 500px;">
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h3>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leavesllbd") </h3>
+                                    </div>
+                                </div>
+
+
+                                @if (Model != null && Model.Any())
+                                {
+                                    foreach (var item in Model)
+                                    {
+                                        // item.ApproverCode;
+                                        string iClassType = "b_sick", iTextStyle = "text-success", iLeaveType = "", iDashes = "", iDays = "";
+
+                                        if (item.LeaveTypeId == 1)
+                                        {
+                                            iClassType = "b_sick"; iTextStyle = "text-success";
+                                            iLeaveType = TitleLeave01 + " Leave"; iDashes = "---";
+                                        }
+                                        else if (item.LeaveTypeId == 2)
+                                        {
+                                            iClassType = "b_casual"; iTextStyle = "text-purple";
+                                            iLeaveType = TitleLeave02 + " Leave"; iDashes = "---";
+                                        }
+                                        else if (item.LeaveTypeId == 3)
+                                        {
+                                            iClassType = "b_annual"; iTextStyle = "text-warning";
+                                            iLeaveType = TitleLeave03 + " Leave"; iDashes = "---";
+                                        }
+                                        else if (item.LeaveTypeId == 4)
+                                        {
+                                            iClassType = "b_other"; iTextStyle = "text-danger";
+                                            iLeaveType = TitleLeave04 + " Leave"; iDashes = "---";
+                                        }
+                                        else if (item.LeaveTypeId == 5)
+                                        {
+                                            iClassType = "b_sick"; iTextStyle = "text-success";
+                                            iLeaveType = TitleLeave05 + " Leave"; iDashes = "---";
+                                        }
+                                        else if (item.LeaveTypeId == 6)
+                                        {
+                                            iClassType = "b_casual"; iTextStyle = "text-purple";
+                                            iLeaveType = TitleLeave06 + " Leave"; iDashes = "---";
+                                        }
+                                        else if (item.LeaveTypeId == 7)
+                                        {
+                                            iClassType = "b_annual"; iTextStyle = "text-warning";
+                                            iLeaveType = TitleLeave07 + " Leave"; iDashes = "---";
+                                        }
+                                        else if (item.LeaveTypeId == 8)
+                                        {
+                                            iClassType = "b_other"; iTextStyle = "text-danger";
+                                            iLeaveType = TitleLeave08 + " Leave"; iDashes = "---";
+                                        }
+                                        else if (item.LeaveTypeId == 9)
+                                        {
+                                            iClassType = "b_sick"; iTextStyle = "text-success";
+                                            iLeaveType = TitleLeave09 + " Leave"; iDashes = "---";
+                                        }
+                                        else if (item.LeaveTypeId == 10)
+                                        {
+                                            iClassType = "b_casual"; iTextStyle = "text-purple";
+                                            iLeaveType = TitleLeave10 + " Leave"; iDashes = "---";
+                                        }
+                                        else if (item.LeaveTypeId == 11)
+                                        {
+                                            iClassType = "b_annual"; iTextStyle = "text-warning";
+                                            iLeaveType = TitleLeave11 + " Leave"; iDashes = "---";
+                                        }
+                                        else if (item.LeaveTypeId == 12)
+                                        {
+                                            iClassType = "b_other"; iTextStyle = "text-danger";
+                                            iLeaveType = TitleLeave12 + " Leave"; iDashes = "---";
+                                        }
+                                        else if (item.LeaveTypeId == 13)
+                                        {
+                                            iClassType = "b_sick"; iTextStyle = "text-success";
+                                            iLeaveType = TitleLeave13 + " Leave"; iDashes = "---";
+                                        }
+                                        else if (item.LeaveTypeId == 14)
+                                        {
+                                            iClassType = "b_casual"; iTextStyle = "text-purple";
+                                            iLeaveType = TitleLeave14 + " Leave"; iDashes = "---";
+                                        }
+                                        else if (item.LeaveTypeId == 15)
+                                        {
+                                            iClassType = "b_annual"; iTextStyle = "text-warning";
+                                            iLeaveType = TitleLeave15 + " Leave"; iDashes = "---";
+                                        }
+                                        else
+                                        {
+                                            iClassType = "b_other"; iTextStyle = "text-danger";
+                                            iLeaveType = TitleLeave08 + " Leave"; iDashes = "---";
+                                        }
+
+                                        if (item.DaysCount > 1)
+                                        {
+                                            iDays = "Days";
+                                        }
+                                        else
+                                        {
+                                            iDays = "Day";
+                                        }
+
+                                        <div class="row p-20">
+                                            <div class="col-4 text-primary">
+                                                <i class="fa fa-circle m-r-5" style="color: #86bcd0;">&nbsp;</i>@item.FromDate.ToString("dd MMM yyyy")
+                                            </div>
+                                            <div class="col-6 @iTextStyle">
+                                                --- <span class="@iClassType">@iLeaveType</span> @iDashes
+                                            </div>
+                                            <div class="col-2 text-primary">
+                                                @item.DaysCount @iDays
+                                            </div>
+                                        </div>
+
+                                    }
+
+                                }
+
+                            </div>
+
+                            <div class="col-6">
+
+                                <div class="row">
+                                    <div class="col-12">
+
+
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <h3>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leavesb") </h3>
+                                            </div>
+                                        </div>
+
+
+                                        <table class="table table-striped table-bordered dataTable dt-responsive nowrap no-footer small" style="width: 100%;">
+                                            <thead>
+                                                <tr class="bg-muted">
+                                                    <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leaveslt")</th>
+                                                    <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leavesla")</th>
+                                                    <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("leaveslaed")</th>
+                                                </tr>
+                                                <tr>
+                                                    <td>@TitleLeave01 Leaves</td>
+                                                    <td>@ViewBag.AvailedSickLeaves</td>
+                                                    <td>@ViewBag.AllocatedSickLeaves</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>@TitleLeave02 Leaves</td>
+                                                    <td>@ViewBag.AvailedCasualLeaves</td>
+                                                    <td>@ViewBag.AllocatedCasualLeaves</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>@TitleLeave03 Leaves</td>
+                                                    <td>@ViewBag.AvailedAnnualLeaves</td>
+                                                    <td>@ViewBag.AllocatedAnnualLeaves</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>@TitleLeave04 Leaves</td>
+                                                    <td>@ViewBag.AvailedOtherLeaves</td>
+                                                    <td>@ViewBag.AllocatedOtherLeaves</td>
+                                                </tr>
+
+                                                @{
+                                                    if (LT05IsActive)
+                                                    {
+                                                        if (ViewBag.AllocatedLeaveType01 != null && int.Parse(ViewBag.AllocatedLeaveType01.ToString()) > 0)
+                                                        {
+                                                            <tr>
+                                                                <td>@TitleLeave05 Leaves</td>
+                                                                <td>@ViewBag.AvailedLeaveType01</td>
+                                                                <td>@ViewBag.AllocatedLeaveType01</td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                }
+
+                                                @{
+                                                    if (LT06IsActive)
+                                                    {
+                                                        if (ViewBag.AllocatedLeaveType02 != null && int.Parse(ViewBag.AllocatedLeaveType02.ToString()) > 0)
+                                                        {
+                                                            <tr>
+                                                                <td>@TitleLeave06 Leaves</td>
+                                                                <td>@ViewBag.AvailedLeaveType02</td>
+                                                                <td>@ViewBag.AllocatedLeaveType02</td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                }
+
+                                                @{
+                                                    if (LT07IsActive)
+                                                    {
+                                                        if (ViewBag.AllocatedLeaveType03 != null && int.Parse(ViewBag.AllocatedLeaveType03.ToString()) > 0)
+                                                        {
+                                                            <tr>
+                                                                <td>@TitleLeave07 Leaves</td>
+                                                                <td>@ViewBag.AvailedLeaveType03</td>
+                                                                <td>@ViewBag.AllocatedLeaveType03</td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                }
+
+                                                @{
+                                                    if (LT08IsActive)
+                                                    {
+                                                        if (ViewBag.AllocatedLeaveType04 != null && int.Parse(ViewBag.AllocatedLeaveType04.ToString()) > 0)
+                                                        {
+                                                            <tr>
+                                                                <td>@TitleLeave08 Leaves</td>
+                                                                <td>@ViewBag.AvailedLeaveType04</td>
+                                                                <td>@ViewBag.AllocatedLeaveType04</td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                }
+
+                                                @{
+                                                    if (LT09IsActive)
+                                                    {
+                                                        if (ViewBag.AllocatedLeaveType05 != null && int.Parse(ViewBag.AllocatedLeaveType05.ToString()) > 0)
+                                                        {
+                                                            <tr>
+                                                                <td>@TitleLeave09 Leaves</td>
+                                                                <td>@ViewBag.AvailedLeaveType05</td>
+                                                                <td>@ViewBag.AllocatedLeaveType05</td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                }
+
+                                                @{
+                                                    if (LT10IsActive)
+                                                    {
+                                                        if (ViewBag.AllocatedLeaveType06 != null && int.Parse(ViewBag.AllocatedLeaveType06.ToString()) > 0)
+                                                        {
+                                                            <tr>
+                                                                <td>@TitleLeave10 Leaves</td>
+                                                                <td>@ViewBag.AvailedLeaveType06</td>
+                                                                <td>@ViewBag.AllocatedLeaveType06</td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                }
+
+                                                @{
+                                                    if (LT11IsActive)
+                                                    {
+                                                        if (ViewBag.AllocatedLeaveType07 != null && int.Parse(ViewBag.AllocatedLeaveType07.ToString()) > 0)
+                                                        {
+                                                            <tr>
+                                                                <td>@TitleLeave11 Leaves</td>
+                                                                <td>@ViewBag.AvailedLeaveType07</td>
+                                                                <td>@ViewBag.AllocatedLeaveType07</td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                }
+
+                                                @{
+                                                    if (LT12IsActive)
+                                                    {
+                                                        if (ViewBag.AllocatedLeaveType08 != null && int.Parse(ViewBag.AllocatedLeaveType08.ToString()) > 0)
+                                                        {
+                                                            <tr>
+                                                                <td>@TitleLeave12 Leaves</td>
+                                                                <td>@ViewBag.AvailedLeaveType08</td>
+                                                                <td>@ViewBag.AllocatedLeaveType08</td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                }
+
+                                                @{
+                                                    if (LT13IsActive)
+                                                    {
+                                                        if (ViewBag.AllocatedLeaveType09 != null && int.Parse(ViewBag.AllocatedLeaveType09.ToString()) > 0)
+                                                        {
+                                                            <tr>
+                                                                <td>@TitleLeave13 Leaves</td>
+                                                                <td>@ViewBag.AvailedLeaveType09</td>
+                                                                <td>@ViewBag.AllocatedLeaveType09</td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                }
+
+                                                @{
+                                                    if (LT14IsActive)
+                                                    {
+                                                        if (ViewBag.AllocatedLeaveType10 != null && int.Parse(ViewBag.AllocatedLeaveType10.ToString()) > 0)
+                                                        {
+                                                            <tr>
+                                                                <td>@TitleLeave14 Leaves</td>
+                                                                <td>@ViewBag.AvailedLeaveType10</td>
+                                                                <td>@ViewBag.AllocatedLeaveType10</td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                }
+
+                                                @{
+                                                    if (LT15IsActive)
+                                                    {
+                                                        if (ViewBag.AllocatedLeaveType11 != null && int.Parse(ViewBag.AllocatedLeaveType11.ToString()) > 0)
+                                                        {
+                                                            <tr>
+                                                                <td>@TitleLeave15 Leaves</td>
+                                                                <td>@ViewBag.AvailedLeaveType11</td>
+                                                                <td>@ViewBag.AllocatedLeaveType11</td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                }
+
+
+
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
+
+                                    </div>
+                                </div>
+
+
+
+
+
+                            </div>
+
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+
+                                <div class="portlet">
+                                    <!-- /primary heading -->
+                                    <div class="portlet-heading">
+                                        <h3 class="portlet-title text-dark"> Bar Chart representing Leaves Availed out of Allowed  </h3>
+                                        <div class="portlet-widgets">
+                                            <a href="javascript:;" data-toggle="reload"><i class="ion-refresh"></i></a>
+                                            <span class="divider"></span>
+                                            <a data-toggle="collapse" data-parent="#accordion1" href="#bg-default"><i class="ion-minus-round"></i></a>
+                                            <span class="divider"></span>
+                                            <a href="#" data-toggle="remove"><i class="ion-close-round"></i></a>
+                                        </div>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                    <div id="bg-default" class="panel-collapse collapse show">
+                                        <div class="portlet-body">
+                                            <div class="text-center">
+                                                <ul class="list-inline chart-detail-list">
+                                                    <li class="list-inline-item">
+                                                        <h5><i class="fa fa-circle m-r-5" style="color: #f58f5e;"></i>Availed Leaves</h5>
+                                                    </li>
+                                                    <li class="list-inline-item">
+                                                        <h5><i class="fa fa-circle m-r-5" style="color: #3bafda;"></i>Allowed Leaves</h5>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div id="morris-bar-chart" style="height: 300px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                        <div class="d-none row">
+                            <div class="col-12">
+                                <table id="attendance_table" class="table table-striped table-bordered dataTable dt-responsive nowrap no-footer small" style="width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>Employee Code</th>
+                                            <th>Availed Sick Leaves</th>
+                                            <th>Availed Casual Leaves</th>
+                                            <th>Availed Annual Leaves</th>
+                                            <th>Availed Other Leaves</th>
+                                            <th>Allocated Sick Leaves</th>
+                                            <th>Allocated Casual Leaves</th>
+                                            <th>Allocated Annual Leaves</th>
+                                            <th>Allocated Other Leaves</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="row m-t-10">
+                            <div class="col-12">
+                                <button type="submit" id="btnExport" onclick="CheckData();" class="d-none btn btn-primary waves-effect waves-light">Export Grid Data</button>
+                                <span id="demo" class="text-danger"></span>
+                                <p id="export_wait2" style="display: none;" class="text-danger"><img src='/images/loader.gif' alt='processing' /></p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End content -->
+
+    @section JS {
+        @*<script src="~/Scripts/zingchart.min.js"></script>*@
+        <script type="text/javascript" src="@Href("~/Scripts/chosen.ajaxaddition.jquery.js")"></script>
+        @*<script type="text/javascript" src="@Href("~/Scripts/monthpicker.js")"></script>*@
+        <script type="text/javascript">
+            //<!-- src = "/pages/morris.init.emp.js" -- >
+
+
+            /**
+             * Theme: Minton Admin Template
+             * Author: Coderthemes
+             * Morris Chart
+             */
+
+            !function ($) {
+                "use strict";
+
+                var MorrisCharts = function () { };
+
+
+
+                //creates Bar chart
+                MorrisCharts.prototype.createBarChart = function (element, data, xkey, ykeys, labels, lineColors) {
+                    Morris.Bar({
+                        element: element,
+                        data: data,
+                        xkey: xkey,
+                        ykeys: ykeys,
+                        labels: labels,
+                        hideHover: 'auto',
+                        resize: true, //defaulted to true
+                        gridLineColor: '#eeeeee',
+                        barColors: lineColors
+                    });
+                },
+
+                MorrisCharts.prototype.init = function () {
+
+                    //creating Stacked chart
+                    //var $stckedData = [
+                    //    { y: 'Sick', a: 5, b: 7 },
+                    //    { y: 'Casual', a: 2, b: 8 },
+                    //    { y: 'Annual', a: 4, b: 10 }
+                    //];
+
+                    //creating Stacked chart
+                    @*var $stckedData = [
+                    { y: 'Sick', a: @ViewBag.AvailedSickLeaves, b: @ViewBag.AllocatedSickLeaves },
+                    { y: 'Casual', a: @ViewBag.AvailedCasualLeaves, b: @ViewBag.AllocatedCasualLeaves },
+                    { y: 'Annual', a: @ViewBag.AvailedAnnualLeaves, b: @ViewBag.AllocatedAnnualLeaves }
+                ];
+                this.createStackedChart('morris-bar-stacked', $stckedData, 'y', ['a', 'b'], ['Availed Leaves', 'Total'], ["#f58f5e", "#ededed"]);*@
+
+                    var $barDataTESTING  = [
+                     { y: '@TitleLeave01', a: @ViewBag.AvailedSickLeaves, b: @ViewBag.AllocatedSickLeaves },
+                     { y: '@TitleLeave02', a: @ViewBag.AvailedCasualLeaves,  b: @ViewBag.AllocatedCasualLeaves },
+                     { y: '@TitleLeave03', a: @ViewBag.AvailedAnnualLeaves,  b: @ViewBag.AllocatedAnnualLeaves },
+                     { y: '@TitleLeave04', a: @ViewBag.AvailedOtherLeaves,  b: @ViewBag.AllocatedOtherLeaves },
+                     { y: '@TitleLeave05', a: @ViewBag.AvailedLeaveType01,  b: @ViewBag.AllocatedLeaveType01 },
+                     { y: '@TitleLeave06', a: @ViewBag.AvailedLeaveType02,  b: @ViewBag.AllocatedLeaveType02 },
+                     { y: '@TitleLeave07', a: @ViewBag.AvailedLeaveType03,  b: @ViewBag.AllocatedLeaveType03 },
+                     { y: '@TitleLeave08', a: @ViewBag.AvailedLeaveType04,  b: @ViewBag.AllocatedLeaveType04 }
+                    ];
+                    //this.createBarChart('morris-bar-chart', $barData, 'y', ['a', 'b'], ['Availed Leaves', 'Allowed Leaves'], ["#f58f5e", "#3bafda"]);
+
+                    var yTitles = []; var aTitles = []; var bTitles = [];
+                    yTitles.push("@TitleLeave01"); aTitles.push(@ViewBag.AvailedSickLeaves); bTitles.push(@ViewBag.AllocatedSickLeaves);
+                    yTitles.push("@TitleLeave02"); aTitles.push(@ViewBag.AvailedCasualLeaves); bTitles.push(@ViewBag.AllocatedCasualLeaves);
+                    yTitles.push("@TitleLeave03"); aTitles.push(@ViewBag.AvailedAnnualLeaves); bTitles.push(@ViewBag.AllocatedAnnualLeaves);
+                    yTitles.push("@TitleLeave04"); aTitles.push(@ViewBag.AvailedOtherLeaves); bTitles.push(@ViewBag.AllocatedOtherLeaves);
+
+                    var lc = 0; var valLT = 0;
+
+                    valLT = 0; valLT = @(ViewBag.AllocatedLeaveType01 == null ? 0 : ViewBag.AllocatedLeaveType01);
+                    if (valLT > 0 && $('#LT05IsActive').val() == "true")
+                    {
+                        lc = lc + 1;
+                        yTitles.push("@TitleLeave05"); aTitles.push(@ViewBag.AvailedLeaveType01); bTitles.push(valLT);
+                    }
+
+                    valLT = 0; valLT = @(ViewBag.AllocatedLeaveType02 == null ? 0 : ViewBag.AllocatedLeaveType02);
+                    if (valLT > 0 && $('#LT06IsActive').val() == "true")
+                    {
+                        lc = lc + 1;
+                        yTitles.push("@TitleLeave06"); aTitles.push(@ViewBag.AvailedLeaveType02); bTitles.push(valLT);
+                    }
+
+                    valLT = 0; valLT = @(ViewBag.AllocatedLeaveType03 == null ? 0 : ViewBag.AllocatedLeaveType03);
+                    if (valLT > 0 && $('#LT07IsActive').val() == "true")
+                    {
+                        lc = lc + 1;
+                        yTitles.push("@TitleLeave07"); aTitles.push(@ViewBag.AvailedLeaveType03); bTitles.push(valLT);
+                    }
+
+                    valLT = 0; valLT = @(ViewBag.AllocatedLeaveType04 == null ? 0 : ViewBag.AllocatedLeaveType04);
+                    if (valLT > 0 && $('#LT08IsActive').val() == "true")
+                    {
+                        lc = lc + 1;
+                        yTitles.push("@TitleLeave08"); aTitles.push(@ViewBag.AvailedLeaveType04); bTitles.push(valLT);
+                    }
+
+                    valLT = 0; valLT = @(ViewBag.AllocatedLeaveType05 == null ? 0 : ViewBag.AllocatedLeaveType05);
+                    if (valLT > 0 && $('#LT09IsActive').val() == "true")
+                    {
+                        lc = lc + 1;
+                        yTitles.push("@TitleLeave09"); aTitles.push(@ViewBag.AvailedLeaveType05); bTitles.push(valLT);
+                    }
+
+                    valLT = 0; valLT = @(ViewBag.AllocatedLeaveType06 == null ? 0 : ViewBag.AllocatedLeaveType06);
+                    if (valLT > 0 && $('#LT10IsActive').val() == "true")
+                    {
+                        lc = lc + 1;
+                        yTitles.push("@TitleLeave10"); aTitles.push(@ViewBag.AvailedLeaveType06); bTitles.push(valLT);
+                    }
+
+                    valLT = 0; valLT = @(ViewBag.AllocatedLeaveType07 == null ? 0 : ViewBag.AllocatedLeaveType07);
+                    if (valLT > 0 && $('#LT11IsActive').val() == "true")
+                    {
+                        lc = lc + 1;
+                        yTitles.push("@TitleLeave11"); aTitles.push(@ViewBag.AvailedLeaveType07); bTitles.push(valLT);
+                    }
+
+                    valLT = 0; valLT = @(ViewBag.AllocatedLeaveType08 == null ? 0 : ViewBag.AllocatedLeaveType08);
+                    if (valLT > 0 && $('#LT12IsActive').val() == "true")
+                    {
+                        lc = lc + 1;
+                        yTitles.push("@TitleLeave12"); aTitles.push(@ViewBag.AvailedLeaveType08); bTitles.push(valLT);
+                    }
+
+                    valLT = 0; valLT = @(ViewBag.AllocatedLeaveType09 == null ? 0 : ViewBag.AllocatedLeaveType09);
+                    if (valLT > 0 && $('#LT13IsActive').val() == "true")
+                    {
+                        lc = lc + 1;
+                        yTitles.push("@TitleLeave13"); aTitles.push(@ViewBag.AvailedLeaveType09); bTitles.push(valLT);
+                    }
+
+                    valLT = 0; valLT = @(ViewBag.AllocatedLeaveType10 == null ? 0 : ViewBag.AllocatedLeaveType10);
+                    if (valLT > 0 && $('#LT14IsActive').val() == "true")
+                    {
+                        lc = lc + 1;
+                        yTitles.push("@TitleLeave14"); aTitles.push(@ViewBag.AvailedLeaveType10); bTitles.push(valLT);
+                    }
+
+                    valLT = 0; valLT = @(ViewBag.AllocatedLeaveType11 == null ? 0 : ViewBag.AllocatedLeaveType11);
+                    if (valLT > 0 && $('#LT15IsActive').val() == "true")
+                    {
+                        lc = lc + 1;
+                        yTitles.push("@TitleLeave15"); aTitles.push(@ViewBag.AvailedLeaveType11); bTitles.push(valLT);
+                    }
+
+                    var $barData = [];
+                    for(var i=0; i < (4+lc); i++)  {
+                        $barData.push({"y" : yTitles[i], "a" : aTitles[i], "b" : bTitles[i] });
+                    }
+                    //for(var i=0; i < 14; i++)  {
+                    //alert(JSON.stringify(columns[i]));
+                    //}
+                    this.createBarChart('morris-bar-chart', $barData, 'y', ['a', 'b'], ['Availed Leaves', 'Allowed Leaves'], ["#f58f5e", "#3bafda"]);
+
+                },
+                //init
+                $.MorrisCharts = new MorrisCharts, $.MorrisCharts.Constructor = MorrisCharts
+            }(window.jQuery),
+
+            //initializing
+                function ($) {
+                    "use strict";
+                    $.MorrisCharts.init();
+                }(window.jQuery);
+
+        </script>
+
+
+        <script>
+            function HideBarr() { HideMessage(); }
+
+
+            function CheckData() {
+                var ss = $("#attendance_table tr").children("td:first").text();
+                if (ss == "No data available in table" || ss == "" || ss == " ") {
+                    $('#export_wait2').show();
+                    document.getElementById("demo").innerHTML = "No Data Found.";
+                    HideBarExcle2();
+                }
+                else {
+
+                    setupTableExportButton('#attendance_table', 'ConsolidatedAttendance');
+                    $('#export_wait2').show();
+                    HideBarExcle2();
+
+                }
+            }
+            function HideMessage() { setTimeout(function () { $('#export_wait').hide(); document.getElementById("btn-excel-download").disabled = false; }, 5000); }
+            function HideBarExcle2() { setTimeout(function () { $('#export_wait2').hide(); document.getElementById("demo").innerHTML = ""; }, 1500); }
+
+
+
+            function searchReport() {
+
+
+                // get the entered string
+                var toSearch = $('attendance_table_filter input').val();
+
+                $('#attendance_table').DataTable().search(toSearch);
+                $('#attendance_table').DataTable().draw();
+
+
+            }
+            function clearr() {
+                $('input[type="search"]').focus();
+                $('input[type="search"]').val("");
+                $('#attendance_table').DataTable().search("");
+                $('#attendance_table').DataTable().draw();
+                $('input[type="search"]').blur();
+
+                document.getElementById("btn-excel-download").disabled = false;
+                $('#export_wait').hide();
+                $('#export_wait2').hide();
+                document.getElementById("demo").innerHTML = "";
+
+            }
+
+
+            function initReportDataTable(identifier, url, columns) {
+                var oTable = $(identifier).DataTable({
+                    "searchDelay": 2000,
+                    "scrollY": "300px",
+                    "serverSide": true,
+                    "ajax": {
+                        "type": "POST",
+                        "url": url,
+                        "contentType": 'application/json; charset=utf-8',
+                        'data': function (data) {
+
+                            //data.employee_id = $('#consolidated-employees').val();
+                            data.from_date = $('#from_date').val();
+                            data.to_date = $('#to_date').val();
+
+                            return data = JSON.stringify(data);
+                        }
+                    },
+                    "scrollX": true,
+                    "scrollCollapse": true,
+                    "processing": true,
+                    "paging": true,
+                    "deferRender": true,
+                    "columns": columns,
+                    "order": [0, "desc"]
+
+                });
+
+                oTable.on("draw", function () {
+                    var keyword = $(identifier + '_filter > label:eq(0) > input').val();
+                    $(identifier).unmark();
+                    $(identifier).mark(keyword, {});
+
+
+
+                    $(identifier + ' tbody tr').click(function (e) {
+                        $('tr.row_selected').removeClass('row_selected');
+                        $(this).addClass('row_selected');
+                    });
+                });
+
+
+                // set the z-index of the 'processing...' overlay
+                // to a great number, so that it may always display
+                // on top of the table. Also set the text color
+                // to black as it is white by default.
+                $(identifier + '_processing').css({
+                    "z-index": "1000",
+                    "color": "rgb(0, 0, 0)"
+                });
+
+
+                // initiate search one second after the user
+                // stops typing.
+                function setSearchDelayOnDataTable(idSelector) {
+                    // remove all events from the search box
+                    $(idSelector + '_filter input').off();
+
+
+                    function customDataTableSearch() {
+
+                        // get the entered string
+                        var toSearch = $(idSelector + '_filter input').val();
+
+                        // do nothing if the string is null.
+                        // I've not tested this, it is just
+                        // in case.
+                        if (toSearch == null) {
+                            return;
+                        }
+
+                        // initiate search programatically.
+                        $(idSelector).DataTable().search(toSearch).draw();
+                    }
+
+                    // this variable holds the timer
+                    var timeout;
+
+                    // register a keypress on the search box
+                    $(idSelector + '_filter input').keypress(function () {
+                        if (timeout != null) {
+                            clearTimeout(timeout);
+                            timeout = null;
+                        }
+
+                        // timeout set to 1 second.
+                        timeout = setTimeout(customDataTableSearch, 1000);
+                    });
+
+                }
+
+                setSearchDelayOnDataTable(identifier);
+            }
+
+
+            $(document).ready(function () {
+                //$('#accordion').accordion("option", "active", 2);
+                //initDataTable("#attendance_table");
+                //setActiveLink("Consolidated Report");
+
+                $(".datepicker").datepicker({ dateFormat: 'dd-mm-yy' });
+
+                $('.hasDatepicker').keydown(function (e) {
+                    var unicode = e.keyCode ? e.keyCode : e.charCode;
+                    if (unicode != 13 && unicode != 8 && unicode != 9) { e.preventDefault(); }
+                });
+
+                $('.hasDatepicker').keydown(function (e) {
+                    var unicode = e.keyCode ? e.keyCode : e.charCode;
+                    if (unicode == 8) { e.preventDefault(); e.stopPropagation(); }
+                });
+                //$('#btnExport').button();
+
+                //setupTableExportButton('#attendance_table', 'AttendanceReport');
+                var present = 0;
+                var absent = 0;
+                var late = 0;
+                var onTime = 0;
+                var earlyGone = 0;
+                //  serializeAndSend();
+                //function serializeAndSend() {
+                //    var obj = {
+                //        from_date: $('#from_date').val(),
+                //        to_date: $('#to_date').val()
+                //    };
+                //    $.ajax({
+                //        url: "graphForConsolidated",
+                //        type: 'POST',
+                //        contentType: 'application/json',
+                //        data: JSON.stringify(obj),
+                //        success: function (data) {
+                //            present = data.dashboardElement.present;
+                //            absent = data.dashboardElement.absent;
+                //            late = data.dashboardElement.late;
+                //            onTime = data.dashboardElement.onTime;
+                //            earlyGone = data.dashboardElement.earlyGone;
+                //            console.log(present + " " + absent + " " + late + " " + earlyGone + " " + onTime);
+                //            loadGraph(present, absent, late, earlyGone, onTime);
+                //        }
+                //    });
+
+                //};
+                var check = false;
+
+
+                //
+                //$('#search-consolidated-report').button();
+                $("#search-consolidated-report").click(function (e) {
+
+                    if ($('#from_date').val() == "") {
+                        alert("Please select 'From Date'");
+                        $('#from_date').focus();
+                        return false;
+                    }
+
+                    if ($('#to_date').val() == "") {
+                        alert("Please select 'To Date'");
+                        $('#to_date').focus();
+                        return false;
+                    }
+
+                    e.preventDefault();
+
+                    //$('input[type="search"]').focus();
+                    //$('input[type="search"]').val("");
+
+                    if (validateForm()) {
+
+                        //serializeAndSend();
+                        searchReport();
+                    }
+
+                    //$('input[type="search"]').blur();
+
+                });
+
+
+                var url = '@Url.Action("LeavesCountReportTableReportDataHandler", "Report", null, Request.Url.Scheme)';
+
+                var columns = [
+                    { "data": "Employee_Code" },
+                       { "data": "AvailedSickLeaves" },
+                       { "data": "AvailedCasualLeaves" },
+                       { "data": "AvailedAnnualLeaves" },
+                       { "data": "AvailedOtherLeaves" },
+                       { "data": "AllocatedSickLeaves" },
+                       { "data": "AllocatedCasualLeaves" },
+                       { "data": "AllocatedAnnualLeaves" },
+                       { "data": "AllocatedOtherLeaves" }
+                ];
+
+                @*
+                   I did this so that like initDataTables the JS
+            for serverside processing can be used for other tables.
+                NOTE: The names of the columns correspond to the View Model.
+            For example in this example the column names, first_name, last_name
+            etc are taken from ViewModels.Employee
+        *@
+
+                //initReportDataTable('#attendance_table', url, columns);
+
+                // ---------------------------- IR ----------------------------
+
+                //download excel
+                $("#btn-excel-download").click(function (e) {
+
+                    if ($('#from_date').val() == "") {
+                        alert("Please select 'From Date'");
+                        $('#from_date').focus();
+                        return false;
+                    }
+
+                    if ($('#to_date').val() == "") {
+                        alert("Please select 'To Date'");
+                        $('#to_date').focus();
+                        return false;
+                    }
+
+                    //alert($('#export_wait').html());
+
+                    if ($('#export_wait').html() == "No Data Found.") {
+                        $('#export_wait').html("<img src='/images/loader.gif' style='width: 110px; margin-left:34%;' alt='processing'>");
+                    }
+
+                    $('#export_wait').show();
+
+                    var post_data = {
+                        //"employee_id": "TYPE_EMP", //$('#employee_id').val(),
+                        "from_date": $('#from_date').val(),
+                        "to_date": $('#to_date').val()
+                    };
+
+                    $("#btn-excel-download").attr("disabled", "disabled");
+
+                    $.ajax({
+                        cache: false,
+                        type: 'post',
+                        url: '/EMP/Report/ConsolidatedReportExcelDownload',
+                        data: post_data,
+                        //contentType: 'application/json;charset=utf-8',
+                        dataType: 'json',
+                        success: function (data) {
+
+                            if (data.FileGuid != "" & data.FileName != "") {
+
+                                $('#export_wait').hide();
+                                $("#btn-excel-download").removeAttr("disabled");
+
+                                //console.log('export done successfully InShaAllah!!!');
+                                //var response = JSON.stringify(data);
+                                //alert(data.FileGuid + ' >> ' + data.FileName);
+
+                                window.location = '/EMP/Report/Download?fileGuid=' + data.FileGuid + '&fileName=' + data.FileName;
+                            }
+                            else {
+                                $('#export_wait').html("No Data Found.");
+                            }
+                        },
+                        error: function (jq) {
+                            console.log('Error: ' + jq.responseText);
+                        }
+
+                    });
+                    //  serializeAndSend();
+                    e.preventDefault();
+                });
+
+                // ------------------------------------------------------------
+
+            });
+
+
+
+            function validateForm() {
+                fDate = $('#attendance-form').find('[name*="time_in_from"]').val().split("-").reverse();
+                tDate = $('#attendance-form').find('[name*="time_in_to"]').val().split("-").reverse();
+
+                fDate = new Date(fDate[0] + "-" + fDate[1] + "-" + fDate[2]);
+                tDate = new Date(tDate[0] + "-" + tDate[1] + "-" + tDate[2]);
+
+
+                if (tDate < fDate) {
+                    alert("To Date should be greater than From Date.");
+                    return false;
+                }
+
+                /*var r = confirm("Are you sure you want to Reprocess?");
+                if (r == false) {
+                    return false;
+                }*/
+
+                return true;
+            }
+
+        </script>
+    }

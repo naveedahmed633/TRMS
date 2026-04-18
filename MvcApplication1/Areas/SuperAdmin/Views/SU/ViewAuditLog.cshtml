@@ -1,0 +1,117 @@
+﻿@{
+    ViewBag.Title = "View Audit Log";
+    Layout = "~/Areas/SuperAdmin/Views/Shared/_Layout.cshtml";
+}
+
+@model ViewModels.CreateManualAttendance
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">Welcome <span class="text-danger">'SuperAdmin'</span>! [Login ID: <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & Name: <span class="text-success">@User.Identity.Name</span>]</h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/SuperAdmin">SuperAdmin</a></li>
+                    <li class="breadcrumb-item active">View Audit Log</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="ti-files"></i> View Audit Log </h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <table id="audit_table" class="table table-striped table-bordered dataTable dt-responsive nowrap no-footer small" style="width: 100%;">
+                                <thead>
+                                    <tr>                                        
+                                        <th style="width: 50%;">User Code - Action - Table - Description</th>
+                                        <th style="width: 10%;">User Code</th>
+                                        <th style="width: 10%;">Table Name</th>
+                                        <th style="width: 10%;">Action Code</th>
+                                        <th style="width: 10%;">Date</th>      
+                                        <th style="width: 10%;">ID</th>                                  
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row m-t-10">
+                        <div class="col-12">
+                            <button type="submit" id="btnExport" class="btn btn-primary waves-effect waves-light">Export to Excel</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End content -->
+
+
+@section JS {
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            //$('#accordion').accordion("option", "active", 2);
+            $(".datepicker").datepicker({ dateFormat: 'dd-mm-yy' });
+            //setActiveLink("Audit Log");
+
+            //$('#btnExport').button();
+            $("#btnExport").click(function (e) {
+                setupTableExportButton('#audit_table', 'AuditLog');
+                e.preventDefault();
+            });
+
+
+
+            var url = '@Url.Action("AuditLogDataHandler", "SU", null, Request.Url.Scheme)';
+
+            var columns = [                
+                { "data": "description" },
+                { "data": "user_code" },
+                { "data": "table" },
+                { "data": "str_action_code" },
+                { "data": "str_create_date_adt" },
+                { "data": "AuditTrailId" }
+            ];
+
+            @*
+               I did this so that like initDataTables the JS
+        for serverside processing can be used for other tables.
+            NOTE: The names of the columns correspond to the View Model.
+        For example in this example the column names, first_name, last_name
+        etc are taken from ViewModels.Employee
+    *@
+
+            initServerSideTableColumnOrderBy('#audit_table', url, columns, 1000, 5, "desc");
+
+
+
+
+        });
+    </script>
+}

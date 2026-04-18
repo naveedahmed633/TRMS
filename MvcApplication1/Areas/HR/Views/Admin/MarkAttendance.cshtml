@@ -1,0 +1,291 @@
+﻿@{
+    ViewBag.Title = "TRMS - Reprocess Attendance";
+    Layout = "~/Areas/HR/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("dashboard.welcome")  <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span></h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/HR">HR</a></li>
+                    <li class="breadcrumb-item active">Attendance Adjustment</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="ti-files"></i> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("attendance.ra")</h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="row">
+                                <div id="calendar"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            @using (Html.BeginForm("MarkAttendance", "Admin", FormMethod.Post, new { id = "attendance-form" }))
+                            {
+                                <div class="row">
+                                    <div class="col-5">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.empcode") / @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("attendance.left")</label>
+                                        <select id="employees" class="form-control" name="employee_code"></select>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-5">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.datefrom") <span class="text-danger font-14">*</span></label>
+                                        <input type="text" class="form-control datepicker" name="from_date" autocomplete="off" required />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-5">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.dateto") <span class="text-danger font-14">*</span></label>
+                                        <input type="text" class="form-control datepicker" name="to_date" autocomplete="off" required />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-4 text-danger">
+                                        @Html.AntiForgeryToken()
+                                        @Html.ValidationSummary()
+                                    </div>
+                                </div>
+								
+								<div class="row m-t-10">
+                                    <div class="col-12 text-danger">
+                                        <span class="text-danger font-14">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("attendance.note")</span>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4">
+                                        <button type="submit" value="Submit" onclick="return validateFormData();" class="btn btn-primary waves-effect waves-light m-t-10">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("attendance.ra")</button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div id="upload" class="d-none">
+
+                        <div class="row">
+                            <div class="col-12">
+                                <h2>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("attendance.updatebyuf")</h2>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                &nbsp;
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <a href="~/Uploads/SampleReprocessAttendance.csv">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("attendance.downloadsample")</a>
+                                OR
+                                <a href="~/Uploads/SampleReprocess.csv">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("attendance.downloadsample")</a>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                &nbsp;
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-12">
+                                @using (Html.BeginForm("UploadFile", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                                {
+                                    @*<div class="row">
+                                            <div class="col-12 text-danger">
+                                                @Html.AntiForgeryToken()
+                                                @Html.ValidationSummary()
+                                            </div>
+                                        </div>*@
+
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <label class="btn btn-primary" for="my-file-selector">
+                                                <input id="my-file-selector" onchange="alertFilename()" type="file" name="file" value="alert" accept=".csv" style="display:none; ">
+                                                @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("attendance.click")
+                                            </label>
+                                            <h3 class="label" id="file-name"></h3>
+                                        </div>
+
+                                        <div class="col-4">
+                                            <button id="btnUpload" type="submit" value="Submit" class="btn btn-danger waves-effect waves-light">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("attendance.uploadfile")</button>
+                                            <label class="label"> @ViewBag.Message</label>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End content -->
+
+@section JS {
+
+    <script type="text/javascript" src="@Href("~/Scripts/chosen.ajaxaddition.jquery.js")"></script>
+    <script>
+
+        function callFutureDateValidator() {
+            var response = false;
+
+            var tDate = $('#attendance-form').find('[name*="from_date"]').val().split("-").reverse();
+            response = validateFutureDate(tDate, 1);
+
+            var fDate = $('#attendance-form').find('[name*="to_date"]').val().split("-").reverse();
+            response = validateFutureDate(fDate, 2);
+
+            return response;
+        }
+
+
+        function validateFutureDate(tDate, type) {
+
+            //tDate = $('#attendance-form').find('[name*="to_date"]').val().split("-").reverse();
+
+            tDate = new Date(tDate[2] + "-" + tDate[1] + "-" + tDate[0]);
+            fDate = new Date();
+            var y = fDate.getFullYear();
+            var m = parseInt(fDate.getMonth()) + 1;
+            var d = fDate.getDate();
+            var futureDate = new Date(m + "-" + d + "-" + y);
+
+            if (tDate >= futureDate) {
+                //alert(tDate + " ==> " + futureDate);
+
+                if (type == 1) {
+                    alert("Today's or Future date is not allowed to select in 'From Date'");
+                    //$('#attendance-form').find('[name*="from_date"]').focus();
+                }
+                else {
+                    alert("Today's or Future date is not allowed to select in 'To Date'");
+                    //$('#attendance-form').find('[name*="to_date"]').focus();
+                }
+
+                return false;
+            }
+
+            return true;
+        }
+
+        $(document).ready(function () {
+            //$('#accordion').accordion("option", "active", 4);
+            //setActiveLink("Reprocess Attendance");
+            $(".chzn-select").chosen();
+            //$("input[type=submit], button").button();
+            $(".datepicker").datepicker({ dateFormat: 'dd-mm-yy' });
+
+            //initDataTable("#leavebalance_table");
+
+            $('#employees').ajaxChosen({
+                dataType: 'json',
+                type: 'POST',
+                url: '@Url.Action("ChangeEmployeePasswordExceptSuperHRsDataHandler", "EmployeeManagement", null, Request.Url.Scheme)'
+            }, {
+                loadingImg: '@Href("~/Content/ChosenAutoComplete/loading.gif")'
+            });
+        });
+
+        function validateFormData() {
+
+            var eCode = $('#employees').val();
+            if (eCode == null || eCode == "") {
+                ////alert("'Employee Code' is required");
+                //$('[name*="employee_code"]').focus();
+                ////return false;
+            }
+
+            var fDate = $('#attendance-form').find('[name*="from_date"]').val().split("-");
+            var tDate = $('#attendance-form').find('[name*="to_date"]').val().split("-");
+
+
+            if (fDate == '') {
+                alert("'From Date' is required to select");
+                $('[name*="from_date"]').focus();
+                return false;
+            }
+
+            if (tDate == '') {
+                alert("'To Date' is required to select");
+                $('[name*="to_date"]').focus();
+                return false;
+            }
+
+            //alert(fDate);
+            //alert(tDate);
+
+            var dtFDate = new Date(fDate[2], fDate[1] - 1, fDate[0]);
+            var dtTDate = new Date(tDate[2], tDate[1] - 1, tDate[0]);
+
+            //alert(dtfDate);
+            //alert(dttDate);
+
+            //var timeDiff = Math.abs(tDate.getTime() - fDate.getTime());
+            //var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
+
+            var today = new Date();
+            if (dtFDate >= today) {
+                alert("ONLY Past date is allowed in 'From Date'");
+                return false;
+            }
+
+            if (dtTDate >= today) {
+                alert("ONLY Past date is allowed in 'To Date'");
+                return false;
+            }
+
+            if (dtTDate < dtFDate) {
+                alert("'To Date' should be greater than 'From Date'");
+                return false;
+            }
+
+            var r = confirm("Are you sure you want to Reprocess?");
+            if (r == false) {
+                return false;
+            }
+
+            return true;
+
+        }
+    </script>
+}

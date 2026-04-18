@@ -1,0 +1,1224 @@
+﻿@{
+    ViewBag.Title = "TRMS - Employee Management";
+    Layout = "~/Areas/HR/Views/Shared/_Layout.cshtml";
+}
+
+@model ViewModels.CreateEmployee
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">Welcome <span class="text-danger">'HR'</span> User! Username: @User.Identity.Name</h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/HR">HR</a></li>
+                    <li class="breadcrumb-item active">Employee Management</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="ti-files"></i> Employee Management </h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-12">
+                            @if (Request.QueryString["message"] != null && Request.QueryString["message"].ToString() == "success")
+            {
+                                <div class="form-group row">
+                                    <div class="text-danger h4 msg">
+                                        The user has been added successfully!!!
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+
+                    @using (Html.BeginForm("AddEmployee", "EmployeeManagement", FormMethod.Post, new { id = "employee-form", enctype = "multipart/form-data" }))
+                    {
+                        <!-- Row - 1 -->
+                        <!-- Column - 1 -->
+                        <div class="row">
+                            <div class="col-4">
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label class="control-label">First Name <span class="text-danger font-14">*</span></label>
+                                        <input type="text" class="form-control" name="first_name" id="fname" required />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Last Name <span class="text-danger font-14">*</span></label>
+                                        <input type="text" class="form-control" name="last_name" id="lname" required />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Employee Code <span class="text-danger font-14">*</span></label>
+                                        <input type="text" pattern="+[0-9]" class="form-control" name="employee_code" id="empid" required>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Email Address</label>
+                                        <input type="email" class="form-control" name="email" id="email">
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Address</label>
+                                        <input type="text" class="form-control" name="address" id="email">
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Mobile No</label>
+                                        <input type="text" class="form-control" name="mobile_no" id="email">
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Date of Joining <span class="text-danger font-14">*</span></label>
+                                        <input type="text" class="form-control datepicker" name="date_of_joining" autocomplete="off" required />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Date of Leaving</label>
+                                        <input type="text" class="form-control datepicker" name="date_of_leaving" autocomplete="off" />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Type of Employment (Perm/Prob) <span class="text-danger font-14">*</span></label>
+                                        <select id="employee-toe-select" class="form-control " name="type_of_employment_id" required>
+                                            <option value="0">none</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Access Group <span class="text-danger font-14">*</span></label>
+                                        <select class="form-control" id="access_group_drop_down" name="access_group_id" required>
+                                            <option selected="selected" disabled="disabled" value="0">Select Access Group</option>
+                                            @foreach (ViewModels.AccessGroup item in Model.accessGroups)
+                                            {
+                                                <option value="@item.id">@item.name</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                            <!-- Column - 2 -->
+                            <div class="col-4">
+
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label class="control-label">Function</label>
+                                        <select id="employee-function-select" class="form-control " name="function_id">
+                                            <option value="0">none</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Department</label>
+                                        <select id="employee-department-select" class="form-control " name="department_id">
+                                            <option value="0">none</option>-
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Designation <span class="text-danger font-14">(used for Salary Calc) *</span></label>
+                                        <select id="employee-designation-select" class="form-control " name="designation_id" required>
+                                            <!--<option value="0">none</option>-->
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Grade <span class="text-danger font-14">(used for Salary Calc) *</span></label>
+                                        <select id="employee-grade-select" class="form-control " name="grade_id" required>
+                                            <!--<option value="0">none</option>-->
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Region</label>
+
+                                        <select id="employee-region-select" class="form-control" name="region_id">
+                                            <option value="0">none</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Location</label>
+
+                                        <select id="employee-location-select" class="form-control" name="location_id">
+                                            <option value="0">none</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Login Status <span class="text-danger font-14">*</span></label>
+                                        <select class="form-control" id="time_tune_status_drop_down" name="time_tune_status" required>
+                                            <option selected="selected" disabled="disabled" value="0">Select Status</option>
+
+                                            <option value="0">Deactive</option>
+                                            <option value="1">Active</option>
+
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Photo</label>
+                                        <input type="file" class="form-control" name="photograph" accept=".jpg" />
+                                    </div>
+                                </div>
+
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Emergency Contact 01 <span class="text-danger font-14">*</span></label>
+                                        <input type="text" class="form-control" name="emergency_contact_01" id="emergency_contact_01" placeholder="M Ali-03xxyyyzzzz-Brother" required />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Emergency Contact 02</label>
+                                        <input type="text" class="form-control" name="emergency_contact_02" id="emergency_contact_02" placeholder="Saad Ahmed-03xxyyyzzzz-Cousin" />
+                                    </div>
+                                </div>
+
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Skills Set <span class="text-danger font-14">*</span></label>
+                                        <select class="form-control" id="skillSets" name="modal_skills_set" multiple required>
+                                            @foreach (ViewModels.SkillsSet item in Model.skillSets)
+                                            {
+                                                <option value="@item.id">@item.skillname</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+
+
+
+                            <!-- Column - 3 -->
+                            <div class="col-4">
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label class="control-label">Sick Leaves <span class="text-danger font-14">*</span> <small>(for whole year)</small></label>
+                                        <select class="form-control" id="sick_leaves" name="sick_leaves" required>
+                                            <option value="0">00</option>
+                                            <option value="1">01</option>
+                                            <option value="2">02</option>
+                                            <option value="3">03</option>
+                                            <option value="4">04</option>
+                                            <option value="5">05</option>
+                                            <option value="6">06</option>
+                                            <option value="7" selected>07</option>
+                                            <option value="8">08</option>
+                                            <option value="9">09</option>
+                                            <option value="10">10</option>
+                                            <option value="11">11</option>
+                                            <option value="12">12</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Casual Leaves <span class="text-danger font-14">*</span> <small>(for whole year)</small></label>
+                                        <select class="form-control" id="casual_leaves" name="casual_leaves" required>
+                                            <option value="0">00</option>
+                                            <option value="1">01</option>
+                                            <option value="2">02</option>
+                                            <option value="3">03</option>
+                                            <option value="4">04</option>
+                                            <option value="5">05</option>
+                                            <option value="6">06</option>
+                                            <option value="7">07</option>
+                                            <option value="8" selected>08</option>
+                                            <option value="9">09</option>
+                                            <option value="10">10</option>
+                                            <option value="11">11</option>
+                                            <option value="12">12</option>
+                                            <option value="13">13</option>
+                                            <option value="14">14</option>
+                                            <option value="15">15</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Annual Leaves <span class="text-danger font-14">*</span> <small>(for whole year)</small></label>
+                                        <select class="form-control" id="annual_leaves" name="annual_leaves" required>
+                                            <option value="0">00</option>
+                                            <option value="1">01</option>
+                                            <option value="2">02</option>
+                                            <option value="3">03</option>
+                                            <option value="4">04</option>
+                                            <option value="5">05</option>
+                                            <option value="6">06</option>
+                                            <option value="7">07</option>
+                                            <option value="8">08</option>
+                                            <option value="9">09</option>
+                                            <option value="10" selected>10</option>
+                                            <option value="11">11</option>
+                                            <option value="12">12</option>
+                                            <option value="13">13</option>
+                                            <option value="14">14</option>
+                                            <option value="15">15</option>
+                                            <option value="16">16</option>
+                                            <option value="17">17</option>
+                                            <option value="18">18</option>
+                                            <option value="19">19</option>
+                                            <option value="20">20</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label id="lupload_file_01" class="control-label">CNIC</label>
+                                        <input type="file" class="form-control" name="file_01" accept=".jpg" />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label id="lupload_file_02" class="control-label">Qualification/Degree</label>
+                                        <input type="file" class="form-control" name="file_02" accept=".jpg" />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label id="lupload_file_03" class="control-label">Experience Certificate</label>
+                                        <input type="file" class="form-control" name="file_03" accept=".jpg" />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label id="lupload_file_04" class="control-label">Other Doc</label>
+                                        <input type="file" class="form-control" name="file_04" accept=".jpg" />
+                                    </div>
+                                </div>
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Date of Birth <span class="text-danger font-14">*</span></label>
+                                        <input type="text" class="form-control datepicker" name="date_of_birth" required />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label id="ldescription" class="control-label">Description</label>
+                                        <textarea id="description" name="description" rows="7" cols="10" class="form-control"></textarea>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+
+
+                        <!-- Row - 2 -->
+                        <div class="row">
+                            <div class="col-12 text-danger">
+                                @Html.AntiForgeryToken()
+                                @Html.ValidationSummary()
+                            </div>
+                        </div>
+
+                        <!-- Row - 3 -->
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary waves-effect waves-light m-t-10">Add Employee</button>
+                                <button type="reset" value="Reset" class="btn btn-primary waves-effect waves-light m-t-10">Reset</button>
+                            </div>
+                        </div>
+                    }
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-12 m-b-10">
+                            <h3>Current Employees List</h3>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <table id="emp_table" class="table table-striped table-bordered dataTable dt-responsive nowrap no-footer small" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>First Name</th>
+                                        <th>Last Name</th>
+                                        <th>Employee Code</th>
+                                        <th>Department</th>
+                                        <th>Designation</th>
+                                        <th>Grade</th>
+                                        <th>User Profile</th>
+                                        <th>User Payroll</th>
+                                        <th>Action</th>
+                                        <th>Date Of Birth</th>
+                                        <th>Function</th>
+                                        <th>Region</th>
+                                        <th>Location</th>
+                                        <th>Line Manager</th>
+                                        <th>Super Line Manager</th>
+                                        <th>Status</th>
+                                        <th>Sick Leaves</th>
+                                        <th>Casual Leaves</th>
+                                        <th>Annual Leaves</th>
+                                        <th>Emrg.Contact-1</th>
+                                        <th>Emrg.Contact-2</th>
+                                        <th>View Docs</th>
+                                        <th>Skills Set</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row m-t-10">
+                        <div class="col-12">
+                            <button type="submit" id="btnExport" class="btn btn-primary waves-effect waves-light">Export to Excel</button>
+                        </div>
+                    </div>
+
+                    <hr />
+
+
+                    <div class="row m-t-10">
+                        <div class="col-12">
+                            <h3>Update using 'Upload File'</h3>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-3">
+                            <a href="~/Uploads/SampleEmployees.csv">Download Sample File</a>
+                        </div>
+
+                        <div class="col-6">
+                            &nbsp;
+                        </div>
+
+                        <div class="col-3 text-right d-none">
+                            @using (Html.BeginForm("DownloadCSVFile", "EmployeeManagement", FormMethod.Post, new { id = "download-form" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.ValidationSummary()
+
+                                <button id="btnDownload" type="submit" value="Submit" class="btn btn-sm btn-default waves-effect waves-light">Download ALL Employees (CSV)</button>
+
+                            }
+                        </div>
+
+                    </div>
+
+                    @using (Html.BeginForm("UploadFile", "EmployeeManagement", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary()
+
+                        <div class="row">
+                            <div class="col-4">
+                                <label class="btn btn-primary" for="my-file-selector">
+                                    <input id="my-file-selector" onchange="alertFilename()" type="file" name="file" value="alert" accept=".csv" style="display:none; ">
+                                    Click to select file
+                                </label>
+                                <h3 class="label" id="file-name"></h3>
+                            </div>
+
+                            <div class="col-4">
+                                <button id="btnUpload" type="submit" value="Submit" class="btn btn-danger waves-effect waves-light">Upload File</button>
+                                @if (ViewBag.Message != null && ViewBag.Message.ToString().Contains("Success"))
+                                {
+                                    <label class="label msg" style="font-size:medium;  color:green;">@ViewBag.Message</label>
+                                }
+                                else
+                                {
+                                    <label class="label msg" style="font-size:medium;  color:red;">@ViewBag.Message</label>
+                                }
+                            </div>
+                        </div>
+                    }
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="employee_modals">
+
+    <div id='employee-edit-form' class='jqUI-modal' title='Edit Employee'>
+        <p class='validationTips'><span class="text-danger font-14">*</span> indicates required fields.</p>
+        <form id='employee-modal-form' enctype="multipart/form-data">
+            <fieldset>
+                <div class="row">
+                    <div class="col-12">
+                        <label class="control-label">First Name <span class="text-danger font-14">*</span></label>
+                        <input type='text'
+                               name='first_name'
+                               id='modal_first_name'
+                               class="form-control"
+                               required />
+                    </div>
+                </div>
+
+
+                <div class="row m-t-10">
+                    <div class="col-12">
+                        <label class="control-label">Last Name <span class="text-danger font-14">*</span></label>
+                        <input type='text'
+                               name='last_name'
+                               class="form-control"
+                               id='modal_last_name' />
+
+                    </div>
+                </div>
+
+                <div class="row m-t-10">
+                    <div class="col-12">
+                        <label class="control-label">Employee Code <span class="text-danger font-14">*</span></label>
+                        <input type='text'
+                               name='employee_code'
+                               id='modal_employee_code'
+                               class="form-control"
+                               required>
+                    </div>
+                </div>
+
+                <div class="row m-t-10">
+                    <div class="col-12">
+                        <label class="control-label">Email Address</label>
+                        <input type='email'
+                               name='email'
+                               id='modal_email'
+                               class="form-control">
+                    </div>
+                </div>
+
+                <div class="row m-t-10">
+                    <div class="col-12">
+                        <label class="control-label">Address</label>
+                        <input type='text'
+                               name='address'
+                               id='modal_address'
+                               class="form-control">
+                    </div>
+                </div>
+
+                <div class="row m-t-10">
+                    <div class="col-12">
+                        <label class="control-label">Mobile Number</label>
+                        <input type='text'
+                               name='mobile_no'
+                               id='modal_mobile_no'
+                               class="form-control">
+                    </div>
+                </div>
+
+                <div class="row m-t-10">
+                    <div class="col-12">
+                        <label class="control-label">Date of Joining <span class="text-danger font-14">*</span></label>
+                        <input type='text'
+                               name='date_of_joining'
+                               id='modal_date_of_joining'
+                               class="form-control datepicker">
+                    </div>
+                </div>
+
+                <div class="row m-t-10">
+                    <div class="col-12">
+                        <label class="control-label">Date of Leaving</label>
+                        <input type='text'
+                               name='date_of_leaving'
+                               id='modal_date_of_leaving'
+                               class="form-control datepicker">
+                    </div>
+                </div>
+                <div class="row m-t-10">
+                    <div class="col-12">
+                        <label class="control-label">Date of Birth</label>
+                        <input type='text'
+                               name='date_of_birth'
+                               id='modal_date_of_birth'
+                               class="form-control datepicker">
+                    </div>
+                </div>
+
+                <div class="row m-t-10">
+                    <div class="col-12">
+                        <label class="control-label">Function</label>
+                        <select class="employee-function-select" name="function_id" id="modal_function" style="min-width: 350px">
+                            <option value="0">none</option>
+                        </select>
+                        @*<select name="function_id" id="modal_function" style="width:100%">
+                                <option selected="selected" disabled="disabled" value="0">Select Function</option>
+                                @foreach (ViewModels.Function item in Model.functions)
+                                {
+                                    <option value="@item.id">@item.name</option>
+                                }
+                            </select>*@
+                    </div>
+                </div>
+
+                <div class="row m-t-10">
+                    <div class="col-12">
+                        <label class="control-label">Designation</label>
+                        <select class="employee-designation-select" name="designation_id" id="modal_designation" style="min-width: 350px">
+                            <option value="0">none</option>
+                        </select>
+                        @*<select name="designation_id" id="modal_designation" style="width:100%">
+                                <option selected="selected" disabled="disabled" value="0">Select Designation</option>
+                                @foreach (ViewModels.Designation item in Model.designations)
+                                {
+                                    <option value="@item.id">@item.name</option>
+                                }
+                            </select>*@
+                    </div>
+                </div>
+
+                <div class="row m-t-10">
+                    <div class="col-12">
+                        <label class="control-label">Department</label>
+                        <select class="employee-department-select" name="department_id" id="modal_department" style="min-width: 350px">
+                            <option value="0">none</option>
+                        </select>
+                        @*<select name="department_id" id="modal_department" style="width:100%">
+                                <option selected="selected" disabled="disabled" value="0">Select Department</option>
+                                @foreach (ViewModels.Department item in Model.departments)
+                                {
+                                    <option value="@item.id">@item.name</option>
+                                }
+                            </select>*@
+                    </div>
+                </div>
+
+                <div class="row m-t-10">
+                    <div class="col-12">
+                        <label class="control-label">Type of Employment <span class="text-danger font-14">*</span></label>
+                        <select class="employee-toe-select" name="modal_type_of_employment" id="modal_type_of_employment" style="min-width: 350px">
+                            <option value="0">none</option>
+                        </select>
+                        @*<select name="type_of_employment_id" id="modal_type_of_employment" style="width:100%">
+                                <option selected="selected" disabled="disabled" value="0">Select TOE</option>
+                                @foreach (ViewModels.TypeOfEmployment item in Model.typeOfEmployments)
+                                {
+                                    <option value="@item.id">@item.name</option>
+                                }
+                            </select>*@
+                    </div>
+                </div>
+
+                <div class="row m-t-10">
+                    <div class="col-12">
+                        <label class="control-label">Access Group <span class="text-danger font-14">*</span></label><br />
+                        <select name="access_group_id" id="modal_access_group" class="form-control" style="min-width: 350px" required>
+                            <option selected="selected" disabled="disabled" value="0" id="modal_access_group">Select Access Group</option>
+                            @foreach (ViewModels.AccessGroup item in Model.accessGroups)
+                            {
+                                <option value="@item.id">@item.name</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="row m-t-10">
+                    <div class="col-12">
+                        <label class="control-label">Login Status <span class="text-danger font-14">*</span></label>
+                        <select name="time_tune_status" id="modal_time_tune_status" class="form-control" style="min-width: 350px" required></select>
+                    </div>
+                </div>
+                <div class="row m-t-10">
+                    <div class="col-12">
+                        <label class="control-label">Region</label>
+
+                        <select class="employee-region-select" name="region_id" id="modal_region" style="min-width: 350px">
+                            <option value="0">none</option>
+                        </select>
+                        @*<select name="region_id" id="modal_region" style="width:100%">
+                                <option selected="selected" disabled="disabled" value="0">Select Region</option>
+                                @foreach (ViewModels.Region item in Model.regions)
+                                {
+                                    <option value="@item.id">@item.name</option>
+                                }
+                            </select>*@
+                    </div>
+                </div>
+
+                <div class="row m-t-10">
+                    <div class="col-12">
+                        <label class="control-label">Grade</label>
+
+                        <select class="employee-grade-select" name="grade_id" id="modal_grade" style="min-width: 350px">
+                            <option value="0">none</option>
+                        </select>
+
+                        @*<select name="grade_id" id="modal_grade" style="width:100%">
+                                <option selected="selected" disabled="disabled" value="0">Select Grade</option>
+                                @foreach (ViewModels.Grades item in Model.grades)
+                                {
+                                    <option value="@item.id">@item.name</option>
+                                }
+                            </select>*@
+                    </div>
+                </div>
+
+                <div class="row m-t-10">
+                    <div class="col-md-12">
+                        <label class="control-label">Location</label>
+
+                        <select class="employee-location-select" name="location_id" id="modal_location" style="min-width: 350px">
+                            <option value="0">none</option>
+                        </select>
+                        @*<select name="location_id" id="modal_location" style="width:100%">
+                                <option selected="selected" disabled="disabled" value="0">Select Location</option>
+                                @foreach (ViewModels.Location item in Model.locations)
+                                {
+                                    <option value="@item.id">@item.name</option>
+                                }
+                            </select>*@
+                    </div>
+                </div>
+
+                <div class="row m-t-10">
+                    <div class="col-12">
+                        <label class="control-label">Sick Leaves <span class="text-danger font-14">*</span> <small>(whole year)</small></label>
+                        <select class="form-control" id="modal_sick_leaves" name="sick_leaves" required>
+                            <option value="0">00</option>
+                            <option value="1">01</option>
+                            <option value="2">02</option>
+                            <option value="3">03</option>
+                            <option value="4">04</option>
+                            <option value="5">05</option>
+                            <option value="6">06</option>
+                            <option value="7">07</option>
+                            <option value="8">08</option>
+                            <option value="9">09</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row m-t-10">
+                    <div class="col-12">
+                        <label class="control-label">Casual Leaves <span class="text-danger font-14">*</span> <small>(whole year)</small></label>
+                        <select class="form-control" id="modal_casual_leaves" name="casual_leaves" required>
+                            <option value="0">00</option>
+                            <option value="1">01</option>
+                            <option value="2">02</option>
+                            <option value="3">03</option>
+                            <option value="4">04</option>
+                            <option value="5">05</option>
+                            <option value="6">06</option>
+                            <option value="7">07</option>
+                            <option value="8">08</option>
+                            <option value="9">09</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                            <option value="13">13</option>
+                            <option value="14">14</option>
+                            <option value="15">15</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row m-t-10">
+                    <div class="col-12">
+                        <label class="control-label">Annual Leaves <span class="text-danger font-14">*</span> <small>(whole year)</small></label>
+                        <select class="form-control" id="modal_annual_leaves" name="annual_leaves" required>
+                            <option value="0">00</option>
+                            <option value="1">01</option>
+                            <option value="2">02</option>
+                            <option value="3">03</option>
+                            <option value="4">04</option>
+                            <option value="5">05</option>
+                            <option value="6">06</option>
+                            <option value="7">07</option>
+                            <option value="8">08</option>
+                            <option value="9">09</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                            <option value="13">13</option>
+                            <option value="14">14</option>
+                            <option value="15">15</option>
+                            <option value="16">16</option>
+                            <option value="17">17</option>
+                            <option value="18">18</option>
+                            <option value="19">19</option>
+                            <option value="20">20</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row m-t-10">
+                    <div class="col-12">
+                        <label class="control-label">Photo</label>
+                        <input id="modal_photograph" type="file" class="form-control" name="modal_photograph" accept=".jpg" />
+                    </div>
+                </div>
+
+                <div class="row m-t-10">
+                    <div class="col-12">
+                        <label id="lmodal_upload_file_01" class="control-label">CNIC</label>
+                        <input id="modal_file_01" type="file" class="form-control" name="modal_file_01" accept=".jpg" />
+                    </div>
+                </div>
+
+                <div class="row m-t-10">
+                    <div class="col-12">
+                        <label id="lmodal_upload_file_02" class="control-label">Experience Certificate</label>
+                        <input id="modal_file_02" type="file" class="form-control" name="modal_file_02" accept=".jpg" />
+                    </div>
+                </div>
+
+                <div class="row m-t-10">
+                    <div class="col-12">
+                        <label id="lmodal_upload_file_03" class="control-label">Degree/Qualification</label>
+                        <input id="modal_file_03" type="file" class="form-control" name="modal_file_03" accept=".jpg" />
+                    </div>
+                </div>
+
+                <div class="row m-t-10">
+                    <div class="col-12">
+                        <label id="lmodal_upload_file_04" class="control-label">Other Upload</label>
+                        <input id="modal_file_04" type="file" class="form-control" name="modal_file_04" accept=".jpg" />
+                    </div>
+                </div>
+
+                <div class="row m-t-10">
+                    <div class="col-12">
+                        <label class="control-label">Emergency Contact 01 <span class="text-danger font-14">*</span></label>
+                        <input type="text" class="form-control" name="modal_emergency_contact_01" id="modal_emergency_contact_01" placeholder="Name-Contact-Relationship" required />
+                    </div>
+                </div>
+
+                <div class="row m-t-10">
+                    <div class="col-12">
+                        <label class="control-label">Emergency Contact 02</label>
+                        <input type="text" class="form-control" name="modal_emergency_contact_02" id="modal_emergency_contact_02" placeholder="Name-Contact-Relationship" />
+                    </div>
+                </div>
+
+                <div class="row m-t-10">
+                    <div class="col-12">
+                        <label class="control-label">Description</label>
+                        <textarea id="modal_description" rows="7" cols="10" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="row m-t-10">
+                    <div class="col-12">
+                        <label class="control-label">Skills Set <span class="text-danger font-14">*</span></label>
+                        <select class="form-control" id="skills_set" name="modal_skills_set" multiple required>
+
+                            @foreach (ViewModels.SkillsSet item in Model.skillSets)
+                            {
+                                <option value="@item.id">@item.skillname</option>
+                            }
+                        </select>
+                        @*<input type="text" class="form-control" name="modal_skills_set" id="skills_set" />*@
+                    </div>
+                </div>
+
+
+                <input type='submit' tabindex='-1' style='position:absolute; top:-1000px'>
+            </fieldset>
+        </form>
+    </div>
+</div>
+
+<!-- End content -->
+
+
+<div id="MidTermModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MidTermModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="CenterModalLabel">View</h4>
+            </div>
+            <div class="modal-body text-center">
+                <img id="image_source" src="~/Images/no-image.png" width="300" />
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Close</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<!-- Custom Modal -->
+<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="mySmallModalLabel">Message Alert</h4>
+            </div>
+            <div class="modal-body">
+                <span id="alert_message"></span>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<div id="toast" class="toast-message" style='display:none'>Message!</div>
+
+@section JS {
+
+    <script type="text/javascript">
+
+        //$('#btnDownload').button();
+
+        //$('#btnUpload').button();
+
+    </script>
+
+    <script type="text/javascript" src="@Href("~/Scripts/chosen.ajaxaddition.jquery.js")"></script>
+
+    <script src="@Url.Content("/Scripts/employeeCRUD.js")" type="text/javascript"></script>
+
+
+    <script type="text/javascript">
+
+        function setChosenSelectList(selector, URL) {
+
+
+            $(selector).ajaxChosen({
+                dataType: 'json',
+                type: 'POST',
+                url: URL
+            }, {
+                loadingImg: '@Href("~/Content/ChosenAutoComplete/loading.gif")'
+            });
+
+
+
+        }
+
+        function HideSpanMessage() {
+            setTimeout(function () { $('.msg').hide(); }, 8000);
+        }
+
+        function redirectToPage() {
+            window.location = '/HR/EmployeeManagement/ManageEmployee';
+            //alert('abc');
+            //window.location.reload();
+        }
+
+        function alertFilename() {
+            var thefile = document.getElementById('my-file-selector');
+            document.getElementById('file-name').innerHTML = thefile.value;
+        }
+        function checkSubmit2(id) {
+
+            jDate = $(id).find('[name*="date_of_joining"]').val().split("-").reverse();
+            lDate = $(id).find('[name*="date_of_leaving"]').val().split("-").reverse();
+            var numbers = /^[0-9]+$/;
+            empcode = $(id).find('[name*="employee_code"]').val();
+
+            jDate = new Date(parseInt(jDate[0]), parseInt(jDate[1]) - 1, parseInt(jDate[2]));
+            lDate = new Date(parseInt(lDate[0]), parseInt(lDate[1]) - 1, parseInt(lDate[2]));
+
+            if (jDate >= lDate && lDate != "Mon Jan 01 1900 00:00:00 GMT+0500 (Pakistan Standard Time)") {
+                alert("Joining Date must be before of Leaving Date");
+                return false;
+            } else {
+
+
+                var number = parseInt(empcode);
+
+                if (isNaN(number)) {
+                    alert('Please input numeric characters only');
+                    return false;
+                }
+                else {
+                    return true;
+
+                }
+
+            }
+
+
+
+
+
+            return true;
+        }
+
+
+        function checkSubmit(id) {
+
+            //bDate = $(id).find('[name*="date_of_birth"]').val().split("-").reverse();
+            jDate = $(id).find('[name*="date_of_joining"]').val().split("-").reverse();
+            lDate = $(id).find('[name*="date_of_leaving"]').val().split("-").reverse();
+            var numbers = /^[0-9]+$/;
+            empcode = $(id).find('[name*="employee_code"]').val();
+
+            //bDate = new Date(parseInt(bDate[0]), parseInt(bDate[1]) - 1, parseInt(bDate[2]));
+            jDate = new Date(parseInt(jDate[0]), parseInt(jDate[1]) - 1, parseInt(jDate[2]));
+            lDate = new Date(parseInt(lDate[0]), parseInt(lDate[1]) - 1, parseInt(lDate[2]));
+
+            /*
+            if ($('#standard_id').val() == "" || $('#standard_id').val() == "0") {
+                $('#alert_message').text("Please select Standard");
+                $('.bs-example-modal-lg').modal('show');
+
+                return false;
+            }
+
+            if ($('#access_group_drop_down').val() == null || $('#access_group_drop_down').val() == "0" || $('#access_group_drop_down').val() == "") {
+                $('#alert_message').text("Please select Access-Group");
+                $('.bs-example-modal-lg').modal('show');
+
+                return false;
+            }
+            */
+
+
+            if (jDate >= lDate && lDate != "Mon Jan 01 1900 00:00:00 GMT+0500 (Pakistan Standard Time)") {
+
+                //$('#alert_message').text("Joining Date must be before of Leaving Date");
+                //$('.bs-example-modal-lg').modal('show');
+
+                alert("Joining Date must be before of Leaving Date");
+                return false;
+            } else {
+
+
+                var number = parseInt(empcode);
+
+                if (isNaN(number)) {
+
+                    //$('#alert_message').text("Please input numeric characters only");
+                    //$('.bs-example-modal-lg').modal('show');
+
+                    alert('Please input numeric characters only');
+                    return false;
+                }
+                else {
+                    return true;
+
+                }
+
+            }
+
+            return true;
+        }
+
+        popup = function viewImage(image_name) {
+            $('#image_source').attr("src", "/Content/UserDocs/" + image_name);
+            $('#MidTermModal').modal('show');
+        }
+
+
+        $(document).ready(function () {
+            //$('#accordion').accordion("option", "active", 1);
+            $(".datepicker").datepicker({ dateFormat: 'dd-mm-yy' });
+
+            //$('#btnExport').button();
+            $("#btnExport").click(function (e) {
+
+                setupTableExportButton('#emp_table', 'Employees');
+                e.preventDefault();
+            });
+
+            HideSpanMessage();
+
+            $('#btnUpload').click(function () {
+
+                //alert('No file found ' + $('#my-file-selector').val());
+
+                if ($('#my-file-selector').val() == "") {
+                    alert('Please select a file first');
+                    return false;
+                }
+            });
+
+            /*
+            $('#btnExport').button();
+            $("#btnExport").click(function (e) {
+                $('#emp_table').tableExport({ type: 'excel', escape: 'false' });
+                e.preventDefault();
+            });
+            */
+
+            //$('.hasDatepicker').keydown(function (e) {
+            //    var unicode = e.keyCode ? e.keyCode : e.charCode;
+            //    if (unicode != 13 && unicode != 8 && unicode != 9) {
+
+
+
+            //        e.preventDefault();
+            //    }
+
+
+            //    // for backspace clear field.
+            //    if (unicode == 8) {
+            //        $(this).val("");
+            //    }
+            //});
+
+            setChosenSelectList('#skills_set');
+            setChosenSelectList('#employee-function-select', '@Url.Action("functions", "EmployeeManagement", null, Request.Url.Scheme)');
+            setChosenSelectList('#employee-designation-select', '@Url.Action("designations", "EmployeeManagement", null, Request.Url.Scheme)');
+            setChosenSelectList('#employee-department-select', '@Url.Action("departments", "EmployeeManagement", null, Request.Url.Scheme)');
+            setChosenSelectList('#employee-toe-select', '@Url.Action("typeOfEmployments", "EmployeeManagement", null, Request.Url.Scheme)');
+            setChosenSelectList('#employee-grade-select', '@Url.Action("grades", "EmployeeManagement", null, Request.Url.Scheme)');
+            setChosenSelectList('#employee-region-select', '@Url.Action("regions", "EmployeeManagement", null, Request.Url.Scheme)');
+            setChosenSelectList('#employee-location-select', '@Url.Action("locations", "EmployeeManagement", null, Request.Url.Scheme)');
+
+            setChosenSelectList('.employee-function-select', '@Url.Action("functions", "EmployeeManagement", null, Request.Url.Scheme)');
+            setChosenSelectList('.employee-designation-select', '@Url.Action("designations", "EmployeeManagement", null, Request.Url.Scheme)');
+            setChosenSelectList('.employee-department-select', '@Url.Action("departments", "EmployeeManagement", null, Request.Url.Scheme)');
+            setChosenSelectList('.employee-toe-select', '@Url.Action("typeOfEmployments", "EmployeeManagement", null, Request.Url.Scheme)');
+            setChosenSelectList('.employee-grade-select', '@Url.Action("grades", "EmployeeManagement", null, Request.Url.Scheme)');
+            setChosenSelectList('.employee-region-select', '@Url.Action("regions", "EmployeeManagement", null, Request.Url.Scheme)');
+            setChosenSelectList('.employee-location-select', '@Url.Action("locations", "EmployeeManagement", null, Request.Url.Scheme)');
+
+            $('#access_group_drop_down').chosen();
+            $('#time_tune_status_drop_down').chosen();
+            //$("input[type=submit], button").button();
+            //setActiveLink("Manage Employees");
+
+
+
+
+            var url = '@Url.Action("DataHandler", "EmployeeManagement", null, Request.Url.Scheme)';
+
+            var columns = [
+           { "data": "first_name" },
+           { "data": "last_name" },
+           { "data": "employee_code" },
+           { "data": "department_name" },
+           { "data": "designation_name" },
+           { "data": "grade_name" },
+           { "data": "view_profile" },
+           { "data": "view_payroll" },
+           { "data": "actions" },
+           { "data": "date_of_birth" },
+           { "data": "function_name" },
+           { "data": "region_name" },
+           { "data": "location_name" },
+           { "data": "line_manager_code" },
+           { "data": "superline_manager_code" },
+           { "data": "time_tune_status" },
+           { "data": "sick_leaves" },
+           { "data": "casual_leaves" },
+           { "data": "annual_leaves" },
+           { "data": "emergency_contact_01" },
+           { "data": "emergency_contact_02" },
+           { "data": "view_images" },
+           { "data": "g_skills_set" },
+           { "data": "description" }
+            ];
+
+            @*
+                    I did this so that like initDataTables the JS
+                    for serverside processing can be used for other tables.
+                    NOTE: The names of the columns correspond to the View Model.
+                    For example in this example the column names, first_name, last_name
+                    etc are taken from ViewModels.Employee
+*@
+
+
+            initServerSideTable('#emp_table', url, columns, 100);
+
+            deleteEmployee = initDeleteEmployeeModal('#employee_modals', '@Url.Action("DeleteEmployee", "EmployeeManagement", null, Request.Url.Scheme)');
+
+            editEmployee = initEditEmployeeModal('@Url.Action("EditEmployee", "EmployeeManagement", null, Request.Url.Scheme)');
+
+            $('#standards-select').chosen();
+
+            setChosenSelectList('#skillSets');
+
+            $('#employee-form').on("submit", function (e) {
+
+                if (!checkSubmit('#employee-form')) {
+
+                    e.preventDefault();
+                }
+            });
+
+        });
+
+        function displayToastrSuccessfull() {
+            $('#toast').html('File Uploded Successfuly');
+            $('#toast').stop().fadeIn(400).delay(3000).fadeOut(400);
+        }
+
+    </script>
+}

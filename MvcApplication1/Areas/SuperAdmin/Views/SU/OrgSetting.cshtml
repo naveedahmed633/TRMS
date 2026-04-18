@@ -1,0 +1,356 @@
+﻿@{
+    ViewBag.Title = "TRMS - Organization Configuration";
+    Layout = "~/Areas/SuperAdmin/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">Welcome <span class="text-danger">'SuperAdmin'</span>! [Login ID: <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & Name: <span class="text-success">@User.Identity.Name</span>]</h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/SuperAdmin">Super Admin</a></li>
+                    <li class="breadcrumb-item active">SET Info - Update</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="mdi mdi-account-box"></i> Set Organization Configuration </h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+                  
+
+
+
+                    <hr>
+
+
+                    <div class="row">
+                        <div class="col-12">
+                            @if (Request.QueryString["message"] != null && Request.QueryString["message"].ToString() == "success")
+                            {
+                                <div class="form-group row">
+                                    <div class="text-danger h4 msg">
+                                        Successfully Apply
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+
+                    @using (Html.BeginForm("UpdateOrgInfo", "SU", FormMethod.Post, new { id = "manual_att_stride" }))
+                    {
+                        <div class="row">
+                            <div class="col-6">
+                                <label class="control-label">Name</label>
+                                <input type="text" class="form-control" id="smtp_host" name="OrgName" value="@ViewBag.OrgName" required>
+                            </div>
+                        </div>
+
+                        <div class="row m-t-10">
+                            <div class="col-md-6">
+                                <label class="control-label">Email Address</label>
+                                <input type="text" class="form-control" id="smtp_port" name="OrgEmail" value="@ViewBag.OrgEmail" required>
+                            </div>
+                        </div>
+
+                        <div class="row  m-t-10">
+                            <div class="col-md-6">
+                                <label class="control-label">Contact Number</label>
+                                <input type="number" class="form-control" id="smtp_email" name="OrgContact" value="@ViewBag.OrgContact" required>
+                            </div>
+                        </div>
+
+                        <div class="row  m-t-10">
+                            <div class="col-md-6">
+                                <label class="control-label">Address</label>
+                                <input type="text" class="form-control" id="smtp_password" name="OrgAddress" value="@ViewBag.OrgAddress" required>
+                            </div>
+                        </div>
+
+                        <div class="row  m-t-10">
+                            <div class="col-md-6">
+                                <label class="control-label">Website</label>
+                                <input type="text" class="form-control" id="test_email" name="OrgWebsite" value="@ViewBag.OrgWebsite" required>
+                            </div>
+                        </div>
+
+                        <div class="row  m-t-10">
+                            <div class="col-md-6">
+                                <label class="control-label">Logo</label>
+                                <input type="file" class="form-control" id="cc_email" name="OrgLogo" value="@ViewBag.OrgLogo">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-10 text-danger">
+                                @Html.AntiForgeryToken()
+                                @Html.ValidationSummary()
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary waves-effect waves-light">Update Info</button>&nbsp;@Html.Raw(ViewBag.Message01)
+                            </div>
+                        </div>
+                    }
+                    <br />
+                    <br />
+                    <br />
+
+
+                </div>
+                @using (Html.BeginForm("AddPermissionSU", "SU"))
+                {
+                    <div id="tblLM">
+                        <p class="bold" style=" text-align: center; font-size: larger; font-weight: 600; ">Modules Rights Management</p>
+                        <table class="table table-bordered">
+                            <thead>
+
+
+                            </thead>
+                            <tbody>
+
+                                @*<tr>
+                            <th class="bold">Modules Rights Management</th>
+                            <th class="text-center bold">View</th>
+                        </tr>*@
+                                <tr>
+                                    <td>
+                                        Employee Management
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="checkbox">
+                                            <input type="checkbox" value="true" name="EmployeeManagement" id="EmployeeManagement">
+                                            <label for="EmployeeManagement"></label>
+                                        </div>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        HR
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="checkbox">
+                                            <input type="checkbox" value="true" name="HR" id="HR" >
+                                            <label for="HR"></label>
+                                        </div>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Leaves
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="checkbox">
+                                            <input type="checkbox" value="true" name="Leaves" id="Leaves">
+                                            <label for="Leaves"></label>
+                                        </div>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Payroll & Loan
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="checkbox">
+                                            <input type="checkbox" value="true" name="PayrollLoan" id="PayrollLoan">
+                                            <label for="PayrollLoan"></label>
+                                        </div>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Overtime
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="checkbox">
+                                            <input type="checkbox" value="true" name="Overtime" id="Overtime">
+                                            <label for="Overtime"></label>
+                                        </div>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Shift Management
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="checkbox">
+                                            <input type="checkbox" value="true" name="ShiftManagement" id="ShiftManagement">
+                                            <label for="ShiftManagement"></label>
+                                        </div>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Roaster Management
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="checkbox">
+                                            <input type="checkbox" value="true" name="RoasterManagement" id="RoasterManagement">
+                                            <label for="RoasterManagement"></label>
+                                        </div>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Attendance Management
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="checkbox">
+                                            <input type="checkbox" value="true" name="AttendanceManagement" id="AttendanceManagement">
+                                            <label for="AttendanceManagement"></label>
+                                        </div>
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        Reports
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="checkbox">
+                                            <input type="checkbox" value="true" name="Report" id="Report">
+                                            <label for="Report"></label>
+                                        </div>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Training Manual
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="checkbox">
+                                            <input type="checkbox" value="true" name="Manual" id="Manual">
+                                            <label for="Manual"></label>
+                                        </div>
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        <button type="submit" class="btn btn-info pull-right">Apply</button>
+                    </div>
+                }
+                <br />
+                <br />
+                <br />
+
+            </div>
+
+
+        </div>
+    </div>
+</div>
+<!-- End content -->
+@section JS {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+
+
+        $(document).ready(function () {
+
+            getDetailsOfRights();
+    
+            HideSpanMessage();
+        });
+
+
+        function getDetailsOfRights() {
+            $.ajax({
+                url: '/SU/SuperAdminModuleRight',
+                type: 'GET',
+                data: {},
+
+              //  dataType: "json",
+
+                success: function (data) {
+
+
+                    if (data.EmployeeManagement == true) {
+                        $("#EmployeeManagement").prop('checked', true);
+                    }
+                    if (data.HR == true) {
+                        $("#HR").prop('checked', true);
+                    }
+                    if (data.Leaves == true) {
+                        $("#Leaves").prop('checked', true);
+                    }
+                    if (data.PayrollLoan == true) {
+                        $("#PayrollLoan").prop('checked', true);
+                    }
+                    if (data.Overtime == true) {
+                        $("#Overtime").prop('checked', true);
+                    }
+                    if (data.ShiftManagement == true) {
+                        $("#ShiftManagement").prop('checked', true);
+                    }
+                    if (data.RoasterManagement == true) {
+                        $("#RoasterManagement").prop('checked', true);
+                    }
+                    if (data.AttendanceManagement == true) {
+                        $("#AttendanceManagement").prop('checked', true);
+                    }
+                    if (data.Report == true) {
+                        $("#Report").prop('checked', true);
+                    }
+                    if (data.Manual == true) {
+                        $("#Manual").prop('checked', true);
+                    }
+
+
+                    console.log(data);
+                },
+                error: function (data) {
+                    console.log(data);
+                    alert("error");
+                }
+            });
+        }
+
+
+        function HideSpanMessage() {
+            setTimeout(function () { $('.msg').hide(); }, 8000);
+        }
+
+    </script>
+}
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,159 @@
+﻿@{
+    ViewBag.Title = "TRMS - Config Page";
+    Layout = "~/Areas/SuperAdmin/Views/Shared/_Layout.cshtml";
+
+    string manualAttendanceStride = (string)ViewBag.manualAttendanceStrideDB;
+}
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">Welcome <span class="text-danger">'SuperAdmin'</span>! [Login ID: <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & Name: <span class="text-success">@User.Identity.Name</span>]</h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/SuperAdmin">Super Admin</a></li>
+                    <li class="breadcrumb-item active">Config Page</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="mdi mdi-account-box"></i> Change Manual Attendance Stride </h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="form-group row">
+                        <div class="col-12">
+                            <h4 style="font-weight: bold;">Change Manual Attendance Stride</h4>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group row">
+                        <div class="col-12">
+                            <p><strong>* What is Manual Attendance Stride?</strong><br /><br />It is the month day after which any attempts - to manually mark an attendance from the previous month - are denied.</p>
+                            <p>The current value for the manual attendance stride is: <strong>@manualAttendanceStride</strong></p>
+                        </div>
+                    </div>
+
+                    @using (Html.BeginForm("ChangeManualAttendanceStride", "SU", FormMethod.Post, new { id = "manual_att_stride" }))
+                    {
+                        <div class="form-group row">
+                            <div class="col-4">
+                                <label class="control-label">Set Manual Attendance Stride: (Day #)</label>
+                                <input type="number" class="form-control" id="day" name="day" autocomplete="off" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-10 text-danger">
+                                @Html.AntiForgeryToken()
+                                @Html.ValidationSummary()
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-4">
+                                <button type="submit" class="btn btn-primary waves-effect waves-light">Set Day Number</button>&nbsp;@Html.Raw(ViewBag.Message01)
+                            </div>
+                        </div>
+                    }
+
+                    <hr>
+
+                    <div class="form-group row">
+                        <div class="col-12">
+                            <h4 style="font-weight: bold;">Effective Date:</h4>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-12">
+                            <p>It is use to manage the final date after which the updates are not allowed in attendance logs: <strong>@ViewBag.AccessCodeDate</strong></p>
+                        </div>
+                    </div>
+
+                    @using (Html.BeginForm("ChangeManualAttendanceDate", "SU", FormMethod.Post, new { id = "manual_att_stride2" }))
+                    {
+                        <div class="form-group row">
+                            <div class="col-4">
+                                <label class="control-label">Select Effective Date: (DD-MM-YYYY)</label>
+                                <input id="date_to" type="text" class="form-control datepicker" name="date_to" autocomplete="off" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-10 text-danger">
+                                @Html.AntiForgeryToken()
+                                @Html.ValidationSummary()
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary waves-effect waves-light">Set Date</button>&nbsp;@Html.Raw(ViewBag.Message02)
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End content -->
+
+
+
+@section JS {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+
+
+        $(document).ready(function () {
+            //$('#accordion').accordion("option", "active", 0);
+
+            $('.datepicker').datepicker({ dateFormat: 'dd-mm-yy' });
+
+            //$("input[type=submit], button").button();
+
+            //setActiveLink("Configuration Manager");
+
+            $('#manual_att_stride').on("submit", function () {
+                var number = $("#day").val();
+
+                if (number >= 1 && number <= 28) {
+
+                }
+                else {
+                    alert("The value should be between range 1 to 28");
+                    return false;
+                }
+
+                return true;
+
+            });
+
+        });
+
+
+
+    </script>
+}

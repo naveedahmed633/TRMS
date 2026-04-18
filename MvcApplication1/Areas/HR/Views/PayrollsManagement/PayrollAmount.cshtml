@@ -1,0 +1,688 @@
+﻿@{
+    ViewBag.Title = "TRMS - Payroll Amounts";
+    Layout = "~/Areas/HR/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .head-style {
+        font-size: 18px;
+        font-weight: bold;
+        background-color: #eee;
+        border-radius: 5px;
+        border: solid;
+        border-width: 1px;
+        border-color: #000;
+        padding: 5px;
+        line-height: 20px;
+    }
+</style>
+@model ViewModels.CreatePayrollAmount
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">Welcome <span class="text-danger">'HR'</span>! [Login ID: <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & Name: <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span>]</h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/HR">HR</a></li>
+                    <li class="breadcrumb-item active">Payroll</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right">
+                                <i class="mdi mdi-desktop-classic"></i> HR - Payroll Amount Management
+                            </h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    @using (Html.BeginForm("PayrollAmount", "PayrollsManagement", FormMethod.Post, new { id = "payroll-amount-form", enctype = "multipart/form-data" }))
+                    {
+                        <div class="row">
+
+                            <div class="text-center col-12">
+                                <span style="display: inline-block;">
+                                    <span class="text-purple h3 span_message">@ViewBag.PayrollAmountMessage</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-4">
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Select Designation</label>
+                                        <select id="designation_id" name="designation_id" class="form-control" required>
+                                            <option value="">-- Select Designation --</option>
+                                            @{
+                                                if (Model.designation_info != null)
+                                                {
+                                                    foreach (ViewModels.Designation item in Model.designation_info)
+                                                    {
+                                                        <option value="@item.id">@item.name</option>
+                                                    }
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Select Grade</label>
+                                        <select id="grade_id" name="grade_id" class="form-control" required>
+                                            <option value="">-- Select Grade --</option>
+                                            @{
+                                                if (Model.grade_info != null)
+                                                {
+                                                    foreach (ViewModels.Grades item in Model.grade_info)
+                                                    {
+                                                        <option value="@item.id">@item.name</option>
+                                                    }
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Basic Pay (Rs.)</label>
+                                        <input id="basic_pay" name="basic_pay" type="text" class="form-control" value="0" required />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Increment (Rs.)</label>
+                                        <input id="increment" name="increment" type="text" class="form-control" value="0" required />
+                                    </div>
+                                </div>
+
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Transport (Rs.)</label>
+                                        <input id="transport" name="transport" type="text" class="form-control" value="0" required />
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="col-4">
+
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Mobile (Rs.)</label>
+                                        <input id="mobile" name="mobile" type="text" class="form-control" value="0" required />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Medical (Rs.)</label>
+                                        <input id="medical" name="medical" type="text" class="form-control" value="0" />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Cash Allowance (Rs.)</label>
+                                        <input id="cash_allowance" name="cash_allowance" type="text" class="form-control" value="0" />
+                                    </div>
+                                </div>
+
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Commission (Rs.)</label>
+                                        <input id="commission" name="commission" type="text" class="form-control" value="0" />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Food (Rs.)</label>
+                                        <input id="food" name="food" type="text" class="form-control" value="0" />
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="col-4">
+
+
+
+
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Night (Rs.)</label>
+                                        <input id="night" name="night" type="text" class="form-control" value="0" />
+                                    </div>
+                                </div>
+
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Rent (Rs.)</label>
+                                        <input id="rent" name="rent" type="text" class="form-control" value="0" />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Group Allowance (Rs.)</label>
+                                        <input id="group_allowance" name="group_allowance" type="text" class="form-control" value="0" />
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+                        <div class="row m-t-10">
+                            <div class="col-12 text-danger span_message">
+                                @Html.AntiForgeryToken()
+                                @Html.ValidationSummary()
+                                @ViewBag.Message
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="submit" id="payroll_setting" class="btn btn-primary waves-effect waves-light m-t-10">Submit</button>
+                                <button type="button" class="btn btn-primary waves-effect waves-light m-t-10" onclick="redirectToPage();">Reset</button>
+                                @*<button type="submit" id="btn-excel-download" onclick="HideBarr();" class="btn btn-primary waves-effect waves-light m-t-10">Download Excel</button>
+                                    <span id="export_wait" style="display: none;" class="text-danger"><img src='/images/loader.gif' alt='processing' /></span>*@
+                                @*<button type="submit" id="btn-excel-download" onclick="HideBarr();" class="btn btn-primary waves-effect waves-light m-t-10"></button>
+                                    <span id="export_wait" style="display: none;" class="text-danger"><img src='/images/loader.gif' alt='processing' /></span>*@
+                            </div>
+                        </div>
+                                                }
+
+     
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    
+
+                    <h3>List of Payrolls Amounts</h3>
+
+                    <div class="row m-t-30">
+                        <div class="col-12">
+                            <table id="payroll_amount_table" class="table table-striped table-bordered dataTable dt-responsive nowrap no-footer small" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Designation</th>
+                                        <th>Grade</th>
+                                        <th>Basic Pay (Rs.)</th>
+                                        <th>Increment (Rs.)</th>
+                                        <th>Transport (Rs.)</th>
+                                        <th>Mobile (Rs.)</th>
+                                        <th>Medical (Rs.)</th>
+                                        <th>Action</th>
+                                        <th>Cash Allowance (Rs.)</th>
+                                        <th>Commission (Rs.)</th>
+                                        <th>Food (Rs.)</th>
+                                        <th>Night (Rs.)</th>
+                                        <th>Rent (Rs.)</th>
+                                        <th>Group Allowance (Rs.)</th>
+                                        <th>Create Date</th>
+                                        <th>Update Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row m-t-10">
+                        <div class="col-12">
+                            <button type="submit" id="btnExport" onclick="CheckData();" class="btn btn-primary waves-effect waves-light">Export Grid Data</button>
+                            <span id="demo" class="text-danger"></span>
+                            <p id="export_wait2" style="display: none;" class="text-danger"><img src='/images/loader.gif' alt='processing' /></p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- End content -->
+<!-- Custom Modal -->
+<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="mySmallModalLabel">Message Alert</h4>
+            </div>
+            <div class="modal-body">
+                <span id="alert_message"></span>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div id="MidTermModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MidTermModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="CenterModalLabel">Payroll Attachment</h4>
+            </div>
+            <div class="modal-body text-center">
+                <img id="image_source" src="~/Images/no-image.png" width="300" />
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Close</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<div id="payroll_amount_dialog"></div>
+@section JS {
+
+    <script src="@Url.Content("/Scripts/payrollAmountCRUD.js")" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        function HideBarr() {
+            HideMessage();
+        }
+
+        function CheckData() {
+            var ss = $("#payroll_amount_table tr").children("td:first").text();
+            if (ss == "No data available in table" || ss == "" || ss == " ") {
+                $('#export_wait2').show();
+                document.getElementById("demo").innerHTML = "No Data Found.";
+                HideBarExcle2();
+            }
+            else {
+                setupTableExportButton('#payroll_amount_table', 'PayrollSetting');
+                $('#export_wait2').show();
+                HideBarExcle2();
+            }
+        }
+
+
+        function redirectToPage() {
+            window.location = '/HR/PayrollsManagement/PayrollAmount';
+        }
+
+        function HideSpanMessage() {
+            setTimeout(function () { $('.span_message').hide(); }, 5000);
+        }
+
+        function HideMessage() { setTimeout(function () { $('#export_wait').hide(); document.getElementById("btn-excel-download").disabled = false; }, 5000); }
+
+        function HideBarExcle2() { setTimeout(function () { $('#export_wait2').hide(); document.getElementById("demo").innerHTML = ""; }, 1500); }
+
+        function searchReport() {
+            // get the entered string
+            var toSearch = $('payroll_amount_table_filter input').val();
+
+            $('#payroll_amount_table').DataTable().search(toSearch);
+            $('#payroll_amount_table').DataTable().draw();
+        }
+
+        popup = function viewImage(image_name) {
+            $('#image_source').attr("src", "/Content/PayrollSet/" + image_name);
+            $('#MidTermModal').modal('show');
+        }
+
+        function clearr() {
+            $('input[type="search"]').focus();
+            $('input[type="search"]').val("");
+            $('#payroll_amount_table').DataTable().search("");
+            $('#payroll_amount_table').DataTable().draw();
+            $('input[type="search"]').blur();
+
+            document.getElementById("btn-excel-download").disabled = false;
+            $('#export_wait').hide();
+            $('#export_wait2').hide();
+            document.getElementById("demo").innerHTML = "";
+
+            validateForm();
+        }
+
+        function initReportDataTable(identifier, url, columns) {
+            var oTable = $(identifier).DataTable({
+                "searchDelay": 2000,
+                "scrollY": "300px",
+                "serverSide": true,
+                "ajax": {
+                    "type": "POST",
+                    "url": url,
+                    "contentType": 'application/json; charset=utf-8',
+                    'data': function (data) {
+
+                        //data.employee_id = $('#consolidated-employees').val();
+                        data.from_date = $('#from_date').val();
+                        data.to_date = $('#to_date').val();
+
+                        return data = JSON.stringify(data);
+                    }
+                },
+                "scrollX": true,
+                "scrollCollapse": true,
+                "processing": true,
+                "paging": true,
+                "deferRender": true,
+                "columns": columns,
+                "bSort": false, //disable all sorting columns
+                //"order": [0, "desc"],
+                "iDisplayLength": 20,
+                "aLengthMenu": [[10, 20, 50, 100], [10, 20, 50, 100]],
+                "responsive": true
+            });
+
+            oTable.on("draw", function () {
+                var keyword = $(identifier + '_filter > label:eq(0) > input').val();
+                $(identifier).unmark();
+                $(identifier).mark(keyword, {});
+
+                $(identifier + ' tbody tr').click(function (e) {
+                    $('tr.row_selected').removeClass('row_selected');
+                    $(this).addClass('row_selected');
+                });
+            });
+
+            // set the z-index of the 'processing...' overlay
+            // to a great number, so that it may always display
+            // on top of the table. Also set the text color
+            // to black as it is white by default.
+            $(identifier + '_processing').css({
+                "z-index": "1000",
+                "color": "rgb(0, 0, 0)"
+            });
+
+            // initiate search one second after the user
+            // stops typing.
+            function setSearchDelayOnDataTable(idSelector) {
+                // remove all events from the search box
+                $(idSelector + '_filter input').off();
+
+                function customDataTableSearch() {
+
+                    // get the entered string
+                    var toSearch = $(idSelector + '_filter input').val();
+
+                    // do nothing if the string is null.
+                    // I've not tested this, it is just
+                    // in case.
+                    if (toSearch == null) {
+                        return;
+                    }
+
+                    // initiate search programatically.
+                    $(idSelector).DataTable().search(toSearch).draw();
+                }
+
+                // this variable holds the timer
+                var timeout;
+
+                // register a keypress on the search box
+                $(idSelector + '_filter input').keypress(function () {
+                    if (timeout != null) {
+                        clearTimeout(timeout);
+                        timeout = null;
+                    }
+
+                    // timeout set to 1 second.
+                    timeout = setTimeout(customDataTableSearch, 1000);
+                });
+
+            }
+
+            setSearchDelayOnDataTable(identifier);
+        }
+
+        $(document).ready(function () {
+
+            var dateToday = new Date();
+            $(".datepicker").datepicker({ dateFormat: 'dd-mm-yy' }); //minDate: dateToday, beforeShowDay: $.datepicker.noWeekends
+
+            HideSpanMessage();
+            //validateForm();
+
+            $('#is_new_payroll').change(function () {
+                if ($(this).is(':checked')) {
+                    $('#is_new_payroll').val("1");
+                    console.log("1");
+                }
+                else {
+                    $('#is_new_payroll').val("0");
+                    console.log("0");
+                }
+            });
+
+            $('.hasDatepicker').keydown(function (e) {
+                var unicode = e.keyCode ? e.keyCode : e.charCode;
+                if (unicode != 13 && unicode != 8 && unicode != 9) { e.preventDefault(); }
+            });
+
+            $('.hasDatepicker').keydown(function (e) {
+                var unicode = e.keyCode ? e.keyCode : e.charCode;
+                if (unicode == 8) { e.preventDefault(); e.stopPropagation(); }
+            });
+
+            $("#btnExport").click(function (e) {
+                $('#payroll_amount_table').tableExport({ type: 'excel', escape: 'false' });
+                e.preventDefault();
+            });
+
+            /*
+            $("#payroll_setting").click(function (e) {
+
+                if ($('#from_date').val() == "") {
+
+                    $('#alert_message').text("Please select 'From Date'");
+                    $('.bs-example-modal-lg').modal('show');
+
+                    //alert("Please select 'From Date'");
+                    $('#from_date').focus();
+                    return false;
+                }
+
+                if ($('#to_date').val() == "") {
+
+                    $('#alert_message').text("Please select 'To Date'");
+                    $('.bs-example-modal-lg').modal('show');
+
+                    //alert("Please select 'To Date'");
+                    $('#to_date').focus();
+                    return false;
+                }
+
+                e.preventDefault();
+
+                if (validateForm()) {
+                    searchReport();
+                }
+
+            });
+            */
+
+            var url = '@Url.Action("PayrollAmountDataHandler", "PayrollsManagement", null, Request.Url.Scheme)';
+            var columns = [
+                  { "data": "Id" },
+                   { "data": "DesignationText" },
+                   { "data": "GradeText" },
+                   { "data": "BasicPay" },
+                   { "data": "Increment" },
+                   { "data": "Transport" },
+                   { "data": "Mobile" },
+                   { "data": "Medical" },
+                   { "data": "actions" },
+                   { "data": "CashAllowance" },
+                   { "data": "Commission" },
+                   { "data": "Food" },
+                   { "data": "Night" },
+                   { "data": "Rent" },
+                   { "data": "GroupAllowance" },
+                   { "data": "CreateDateTimeText" },
+                   { "data": "UpdateDateTimeText" }
+            ];
+
+            @*
+                   I did this so that like initDataTables the JS
+            for serverside processing can be used for other tables.
+                NOTE: The names of the columns correspond to the View Model.
+            For example in this example the column names, first_name, last_name
+            etc are taken from ViewModels.Employee
+        *@
+            //IR Commented
+            initReportDataTable('#payroll_amount_table', url, columns);
+            editPayrollAmount = initEditModal("#payroll_amount_dialog", '@Url.Action("UpdatePayrollAmount", "PayrollsManagement", null, Request.Url.Scheme)', "Payroll_Amount");
+            deletePayrollAmount = initDeleteModal("#payroll_amount_dialog", '@Url.Action("RemovePayrollAmount", "PayrollsManagement", null, Request.Url.Scheme)', "Payroll_Amount");
+
+            // ---------------------------- IR ----------------------------
+
+            //download excel
+            $("#btn-excel-download").click(function (e) {
+
+                if ($('#from_date').val() == "") {
+                    $('#alert_message').text("Please select 'From Date'");
+                    $('.bs-example-modal-lg').modal('show');
+
+                    //alert("Please select 'From Date'");
+                    $('#from_date').focus();
+                    return false;
+                }
+
+                if ($('#to_date').val() == "") {
+
+                    $('#alert_message').text("Please select 'To Date'");
+                    $('.bs-example-modal-lg').modal('show');
+
+                    //alert("Please select 'To Date'");
+                    $('#to_date').focus();
+                    return false;
+                }
+
+                //alert($('#export_wait').html());
+
+                if ($('#export_wait').html() == "No Data Found.") {
+                    $('#export_wait').html("<img src='/images/loader.gif' style='width: 110px; margin-left:34%;' alt='processing'>");
+                }
+
+                $('#export_wait').show();
+
+                var post_data = {
+                    //"employee_id": "TYPE_EMP", //$('#employee_id').val(),
+                    "from_date": $('#from_date').val(),
+                    "to_date": $('#to_date').val()
+                };
+
+                $("#btn-excel-download").attr("disabled", "disabled");
+
+                $.ajax({
+                    cache: false,
+                    type: 'post',
+                    url: '/HR/Report/ConsolidatedReportExcelDownload',
+                    data: post_data,
+                    //contentType: 'application/json;charset=utf-8',
+                    dataType: 'json',
+                    success: function (data) {
+
+                        if (data.FileGuid != "" & data.FileName != "") {
+
+                            $('#export_wait').hide();
+                            $("#btn-excel-download").removeAttr("disabled");
+
+                            //console.log('export done successfully InShaAllah!!!');
+                            //var response = JSON.stringify(data);
+                            //alert(data.FileGuid + ' >> ' + data.FileName);
+
+                            window.location = '/HR/Report/Download?fileGuid=' + data.FileGuid + '&fileName=' + data.FileName;
+                        }
+                        else {
+                            $('#export_wait').html("No Data Found.");
+                        }
+                    },
+                    error: function (jq) {
+                        console.log('Error: ' + jq.responseText);
+                    }
+
+                });
+                //  serializeAndSend();
+                e.preventDefault();
+            });
+
+            // ------------------------------------------------------------
+        });
+
+        function validateForm() {
+            var fDate = $('#payroll-amount-form').find('[name*="from_date"]').val().split("-").reverse();
+            var tDate = $('#payroll-amount-form').find('[name*="to_date"]').val().split("-").reverse();
+
+            var vfDate = new Date(fDate[0], (fDate[1] - 1), fDate[2]);
+            var vtDate = new Date(tDate[0], (tDate[1] - 1), tDate[2]);
+
+            //console.log('3>> ' + vfDate + ' - ' + vtDate);
+
+            fDate = new Date(fDate[0] + "-" + fDate[1] + "-" + fDate[2]);
+            tDate = new Date(tDate[0] + "-" + tDate[1] + "-" + tDate[2]);
+
+            console.log('fDate = ' + fDate);
+            console.log('tDate = ' + tDate);
+
+            if (vtDate < vfDate) {
+
+                $('#alert_message').text("'To Date' should be greater than 'From Date'");
+                $('.bs-example-modal-lg').modal('show');
+
+                //alert("To Date should be greater than From Date.");
+                return false;
+            }
+
+            /*var r = confirm("Are you sure you want to Reprocess?");
+            if (r == false) {
+                return false;
+            }*/
+
+            return true;
+        }
+    </script>
+
+
+}

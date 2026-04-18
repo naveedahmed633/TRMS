@@ -1,0 +1,732 @@
+﻿@{
+    ViewBag.Title = "TRMS - Loan Application";
+    Layout = "~/Areas/HR/Views/Shared/_Layout.cshtml";
+}
+
+@model ViewModels.CreateLoanApplication
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">Welcome <span class="text-danger">'HR'</span>! [Login ID: <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & Name: <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span>]</h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/HR">HR</a></li>
+                    <li class="breadcrumb-item active">Loan</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="mdi mdi-desktop-classic"></i> HR - Loan Application Form </h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    @using (Html.BeginForm("LoanApplication", "LoansManagement", FormMethod.Post, new { id = "loan-application-form", enctype = "multipart/form-data" }))
+                    {
+                        <div class="row">
+                            <div class="col-4">
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Employee Code <span class="text-danger font-14">*</span></label>
+                                        <select id="employee_id" name="employee_id" class="form-control" required>
+                                            <option value="">-- Select Employee --</option>
+                                            @foreach (ViewModels.Employee item in Model.employees)
+                                            {
+                                                <option value="@item.id">@item.first_name</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Loan Month (Date) <span class="text-danger font-14">*</span></label>
+                                        <input id="loan_allocated_date" name="loan_allocated_date" type="text" class="form-control datepicker" autocomplete="off" required />
+                                    </div>
+                                </div>
+
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Loan Type <span class="text-danger font-14">*</span></label>
+                                        <select id="loan_type_id" name="loan_type_id" class="form-control" required>
+                                            @foreach (ViewModels.LoanTypeInfo item in Model.loan_types)
+                                            {
+                                                <option value="@item.Id">@item.LoanTypeText</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Loan Amount (Rs.) <span class="text-danger font-14">*</span></label>
+                                        <input id="loan_amount" name="loan_amount" type="text" class="form-control" value="" required />
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+
+                            <div class="col-4">
+
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Installment Numbers</label>
+                                        <select id="installment_numbers" name="installment_numbers" class="form-control" required>
+                                            <option value="">-- Select One --</option>
+                                            @for (int i = 1; i < 100; i++)
+                                            {
+                                                <option value="@i">@i</option>
+                                            }
+
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Installment Amount Per Month (Rs.) <span class="text-danger">(Auto Calc)</span></label>
+                                        <input id="installment_amount" name="installment_amount" type="text" readonly style="background-color: #eee;" class="form-control" value="0" />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Deductable Amount for the Month (Rs.)</label>
+                                        <input id="deductable_amount" name="deductable_amount" type="text" class="form-control" value="0" />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Balance Amount (Rs.) <span class="text-danger">(Auto Calc)</span></label>
+                                        <input id="balance_amount" name="balance_amount" type="text" readonly style="background-color: #eee;" class="form-control" value="0" />
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                            <div class="col-4">
+
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Loan Status</label>
+                                        <select id="loan_status_id" name="loan_status_id" class="form-control" required>
+                                            @foreach (ViewModels.LoanStatusTypeInfo item in Model.loan_status_types)
+                                            {
+                                                <option value="@item.Id">@item.LoanStatusTypeText</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Remarks</label>
+                                        <textarea id="remarks" name="remarks" rows="4" class="form-control"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">Upload Attachment (optional)</label>
+                                        <input type="file" id="attachment_file_path" name="attachment_file_path" accept=".jpg" class="form-control">
+                                        <!--<input type="hidden" id="user_id" name="user_id" value="194101" />
+                                        <input type="hidden" id="leave_status_id" name="leave_status_id" value="1" />-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row m-t-10">
+                            <div class="col-12 text-danger span_message">
+                                @Html.AntiForgeryToken()
+                                @Html.ValidationSummary()
+                                @ViewBag.Message
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="submit" id="loan_application" class="btn btn-primary waves-effect waves-light m-t-10">Submit</button>
+                                <button type="button" class="btn btn-primary waves-effect waves-light m-t-10" onclick="redirectToPage();">Reset</button>
+                                @*<button type="submit" id="btn-excel-download" onclick="HideBarr();" class="btn btn-primary waves-effect waves-light m-t-10">Download Excel</button>
+                                    <span id="export_wait" style="display: none;" class="text-danger"><img src='/images/loader.gif' alt='processing' /></span>*@
+                            </div>
+                        </div>
+                    }
+
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                   
+
+                    <h3>List of Previous Applications</h3>
+
+                    <div class="row m-t-30">
+                        <div class="col-12">
+                            <table id="loan_application_table" class="table table-striped table-bordered dataTable dt-responsive nowrap no-footer small" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Employee Code</th>
+                                        <th>Loan Month</th>
+                                        <th>Balance Amount</th>
+                                        <th>Deductable Amount <div class="small text-danger">(applicable in case greater than 0)</div></th>
+                                        <th>Installment Amount <div class="small text-danger">(fixed for per month)</div></th>
+                                        <th>Loan Amount</th>
+                                        <th>Actions</th>
+                                        <th>Installment Numbers</th>
+                                        <th>Name</th>
+                                        <th>Loan Type</th>
+                                        <th>Loan Status</th>
+                                        <th>Remarks</th>
+                                        <th>Attachment</th>
+                                        <th>Create Date</th>
+                                        <th>Update Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row m-t-10">
+                        <div class="col-12">
+                            <button type="submit" id="btnExport" onclick="CheckData();" class="btn btn-primary waves-effect waves-light">Export Grid Data</button>
+                            <span id="demo" class="text-danger"></span>
+                            <p id="export_wait2" style="display: none;" class="text-danger"><img src='/images/loader.gif' alt='processing' /></p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End content -->
+<!-- Custom Modal -->
+<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="mySmallModalLabel">Message Alert</h4>
+            </div>
+            <div class="modal-body">
+                <span id="alert_message"></span>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div id="MidTermModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MidTermModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="CenterModalLabel">Loan Application</h4>
+            </div>
+            <div class="modal-body text-center">
+                <img id="image_source" src="~/Images/no-image.png" width="300" />
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Close</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<div id="loan_applicaiton_dialog"></div>
+@section JS {
+
+    <script type="text/javascript" src="@Href("~/Scripts/loanCRUD.js")"></script>
+
+    <script type="text/javascript">
+        function HideBarr() {
+            HideMessage();
+        }
+
+        function CheckData() {
+            var ss = $("#loan_application_table tr").children("td:first").text();
+            if (ss == "No data available in table" || ss == "" || ss == " ") {
+                $('#export_wait2').show();
+                document.getElementById("demo").innerHTML = "No Data Found.";
+                HideBarExcle2();
+            }
+            else {
+                setupTableExportButton('#loan_application_table', 'LeaveApplication');
+                $('#export_wait2').show();
+                HideBarExcle2();
+            }
+        }
+
+
+        function redirectToPage() {
+            window.location = '/HR/LoansManagement/LoanApplication';
+        }
+
+        function HideSpanMessage() {
+            setTimeout(function () { $('.span_message').hide(); }, 5000);
+        }
+
+        function HideMessage() { setTimeout(function () { $('#export_wait').hide(); document.getElementById("btn-excel-download").disabled = false; }, 5000); }
+
+        function HideBarExcle2() { setTimeout(function () { $('#export_wait2').hide(); document.getElementById("demo").innerHTML = ""; }, 1500); }
+
+        function searchReport() {
+            // get the entered string
+            var toSearch = $('loan_application_table_filter input').val();
+
+            $('#loan_application_table').DataTable().search(toSearch);
+            $('#loan_application_table').DataTable().draw();
+        }
+
+        popup = function viewImage(image_name) {
+            $('#image_source').attr("src", "/Content/LoanApps/" + image_name);
+            $('#MidTermModal').modal('show');
+        }
+
+        function clearr() {
+            $('input[type="search"]').focus();
+            $('input[type="search"]').val("");
+            $('#loan_application_table').DataTable().search("");
+            $('#loan_application_table').DataTable().draw();
+            $('input[type="search"]').blur();
+
+            document.getElementById("btn-excel-download").disabled = false;
+            $('#export_wait').hide();
+            $('#export_wait2').hide();
+            document.getElementById("demo").innerHTML = "";
+
+            validateForm();
+        }
+
+        function initReportDataTable(identifier, url, columns) {
+            var oTable = $(identifier).DataTable({
+                "searchDelay": 2000,
+                "scrollY": "300px",
+                "serverSide": true,
+                "ajax": {
+                    "type": "POST",
+                    "url": url,
+                    "contentType": 'application/json; charset=utf-8',
+                    'data': function (data) {
+
+                        //data.employee_id = $('#consolidated-employees').val();
+                        data.from_date = $('#from_date').val();
+                        data.to_date = $('#to_date').val();
+
+                        return data = JSON.stringify(data);
+                    }
+                },
+                "scrollX": true,
+                "scrollCollapse": true,
+                "processing": true,
+                "paging": true,
+                "deferRender": true,
+                "columns": columns,
+                "order": [0, "desc"],
+                "iDisplayLength": 50,
+                "aLengthMenu": [[10, 20, 50, 100], [10, 20, 50, 100]],
+                "responsive": true
+            });
+
+            oTable.on("draw", function () {
+                var keyword = $(identifier + '_filter > label:eq(0) > input').val();
+                $(identifier).unmark();
+                $(identifier).mark(keyword, {});
+
+                $(identifier + ' tbody tr').click(function (e) {
+                    $('tr.row_selected').removeClass('row_selected');
+                    $(this).addClass('row_selected');
+                });
+            });
+
+            // set the z-index of the 'processing...' overlay
+            // to a great number, so that it may always display
+            // on top of the table. Also set the text color
+            // to black as it is white by default.
+            $(identifier + '_processing').css({
+                "z-index": "1000",
+                "color": "rgb(0, 0, 0)"
+            });
+
+            // initiate search one second after the user
+            // stops typing.
+            function setSearchDelayOnDataTable(idSelector) {
+                // remove all events from the search box
+                $(idSelector + '_filter input').off();
+
+                function customDataTableSearch() {
+
+                    // get the entered string
+                    var toSearch = $(idSelector + '_filter input').val();
+
+                    // do nothing if the string is null.
+                    // I've not tested this, it is just
+                    // in case.
+                    if (toSearch == null) {
+                        return;
+                    }
+
+                    // initiate search programatically.
+                    $(idSelector).DataTable().search(toSearch).draw();
+                }
+
+                // this variable holds the timer
+                var timeout;
+
+                // register a keypress on the search box
+                $(idSelector + '_filter input').keypress(function () {
+                    if (timeout != null) {
+                        clearTimeout(timeout);
+                        timeout = null;
+                    }
+
+                    // timeout set to 1 second.
+                    timeout = setTimeout(customDataTableSearch, 1000);
+                });
+
+            }
+
+            setSearchDelayOnDataTable(identifier);
+        }
+
+
+        $(document).ready(function () {
+
+            var dateToday = new Date();
+            $(".datepicker").datepicker({ dateFormat: 'dd-mm-yy' }); //minDate: dateToday, beforeShowDay: $.datepicker.noWeekends
+
+            var now = new Date();
+            var month = (now.getMonth() + 1);
+            var day = now.getDate();
+            if (month < 10)
+                month = "0" + month;
+            if (day < 10)
+                day = "0" + day;
+            var today = day + '-' + month + '-' + now.getFullYear();
+
+            $('#loan_allocated_date').val(today);
+
+            HideSpanMessage();
+            //validateForm();
+
+            $('.hasDatepicker').keydown(function (e) {
+                var unicode = e.keyCode ? e.keyCode : e.charCode;
+                if (unicode != 13 && unicode != 8 && unicode != 9) { e.preventDefault(); }
+            });
+
+            $('.hasDatepicker').keydown(function (e) {
+                var unicode = e.keyCode ? e.keyCode : e.charCode;
+                if (unicode == 8) { e.preventDefault(); e.stopPropagation(); }
+            });
+
+            $("#btnExport").click(function (e) {
+                $('#loan_application_table').tableExport({ type: 'excel', escape: 'false' });
+                e.preventDefault();
+            });
+
+            $("#loan_amount").on("blur", function () {
+                $("#balance_amount").val($(this).val());
+            });
+
+
+            $("#installment_numbers").change(function () {
+                var amt = 0, num = 0, ins = 0;
+                num = $(this).find(":selected").val();
+                amt = $("#loan_amount").val();
+
+                if (amt != "" && amt > 0) {
+                    ins = (amt / num) * 1;
+                    $("#installment_amount").val(ins);
+                    $("#balance_amount").val(amt - ins);
+
+                    console.log(num + " >> " + amt + " >> " + ins);
+                }
+                else {
+                    $('#alert_message').text("Please enter a valid Loan Amount.");
+                    $("#installment_numbers").val("");
+                    //$("#loan_amount").focus();
+                    $('.bs-example-modal-lg').modal('show');
+
+                    return false;
+                }
+
+            });
+
+            $("#deductable_amount").on("blur", function () {
+                var ded = 0, bal = 0, ins = 0, diff = 0;
+
+                ded = $(this).val();
+                ins = $("#installment_amount").val();
+                loan = $("#loan_amount").val();
+
+
+                if (loan == 0 || loan == "") {
+                    $('#alert_message').text("Please enter the Loan Amount first");
+                    $('.bs-example-modal-lg').modal('show');
+
+                    num = $("#installment_numbers").val("");
+                    $("#loan_amount").focus();
+
+                    return false;
+                }
+
+                if (ded > 0) {
+                    diff = loan - ded;
+                    $("#balance_amount").val(diff);
+                }
+                else {
+                    diff = loan - ins;
+                    $("#balance_amount").val(diff);
+                }
+
+                console.log(ded + " >> " + ins + " >> " + bal);
+
+            });
+
+            /*
+            $("#loan_application").click(function (e) {
+
+                if ($('#loan_allocated_date').val() == "") {
+
+                    $('#alert_message').text("Please select 'Loan Date'");
+                    $('.bs-example-modal-lg').modal('show');
+
+                    //alert("Please select 'From Date'");
+                    $('#loan_allocated_date').focus();
+                    return false;
+                }
+
+                if ($('#loan_amount').val() == "" || $('#loan_amount').val() == "0") {
+
+                    $('#alert_message').text("Please enter a valid 'Loan Amount'");
+                    $('.bs-example-modal-lg').modal('show');
+
+                    //alert("Please select 'To Date'");
+                    $('#loan_amount').focus();
+                    return false;
+                }
+
+                if ($('#loan_installment').val() == "") {
+
+                    $('#alert_message').text("Please enter a valid 'Loan Installment'");
+                    $('.bs-example-modal-lg').modal('show');
+
+                    //alert("Please select 'To Date'");
+                    $('#loan_installment').focus();
+                    return false;
+                }
+
+                e.preventDefault();
+
+                //if (validateForm()) {
+                //    searchReport();
+                //}
+
+            });
+            */
+
+            var url = '@Url.Action("LoanApplicationDataHandler", "LoansManagement", null, Request.Url.Scheme)';
+            var columns = [
+                   { "data": "Id" },
+                   { "data": "EmployeeCode" },
+                   { "data": "LoanAllocatedDateText" },
+                   { "data": "BalanceAmount" },
+                   { "data": "DeductableAmount" },
+                   { "data": "InstallmentAmount" },
+                   { "data": "LoanAmount" },
+                   { "data": "actions" },
+                   { "data": "InstallmentNumbers" },
+                   { "data": "EmployeeName" },
+                   { "data": "LoanTypeText" },
+                   { "data": "LoanStatusText" },
+                   { "data": "Remarks" },
+                   { "data": "AttachmentFilePath" },
+                   { "data": "CreateDateTimeText" },
+                   { "data": "UpdateDateTimeText" }
+            ];
+
+            @*
+                   I did this so that like initDataTables the JS
+            for serverside processing can be used for other tables.
+                NOTE: The names of the columns correspond to the View Model.
+            For example in this example the column names, first_name, last_name
+            etc are taken from ViewModels.Employee
+        *@
+
+            initReportDataTable('#loan_application_table', url, columns);
+            editLoanApplication = initEditModal("#loan_applicaiton_dialog", '@Url.Action("UpdateLoanApplication", "LoansManagement", null, Request.Url.Scheme)', "loan_application");
+            deleteLoanApplication = initDeleteModal("#loan_applicaiton_dialog", '@Url.Action("RemoveLoanApplication", "LoansManagement", null, Request.Url.Scheme)', "loan_application");
+
+            // ---------------------------- IR ----------------------------
+
+            //download excel
+            $("#btn-excel-download").click(function (e) {
+
+                if ($('#from_date').val() == "") {
+                    $('#alert_message').text("Please select 'From Date'");
+                    $('.bs-example-modal-lg').modal('show');
+
+                    //alert("Please select 'From Date'");
+                    $('#from_date').focus();
+                    return false;
+                }
+
+                if ($('#to_date').val() == "") {
+
+                    $('#alert_message').text("Please select 'To Date'");
+                    $('.bs-example-modal-lg').modal('show');
+
+                    //alert("Please select 'To Date'");
+                    $('#to_date').focus();
+                    return false;
+                }
+
+                //alert($('#export_wait').html());
+
+                if ($('#export_wait').html() == "No Data Found.") {
+                    $('#export_wait').html("<img src='/images/loader.gif' style='width: 110px; margin-left:34%;' alt='processing'>");
+                }
+
+                $('#export_wait').show();
+
+                var post_data = {
+                    //"employee_id": "TYPE_EMP", //$('#employee_id').val(),
+                    "from_date": $('#from_date').val(),
+                    "to_date": $('#to_date').val()
+                };
+
+                $("#btn-excel-download").attr("disabled", "disabled");
+
+                $.ajax({
+                    cache: false,
+                    type: 'post',
+                    url: '/HR/Report/ConsolidatedReportExcelDownload',
+                    data: post_data,
+                    //contentType: 'application/json;charset=utf-8',
+                    dataType: 'json',
+                    success: function (data) {
+
+                        if (data.FileGuid != "" & data.FileName != "") {
+
+                            $('#export_wait').hide();
+                            $("#btn-excel-download").removeAttr("disabled");
+
+                            //console.log('export done successfully InShaAllah!!!');
+                            //var response = JSON.stringify(data);
+                            //alert(data.FileGuid + ' >> ' + data.FileName);
+
+                            window.location = '/HR/Report/Download?fileGuid=' + data.FileGuid + '&fileName=' + data.FileName;
+                        }
+                        else {
+                            $('#export_wait').html("No Data Found.");
+                        }
+                    },
+                    error: function (jq) {
+                        console.log('Error: ' + jq.responseText);
+                    }
+
+                });
+                //  serializeAndSend();
+                e.preventDefault();
+            });
+
+            // ------------------------------------------------------------
+        });
+
+        function validateForm() {
+            var fDate = $('#loan-application-form').find('[name*="from_date"]').val().split("-").reverse();
+            var tDate = $('#loan-application-form').find('[name*="to_date"]').val().split("-").reverse();
+
+            fDate = new Date(fDate[0] + "-" + fDate[1] + "-" + fDate[2]);
+            tDate = new Date(tDate[0] + "-" + tDate[1] + "-" + tDate[2]);
+
+            console.log('fDate = ' + fDate);
+            console.log('tDate = ' + tDate);
+
+            if (fDate > tDate) {
+
+                $('#alert_message').text("'To Date' should be greater than 'From Date'");
+                $('.bs-example-modal-lg').modal('show');
+
+                //alert("To Date should be greater than From Date.");
+                return false;
+            }
+
+
+            if ($('#loan_allocated_date').val() == "") {
+
+                $('#alert_message').text("Please select 'Loan Date'");
+                $('.bs-example-modal-lg').modal('show');
+
+                //alert("Please select 'From Date'");
+                $('#loan_allocated_date').focus();
+                return false;
+            }
+
+            if ($('#loan_amount').val() == "" || $('#loan_amount').val() == "0") {
+
+                $('#alert_message').text("Please enter a valid 'Loan Amount'");
+                $('.bs-example-modal-lg').modal('show');
+
+                //alert("Please select 'To Date'");
+                $('#loan_amount').focus();
+                return false;
+            }
+
+            if ($('#loan_installment').val() == "") {
+
+                $('#alert_message').text("Please enter a valid 'Loan Installment'");
+                $('.bs-example-modal-lg').modal('show');
+
+                //alert("Please select 'To Date'");
+                $('#loan_installment').focus();
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+
+
+}

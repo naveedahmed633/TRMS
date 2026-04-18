@@ -1,0 +1,27 @@
+USE [UNIS]
+GO
+/****** Object:  Trigger [dbo].[populateHaTransit]    Script Date: 8/3/2017 1:57:38 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- Batch submitted through debugger: SQLQuery15.sql|7|0|C:\Users\Abdullah\AppData\Local\Temp\~vs85F0.sql
+
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER TRIGGER [dbo].[populateHaTransit]
+   ON  [UNIS].[dbo].[tEnter]
+   AFTER insert
+AS 
+BEGIN
+declare @status int =1
+insert into [TimeTune].[dbo].[HaTransits] (C_Name,C_Unique,C_Date,C_Time,L_UID,L_TID,active)
+select C_Name,C_Unique,convert(datetime,dbo.getDateString2(C_Date),120) as C_Date,
+dbo.getDateString(C_Time) ,L_UID,L_TID,@status
+from inserted
+where L_UID >-1 and convert(datetime,dbo.getDateString2(C_Date),120)<=convert(datetime,getdate(),120)
+
+END

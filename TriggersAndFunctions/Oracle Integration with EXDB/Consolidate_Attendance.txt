@@ -1,0 +1,9 @@
+CREATE TABLE Consolidate_Attendance (
+    P_Seq INT IDENTITY PRIMARY KEY, -- Unique identifier for each record
+    User_ID INT,                   -- User ID
+    Date DATE,                     -- Date of attendance
+    Time_in TIME,                  -- Time of check-in
+    Time_out TIME,                 -- Time of check-out
+    Device_IN_Name VARCHAR(100),   -- Device name used for IN
+    Device_OUT_Name VARCHAR(100)   -- Device name used for OUT
+);

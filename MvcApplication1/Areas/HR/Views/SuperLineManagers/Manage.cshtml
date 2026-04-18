@@ -1,0 +1,246 @@
+﻿@{
+    ViewBag.Title = "TRMS - Roster Management";
+    Layout = "~/Areas/HR/Views/Shared/_Layout.cshtml";
+}
+
+@model ViewModels.Group
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("dashboard.welcome")  <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span></h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/HR">HR</a></li>
+                    <li class="breadcrumb-item active">Roaster Management</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="mdi mdi-format-rotate-90"></i> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("manager.managemanager") </h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-4">
+
+
+                            @using (Html.BeginForm("AddSLMData", "SuperLineManagers", FormMethod.Post, new { id = "employee-form" }))
+                            {
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("manager.id")</label>
+                                        <select id="line-managers" class="form-control" name="super_line_manager">
+                                            <option value="-1">none</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("manager.manempcodes")</label>
+                                        <select id="group-employees" name="group_employees" class="form-control" multiple>
+                                            <option value=""></option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12 text-danger">
+                                        @Html.AntiForgeryToken()
+                                        @Html.ValidationSummary()
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <button type="submit" value="Add Manager" class="btn btn-primary waves-effect waves-light m-t-10">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("manager.add")</button>
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <table id="slms_table" class="table table-striped table-bordered dataTable dt-responsive nowrap no-footer small" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("manager.code")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("manager.name")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("attendance.action")</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row m-t-10">
+                        <div class="col-12">
+                            <button type="submit" id="btnExport" class="btn btn-primary waves-effect waves-light">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.exportgrid")</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End content -->
+<!-- [START]: Dialog -->
+
+<div style="display:none">
+    <div id='edit-slm-form' class='jqUI-modal' title='Manage Tagging'>
+
+        <p class='validationTips'>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("group.allformfields")</p>
+        <form id='shift_edit_modal'>
+
+            <fieldset>
+
+                <div class='row'>
+
+                    <div class='col-md-12'>
+
+                        <label class='control-label'>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("manager.taggedemp")</label>
+                        <select id='modal-employees' class="form-control" name='group_employees' style="width: 100%" multiple>
+
+                            <option value=''></option>
+                        </select>
+                    </div>
+                </div>
+
+                <input type='submit' tabindex='-1' style='position:absolute; top:-1000px'>
+
+            </fieldset>
+        </form>
+    </div>
+</div>
+
+<!-- [END]: Dialog -->
+
+@section JS {
+
+    <script type="text/javascript" src="@Href("~/Scripts/chosen.ajaxaddition.jquery.js")"></script>
+
+    <script type="text/javascript" src="@Href("~/Scripts/editSLMs.js")"></script>
+
+    @*<script type="text/javascript" src="@Href("~/Scripts/chosen.ajaxaddition.jquery.js")"></script>
+
+        <script type="text/javascript" src="@Href("~/Scripts/groupCRUD.js")"></script>*@
+
+    <script>
+
+        function initializeChosenSelects() {
+
+            function initializeSelect(identifier, url) {
+                $(identifier).ajaxChosen({
+                    dataType: 'json',
+                    type: 'POST',
+                    url: url
+                }, {
+                    loadingImg: '@Href("~/Content/ChosenAutoComplete/loading.gif")'
+                });
+            }
+
+            initializeSelect('#line-managers', '@Url.Action("superlineManagersDataHandler", "SuperLineManagers", null, Request.Url.Scheme)');
+            initializeSelect('#group-employees', '@Url.Action("lmemployeesDataHandler", "SuperLineManagers", null, Request.Url.Scheme)');
+
+            initializeSelect('#modal-employees', '@Url.Action("getAllEmployees", "SuperLineManagers", null, Request.Url.Scheme)');
+        }
+
+
+        function initializeDataTable() {
+
+            var url = '@Url.Action("getAllSLMsDataHandler", "SuperLineManagers", null, Request.Url.Scheme)';
+
+            var columns = [
+                   { "data": "slm_employee_code" },
+                   { "data": "slm_name" },
+                   { "data": "action" }
+            ];
+
+            initServerSideTable('#slms_table', url, columns, 100);
+        }
+
+        $(document).ready(function () {
+            var empCode2= @Html.Raw(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId);
+
+            $.ajax({
+                url: '/HR/HR/VerfiyDataHandler',
+                type: "POST",
+                data: { empId: empCode2 },
+                dataType: "json",
+
+                success: function (data) {
+                    if (data.HRExportGridData == false) {
+                        $("#btnExport").hide();
+                    }
+
+
+
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+            $("#btnExport").click(function (e) {
+                setupTableExportButton('#slms_table', 'SuperLineManagers');
+                e.preventDefault();
+            });
+            /*
+            $('#btnExport').button();
+            $("#btnExport").click(function (e) {
+                $('#slms_table').tableExport({ type: 'excel', escape: 'false' });
+                e.preventDefault();
+            });
+            */
+
+
+
+
+
+            initializeChosenSelects();
+
+            initializeDataTable();
+
+
+
+
+
+
+
+            editSLM = initEditSLMModal('@Url.Action("editSLM", "SuperLineManagers", null, Request.Url.Scheme)');
+            deleteSLM = initDeleteSLMModal('@Url.Action("deleteSLM", "SuperLineManagers", null, Request.Url.Scheme)');
+
+        });
+
+
+
+    </script>
+
+
+}

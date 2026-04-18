@@ -1,0 +1,37 @@
+﻿
+
+<h4 style="font-weight: bold;">Attendance Management</h4>
+<div class="row">
+    <div class="form-group col-md-3">
+        <h5 style="font-weight: bold;">Upload Attendance Raw File</h5>
+        <form>
+            <div class="row">
+
+                <div class="col-md-12">
+                    <label class="control-label">Attendance File</label><input type="file">
+                    </div>
+                </div>
+            <div class="row">
+                <div class="col-md-12" style="margin-top:5px">
+                    <button type="submit" value="Submit">Upload</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    
+</div>
+
+
+@section JS {
+    <script>
+        $(document).ready(function () {
+            $('#accordion').accordion("option", "active", 4);
+            $("input[type=submit], button").button();
+            setActiveLink("Upload Raw Attendance");
+        });
+
+
+
+    </script>
+}

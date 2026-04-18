@@ -1,0 +1,129 @@
+﻿using System.Configuration;
+using DLL.Models;
+using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DLL.Models
+{
+    public class Context : DbContext
+    {
+        public static string connectionString = ConfigurationManager.ConnectionStrings["TimeTune"].ConnectionString;
+        public static string connectionStringR2 = ConfigurationManager.ConnectionStrings["TimeTuneR2"].ConnectionString;
+
+
+
+        public Context() : base(connectionString)
+        {
+            bool bStatus = false;
+
+
+
+            if (ConfigurationManager.AppSettings["TimeTuneDBTimeOut"] != null && ConfigurationManager.AppSettings["TimeTuneDBTimeOut"].ToString() != "")
+            {
+                this.Database.CommandTimeout = int.Parse(ConfigurationManager.AppSettings["TimeTuneDBTimeOut"].ToString()); //600 = 10 * 60 = 10 min
+            }
+
+            bStatus = GetDBConnectionStatus(this.Database);
+            if (!bStatus)
+            {
+                try
+                {
+                    //var c = ;
+
+                    //bStatus = GetDBConnectionStatus(Context(connectionStringR2));
+
+                    this.Database.Connection.ConnectionString = connectionStringR2;
+                    if (this.Database.Connection.State == System.Data.ConnectionState.Closed)
+                    {
+                        this.Database.Connection.Open();
+                        bStatus = this.Database.Exists();
+                    }
+
+                    //Database = c.Database;
+
+                }
+                catch (Exception ex)
+                {
+                    //throw;
+                }
+
+            }
+
+            // : base("Server=10.200.65.194; Database=TimeTune; User Id=sa; Password=resco123!!")
+            //public Context():base("Server=192.168.0.229; Database=TimeTune; User Id=sa; Password=mngr")
+            //this.Configuration.LazyLoadingEnabled = true;
+        }
+
+        public DbSet<AccessCodeValue> access_code_value { get; set; }
+        public DbSet<AccessGroup> access_group { get; set; }
+        public DbSet<ConsolidatedAttendance> consolidated_attendance { get; set; }
+        public DbSet<ConsolidatedAttendancesArchive> consolidated_attendance_su { get; set; }
+        public DbSet<AttendanceRemarksRegister> attendance_remarks_register { get; set; }
+        public DbSet<GroupCalendar> group_calendar { get; set; }
+        public DbSet<Department> department { get; set; }
+        public DbSet<Designation> designation { get; set; }
+        public DbSet<Employee> employee { get; set; }
+        public DbSet<EmployeeForgotPassword> employee_forgotpassword { get; set; }
+        //public DbSet<Employee_SSO> employee_sso { get; set; }
+        public DbSet<PersistentAttendanceLog> persistent_attendance_log { get; set; }
+        public DbSet<Function> function { get; set; }
+        public DbSet<Grade> grade { get; set; }
+        public DbSet<Group> group { get; set; }
+        public DbSet<ManualAttendance> manual_attendance { get; set; }
+        public DbSet<Region> region { get; set; }
+        public DbSet<Remark> remarks { get; set; }
+        public DbSet<Shift> shift { get; set; }
+        public DbSet<DLL.Models.GroupCalendarOverride> group_calendar_overrides { get; set; }
+        public DbSet<GeneralCalendar> general_calender { get; set; }
+        public DbSet<GeneralCalendarOverride> general_calender_override { get; set; }
+        public DbSet<TypeOfEmployment> type_of_employment { get; set; }
+        public DbSet<Location> location { get; set; }
+        public DbSet<AuditTrail> audit_trail { get; set; }
+        public DbSet<HaTransit> ha_transit { get; set; }
+        public DbSet<ShiftToGroupRegister> shift_to_group_register { get; set; }
+        public DbSet<ManualGroupShiftAssigned> manual_group_shift_assigned { get; set; }
+        public DbSet<Terminals> termainal { get; set; }
+        public DbSet<SLM> super_line_manager_tagging { get; set; }
+        public DbSet<ContractualStaff> contractual_staff { get; set; }
+        public DbSet<CS_AttendanceLog> cs_persistent_log { get; set; }
+        public DbSet<CS_PersistentLog> cs_consolidated_log { get; set; }
+        public DbSet<FutureManualAttendance> futureManualAttendance { get; set; }
+
+        public DbSet<LogMessage> log_message { get; set; }
+        public DbSet<LogOFFDate> log_off_date { get; set; }
+
+
+        public bool GetDBConnectionStatus(Database db)
+        {
+            bool dbStatus = false;
+
+            try
+            {
+                //logic here
+                dbStatus = this.Database.Exists();
+                if (dbStatus == false)
+                {
+
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+
+
+            return dbStatus;
+        }
+    }
+
+
+
+
+
+}

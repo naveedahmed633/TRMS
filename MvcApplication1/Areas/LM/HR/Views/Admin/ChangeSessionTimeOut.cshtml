@@ -1,0 +1,32 @@
+﻿<h2>Change Session TimeOut</h2>
+
+
+<div class="row">
+    <div class="form-group col-md-3">
+        @using (Html.BeginForm("ChangeSessionTimeOut", "Admin", FormMethod.Post, new { id = "ChangeSessionTimeOut-form" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary()
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Time Out Time</label>
+                    <input type="text" class="form-control" name="Time_Out_Time">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12" style="margin-top:5px">
+                    <button type="submit" class="btn" style="background-color: rgb(0, 130, 105); " value="Submit">Update</button>
+                </div>
+            </div>
+        }
+    </div>
+    <script>
+        $(document).ready(function () {
+            $('#accordion').accordion("option", "active", 5);
+            $("input[type=submit], button").button();
+            setActiveLink("ChangeSessionTimeOut");
+        });
+    </script>
+

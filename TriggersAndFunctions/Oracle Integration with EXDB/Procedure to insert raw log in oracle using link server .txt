@@ -1,0 +1,26 @@
+create PROCEDURE PopulatePunchingEmpData
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Insert data from HaTransits_Dump to Oracle table via Linked Server
+    INSERT INTO OPENQUERY(ORACLE2, 
+        'SELECT P_SEQ, EMP_ID, TIME_IN, TIME_OUT, EDATE, DEVICE_NAME
+         FROM SA.PUNCHING_EMP_DATA_ROW')
+    SELECT [P_Seq]
+      ,[C_Unique]
+      ,[C_Time]
+      ,NULL
+	  ,C_Date
+      ,[Device_Name]
+    FROM EXDB.dbo.HaTransits_Dump
+    WHERE active = 1;  -- If you want to only process unprocessed data
+
+    -- Optionally, mark rows as processed after the insert
+    UPDATE EXDB.dbo.HaTransits_Dump
+    SET active = 0
+    WHERE active = 1;
+END;
+
+
+EXEC PopulatePunchingEmpData;

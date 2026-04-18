@@ -1,0 +1,701 @@
+﻿@model ViewModels.CreateEmployee
+
+<h4 style="font-weight: bold;">Employee Management</h4>
+<div class="row">
+    <div class="form-group col-md-3">
+        <h5 style="font-weight: bold;">Register User</h5>
+
+        @using (Html.BeginForm("AddEmployee", "EmployeeManagement", FormMethod.Post, new { id = "employee-form" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary()
+            <div class="row">
+
+                <div class="col-md-12">
+                    <label class="control-label">First Name</label>
+                    <input type="text" class="form-control" name="first_name" id="fname" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Last Name</label>
+                    <input type="text" class="form-control" name="last_name" id="lname" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Employee Number</label>
+                    <input type="text" pattern="+[0-9]" class="form-control" name="employee_code" id="empid" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Email Address</label>
+                    <input type="email" class="form-control" name="email" id="email">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Address</label>
+                    <input type="text" class="form-control" name="address" id="email">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Mobile No</label>
+                    <input type="text" class="form-control" name="mobile_no" id="email">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Date of Joining</label>
+                    <input type="text" class="form-control datepicker" name="date_of_joining" style="background-color: #FFF" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Date of Leaving</label>
+                    <input type="text" class="form-control datepicker" name="date_of_leaving" style="background-color: #FFF">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Function</label>
+
+                    <select id="employee-function-select" class="form-control " name="function_id">
+                        <option value="0">none</option>
+                    </select>
+
+                    @*<select class="form-control" name="function_id">
+                        <option selected="selected" disabled="disabled" value="0">Select Function</option>
+                        @foreach (ViewModels.Function item in Model.functions)
+                        {
+                            <option value="@item.id">@item.name</option>
+                        }
+                    </select>*@
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <label class="control-label">Designation</label>
+
+                        <select id="employee-designation-select" class="form-control " name="designation_id">
+                            <option value="0">none</option>
+                        </select>
+
+                        @*<select class="form-control" name="designation_id">
+                            <option selected="selected" disabled="disabled" value="0">Select Designation</option>
+                            
+                            foreach (ViewModels.Designation item in Model.designations)
+                            {
+                                <option value="@item.id">@item.name</option>
+                            }
+                        </select>*@
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <label class="control-label">Department</label>
+
+                        <select id="employee-department-select" class="form-control " name="department_id">
+                            <option value="0">none</option>
+                        </select>
+
+
+                        @*<select class="form-control" name="department_id">
+                            <option selected="selected" disabled="disabled" value="0">Select Department</option>
+                            @foreach (ViewModels.Department item in Model.departments)
+                            {
+                                <option value="@item.id">@item.name</option>
+                            }
+                        </select>*@
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <label class="control-label">Type of Employment</label>
+
+                        <select id="employee-toe-select" class="form-control " name="type_of_employment_id">
+                            <option value="0">none</option>
+                        </select>
+
+                        @*<select class="form-control" name="type_of_employment_id">
+                            <option selected="selected" disabled="disabled" value="0">Select Type</option>
+                            @foreach (ViewModels.TypeOfEmployment item in Model.typeOfEmployments)
+                            {
+                                <option value="@item.id">@item.name</option>
+                            }
+                        </select>*@
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <label class="control-label">Grade/Cadre</label>
+
+                        <select id="employee-grade-select" class="form-control " name="grade_id">
+                            <option value="0">none</option>
+                        </select>
+
+                        @*<select class="form-control" name="grade_id">
+                            <option selected="selected" disabled="disabled" value="0">Select Grade</option>
+                            @foreach (ViewModels.Grades item in Model.grades)
+                            {
+                                <option value="@item.id">@item.name</option>
+                            }
+                        </select>*@
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <label class="control-label">Access Group</label>
+                        <select class="form-control" id="access_group_drop_down" name="access_group_id" required>
+                            <option selected="selected" disabled="disabled" value="0">Select Access Group</option>
+                            @foreach (ViewModels.AccessGroup item in Model.accessGroups)
+                            {
+                                <option value="@item.id">@item.name</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+             <div class="row">
+                    <div class="col-md-12">
+                        <label class="control-label">Time Tune Status</label>
+                        <select class="form-control" id="time_tune_status_drop_down" name="time_tune_status" required>
+                            <option selected="selected" disabled="disabled" value="0">Select Status</option>
+
+                                <option value="0">Deactive</option>
+                                <option value="1">Active</option>
+                            
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label class="control-label">Region</label>
+
+                        <select id="employee-region-select" class="form-control" name="region_id">
+                            <option value="0">none</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <label class="control-label">Location</label>
+
+                        <select id="employee-location-select" class="form-control" name="location_id">
+                            <option value="0">none</option>
+                        </select>
+
+                        @*<select class="form-control" name="location_id">
+                            <option selected="selected" disabled="disabled" value="0">Select Location</option>
+                            @foreach (ViewModels.Location item in Model.locations)
+                            {
+                                <option value="@item.id">@item.name</option>
+                            }
+                        </select>*@
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-md-12" style="margin-top:5px">
+                        <button type="submit" value="Submit">Add Employee</button>
+                        <button type="reset" value="Reset">Reset</button>
+                    </div>
+                </div>
+            }
+        <br><br><br><br><br><br><br><br>
+        </div>
+
+
+        <div class="col-md-9">
+            <h5 style="font-weight: bold;">Current Employees</h5>
+
+            <table id="emp_table" class="display cell-border" width="100%">
+                <thead>
+
+                    <tr>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Employee Number</th>
+                        <th>Function</th>
+                        <th>Department</th>
+                        <th>Line Manager</th>
+                        <th>Status</th>
+                        <th>Action</th>
+
+                    </tr>
+
+                </thead>
+                <tbody></tbody>
+            </table>
+            <button type="submit" id="btnExport" style="margin-top:5px">Export excel</button>
+
+            <hr />
+            @using (Html.BeginForm("DownloadCSVFile", "EmployeeManagement", FormMethod.Post, new { id = "download-form" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary()
+
+                <div class="col-md-4" style="margin-top:5px">
+                    <button id="btnDownload" type="submit" value="Submit">Download File</button>
+                </div>
+
+            }
+        </div>
+  
+    @using (Html.BeginForm("UploadFile", "EmployeeManagement", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary()
+
+   <div class="row">
+                <div class="col-md-4">
+                    <label class="btn btn-primary" for="my-file-selector" style="margin-left: 15px">
+                        <input id="my-file-selector" onchange="alertFilename()" type="file" name="file" value="alert"  accept=".csv" style="display:none; ">
+                        Click to select file
+                    </label>
+                    <h3 class="label" style="font-size:medium; color:black" id="file-name"></h3>
+                </div>
+           
+            <div class="col-md-4" style="margin-top:5px">
+                <button id="btnUpload" type="submit" value="Submit">Upload File</button>
+               <label class="label" style="font-size:medium; color:black"> @ViewBag.Message</label>
+           </div>
+       </div>
+    }
+    
+    </div>
+
+    <div id="employee_modals">
+
+        <div id='employee-edit-form' class='jqUI-modal' title='Edit Employee'>
+            <p class='validationTips'>All form fields are required.</p>
+            <form id='employee-modal-form'>
+                <fieldset>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>First Name</label><br />
+                            <input type='text'
+                                   name='first_name'
+                                   id='modal_first_name'
+                                   class='text ui-widget-content ui-corner-all' style="width:100%" required>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Last Name</label><br />
+                            <input type='text'
+                                   name='last_name'
+                                   id='modal_last_name'
+                                   class='text ui-widget-content ui-corner-all' style="width:100%">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Employee Number</label><br />
+                            <input type='text' pattern="+[0-9]"
+                                   name='employee_code'
+                                   id='modal_employee_code'
+                                   class='text ui-widget-content ui-corner-all' style="width:100%" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Email Address</label><br />
+                            <input type='email'
+                                   name='email'
+                                   id='modal_email'
+                                   class='text ui-widget-content ui-corner-all' style="width:100%">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Address</label><br />
+                            <input type='text'
+                                   name='address'
+                                   id='modal_address'
+                                   class='text ui-widget-content ui-corner-all' style="width:100%">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Mobile Number</label><br />
+                            <input type='text'
+                                   name='mobile_no'
+                                   id='modal_mobile_no'
+                                   class='text ui-widget-content ui-corner-all' style="width:100%">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Date of Joining</label><br />
+                            <input type='text'
+                                   name='date_of_joining'
+                                   id='modal_date_of_joining'
+                                   class='text ui-widget-content ui-corner-all datepicker hasDatePicker' style="width:100%" readonly>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Date of Leaving</label><br />
+                            <input type='text'
+                                   name='date_of_leaving'
+                                   id='modal_date_of_leaving'
+                                   class='text ui-widget-content ui-corner-all datepicker hasDatePicker' style="width:100%" readonly>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Function</label><br />
+
+                            <select class="form-control employee-function-select" name="function_id" id="modal_function" style="width:100%">
+                                <option value="0">none</option>
+                            </select>
+                            @*<select name="function_id" id="modal_function" style="width:100%">
+                                <option selected="selected" disabled="disabled" value="0">Select Function</option>
+                                @foreach (ViewModels.Function item in Model.functions)
+                                {
+                                    <option value="@item.id">@item.name</option>
+                                }
+                            </select>*@
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Designation</label><br />
+
+                            <select class="form-control employee-designation-select" name="designation_id" id="modal_designation" style="width:100%">
+                                <option value="0">none</option>
+                            </select>
+                            @*<select name="designation_id" id="modal_designation" style="width:100%">
+                                <option selected="selected" disabled="disabled" value="0">Select Designation</option>
+                                @foreach (ViewModels.Designation item in Model.designations)
+                                {
+                                    <option value="@item.id">@item.name</option>
+                                }
+                            </select>*@
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Department</label><br />
+
+                            <select class="form-control employee-department-select" name="department_id" id="modal_department" style="width:100%">
+                                <option value="0">none</option>
+                            </select>
+                            @*<select name="department_id" id="modal_department" style="width:100%">
+                                <option selected="selected" disabled="disabled" value="0">Select Department</option>
+                                @foreach (ViewModels.Department item in Model.departments)
+                                {
+                                    <option value="@item.id">@item.name</option>
+                                }
+                            </select>*@
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Type of Employment</label><br />
+
+                            <select class="form-control employee-toe-select" name="modal_type_of_employment" id="modal_type_of_employment" style="width:100%">
+                                <option value="0">none</option>
+                            </select>
+                            @*<select name="type_of_employment_id" id="modal_type_of_employment" style="width:100%">
+                                <option selected="selected" disabled="disabled" value="0">Select TOE</option>
+                                @foreach (ViewModels.TypeOfEmployment item in Model.typeOfEmployments)
+                                {
+                                    <option value="@item.id">@item.name</option>
+                                }
+                            </select>*@
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Access Group</label><br />
+                            <select name="access_group_id" id="modal_access_group" style="width:100%" required>
+                                <option selected="selected" disabled="disabled" value="0" id="modal_access_group">Select Access Group</option>
+                                @foreach (ViewModels.AccessGroup item in Model.accessGroups)
+                                {
+                                    <option value="@item.id">@item.name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Time Tune Status</label><br />
+                            <select name="time_tune_status" id="modal_time_tune_status" style="width:100%" required>
+                                
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Region</label><br />
+
+                            <select class="form-control employee-region-select" name="region_id" id="modal_region" style="width:100%">
+                                <option value="0">none</option>
+                            </select>
+                            @*<select name="region_id" id="modal_region" style="width:100%">
+                                <option selected="selected" disabled="disabled" value="0">Select Region</option>
+                                @foreach (ViewModels.Region item in Model.regions)
+                                {
+                                    <option value="@item.id">@item.name</option>
+                                }
+                            </select>*@
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Grade</label><br />
+
+                            <select class="form-control employee-grade-select" name="grade_id" id="modal_grade" style="width:100%">
+                                <option value="0">none</option>
+                            </select>
+
+                            @*<select name="grade_id" id="modal_grade" style="width:100%">
+                                <option selected="selected" disabled="disabled" value="0">Select Grade</option>
+                                @foreach (ViewModels.Grades item in Model.grades)
+                                {
+                                    <option value="@item.id">@item.name</option>
+                                }
+                            </select>*@
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Location</label><br />
+
+                            <select class="form-control employee-location-select" name="location_id" id="modal_location" style="width:100%">
+                                <option value="0">none</option>
+                            </select>
+                            @*<select name="location_id" id="modal_location" style="width:100%">
+                                <option selected="selected" disabled="disabled" value="0">Select Location</option>
+                                @foreach (ViewModels.Location item in Model.locations)
+                                {
+                                    <option value="@item.id">@item.name</option>
+                                }
+                            </select>*@
+                        </div>
+                    </div>
+
+                    <input type='submit' tabindex='-1' style='position:absolute; top:-1000px'>
+                </fieldset>
+            </form>
+
+           
+        </div>
+       
+      
+
+        
+
+
+       
+
+    </div>
+
+    @section JS {
+
+<script type="text/javascript">
+
+    $('#btnDownload').button();
+
+    $('#btnUpload').button();
+
+</script>
+
+        <script type="text/javascript" src="@Href("~/Scripts/chosen.ajaxaddition.jquery.js")"></script>
+
+        <script src="@Url.Content("/Scripts/employeeCRUD.js")" type="text/javascript"></script>
+
+
+        <script type="text/javascript">
+
+            function setChosenSelectList(selector,URL) {
+
+
+                $(selector).ajaxChosen({
+                    dataType: 'json',
+                    type: 'POST',
+                    url: URL
+                }, {
+                    loadingImg: '@Href("~/Content/ChosenAutoComplete/loading.gif")'
+                });
+
+
+
+            }
+            function alertFilename() {
+                var thefile = document.getElementById('my-file-selector');
+                document.getElementById('file-name').innerHTML=thefile.value;
+            }
+            function checkSubmit(id) {
+
+                jDate = $(id).find('[name*="date_of_joining"]').val().split("-").reverse();
+                lDate = $(id).find('[name*="date_of_leaving"]').val().split("-").reverse();
+                var numbers = /^[0-9]+$/;
+                empcode = $(id).find('[name*="employee_code"]').val();
+
+                jDate = new Date(parseInt(jDate[0]), parseInt(jDate[1]) - 1, parseInt(jDate[2]));
+                lDate = new Date(parseInt(lDate[0]), parseInt(lDate[1]) - 1, parseInt(lDate[2]));
+
+                if (jDate >= lDate) {
+                    alert("Joining Date must be before of Leaving Date");
+                    return false;
+                } else {
+
+
+                    var number = parseInt(empcode);
+
+                    if (isNaN(number)) {
+                        alert('Please input numeric characters only');
+                        return false;
+                    }
+                    else {
+                        return true;
+
+                    }
+
+                }
+
+
+                    
+
+
+                return true;
+            }
+
+
+            $(document).ready(function () {
+                $('#accordion').accordion("option", "active", 1);
+                $(".datepicker").datepicker({ dateFormat: 'dd-mm-yy' });
+
+
+
+                setupTableExportButton('#emp_table', '#btnExport', 'Employees');
+                /*
+                $('#btnExport').button();
+                $("#btnExport").click(function (e) {
+                    $('#emp_table').tableExport({ type: 'excel', escape: 'false' });
+                    e.preventDefault();
+                });
+                */
+
+                $('.hasDatepicker').keydown(function (e) {
+                    var unicode = e.keyCode ? e.keyCode : e.charCode;
+                    if (unicode != 13 && unicode != 8 && unicode != 9) {
+
+
+
+                        e.preventDefault();
+                    }
+
+
+                    // for backspace clear field.
+                    if (unicode == 8) {
+                        $(this).val("");
+                    }
+                });
+
+
+                setChosenSelectList('#employee-function-select', '@Url.Action("functions", "EmployeeManagement", null, Request.Url.Scheme)');
+                setChosenSelectList('#employee-designation-select', '@Url.Action("designations", "EmployeeManagement", null, Request.Url.Scheme)');
+                setChosenSelectList('#employee-department-select', '@Url.Action("departments", "EmployeeManagement", null, Request.Url.Scheme)');
+                setChosenSelectList('#employee-toe-select', '@Url.Action("typeOfEmployments", "EmployeeManagement", null, Request.Url.Scheme)');
+                setChosenSelectList('#employee-grade-select', '@Url.Action("grades", "EmployeeManagement", null, Request.Url.Scheme)');
+                setChosenSelectList('#employee-region-select', '@Url.Action("regions", "EmployeeManagement", null, Request.Url.Scheme)');
+                setChosenSelectList('#employee-location-select', '@Url.Action("locations", "EmployeeManagement", null, Request.Url.Scheme)');
+
+                setChosenSelectList('.employee-function-select', '@Url.Action("functions", "EmployeeManagement", null, Request.Url.Scheme)');
+                setChosenSelectList('.employee-designation-select', '@Url.Action("designations", "EmployeeManagement", null, Request.Url.Scheme)');
+                setChosenSelectList('.employee-department-select', '@Url.Action("departments", "EmployeeManagement", null, Request.Url.Scheme)');
+                setChosenSelectList('.employee-toe-select', '@Url.Action("typeOfEmployments", "EmployeeManagement", null, Request.Url.Scheme)');
+                setChosenSelectList('.employee-grade-select', '@Url.Action("grades", "EmployeeManagement", null, Request.Url.Scheme)');
+                setChosenSelectList('.employee-region-select', '@Url.Action("regions", "EmployeeManagement", null, Request.Url.Scheme)');
+                setChosenSelectList('.employee-location-select', '@Url.Action("locations", "EmployeeManagement", null, Request.Url.Scheme)');
+
+                $('#access_group_drop_down').chosen();
+                $('#time_tune_status_drop_down').chosen();
+                $("input[type=submit], button").button();
+                setActiveLink("Manage Employees");
+
+
+
+
+                var url = '@Url.Action("DataHandler", "EmployeeManagement", null, Request.Url.Scheme)';
+
+                var columns = [
+               { "data": "first_name" },
+               { "data": "last_name" },
+               { "data": "employee_code" },
+               { "data": "function_name" },
+               { "data": "department_name" },
+               { "data": "line_manager_code" },
+               {"data":"time_tune_status"},
+                { "data": "actions" }
+
+                ];
+
+                @*
+                    I did this so that like initDataTables the JS
+                    for serverside processing can be used for other tables.
+                    NOTE: The names of the columns correspond to the View Model.
+                    For example in this example the column names, first_name, last_name
+                    etc are taken from ViewModels.Employee
+*@
+                
+
+            initServerSideTable('#emp_table', url, columns);
+
+            deleteEmployee = initDeleteEmployeeModal('#employee_modals', '@Url.Action("DeleteEmployee", "EmployeeManagement", null, Request.Url.Scheme)');
+
+            editEmployee = initEditEmployeeModal('@Url.Action("EditEmployee", "EmployeeManagement", null, Request.Url.Scheme)');
+
+               
+            $('#employee-form').on("submit", function (e) {
+
+                if (!checkSubmit('#employee-form')) {
+                    e.preventDefault();
+                }
+            });
+
+            });
+            
+            function displayToastrSuccessfull() {
+                $('#toast').html('File Uploded Successfuly');
+                $('#toast').stop().fadeIn(400).delay(3000).fadeOut(400);
+            }
+
+    </script>
+}

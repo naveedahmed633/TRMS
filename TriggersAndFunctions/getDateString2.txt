@@ -1,0 +1,26 @@
+USE [UNIS]
+GO
+/****** Object:  UserDefinedFunction [dbo].[getDateString2]    Script Date: 7/27/2016 5:16:43 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:        <Author,,Name>
+-- Create date: <Create Date, ,>
+-- Description:    <Description, ,>
+-- =============================================
+ALTER FUNCTION [dbo].[getDateString2] 
+(
+    @time varchar(50)
+)
+RETURNS varchar (50)
+AS
+BEGIN
+    -- Declare the return vari0able here
+DECLARE @result varchar(50)
+
+DECLARE @String NVARCHAR(20) =@time
+select @result=  STUFF(STUFF(@String,5,0,'-'),8,0,'-')+' 00:00:00'
+return @result
+END

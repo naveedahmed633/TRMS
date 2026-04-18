@@ -1,0 +1,72 @@
+﻿@{
+    ViewBag.Title = "Manage";
+}
+
+<h2>Get Set Super Line Managers via CSV</h2>
+
+
+
+
+@using (Html.BeginForm("DownloadCSVFile", "UploadDownloadSuperLineManagers", FormMethod.Post, new { id = "download-form" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+
+    <div class="row">
+        <div class="col-md-12" style="margin-top:5px">
+            <button id="btnDownload" type="submit" value="Submit">Download File</button>
+        </div>
+    </div>
+}
+
+<hr />
+
+
+@using (Html.BeginForm("UploadFile", "UploadDownloadSuperLineManagers", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+
+    <div class="row">
+        <div class="row">
+            <div class="col-md-12">
+                <label class="btn btn-primary" for="my-file-selector" style="margin-left: 15px">
+                    <input id="my-file-selector" onchange="alertFilename()" type="file" name="file" value="alert" accept=".csv" style="display:none;">
+                    Click to select file
+                </label>
+                <h3 class="label" style="font-size:medium; color:black" id="file-name"></h3>
+            </div>
+        </div>
+        <div class="col-md-12" style="margin-top:5px">
+            <button id="btnUpload" type="submit" value="Submit">Upload File</button>
+            <label class="label" style="font-size:medium; color:black"> @ViewBag.Message</label>
+        </div>
+    </div>
+}
+
+@section JS {
+
+    <script type="text/javascript">
+
+        function alertFilename() {
+            var thefile = document.getElementById('my-file-selector');
+            document.getElementById('file-name').innerHTML = thefile.value;
+        }
+
+
+        $(document).ready(function () {
+            $('#accordion').accordion("option", "active", 3);
+            setActiveLink("Get/Set Super Line Managers");
+
+
+            $('#btnDownload').button();
+
+            $('#btnUpload').button();
+
+        });
+        
+
+    </script>
+    
+
+}

@@ -1,0 +1,369 @@
+﻿﻿@{
+    ViewBag.Title = "TRMS - Monthly Working Hours Timesheet";
+    Layout = "~/Areas/HR/Views/Shared/_Layout.cshtml";
+}
+@using System.Globalization
+
+<style>
+    .loading-indicator-container {
+        position: absolute; /* Position it within the table */
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%); /* Center it */
+        text-align: center;
+        font-size: 16px;
+        color: #333;
+        background-color: white;
+    }
+
+    .spinner-border {
+        width: 3rem;
+        height: 3rem;
+        margin-bottom: 10px;
+    }
+
+    .loading-message {
+        margin: 0;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="ti-files"></i> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.monworkhrstimesheet") </h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-4">
+                                    <label class="control-label">
+                                        @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.selectmonth") <span class="text-danger font-14">*</span>
+                                    </label>
+
+                                    <select id="monthly-time-sheet-month" class="chzn-select w-100" name="month" required>
+                                        <option selected="selected" disabled="disabled" value="0">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.moy")</option>
+                                        @for (int year = DateTime.Now.Year; year >= DateTime.Now.Year - 3; year--)
+                                        {
+                                            for (int month = 12; month > 0; month--)
+                                            {
+                                                <option value="@(year+ "-"+month.ToString("00"))"
+                                                        @(year == DateTime.Now.Year && month == DateTime.Now.Month ? "selected" : "")>
+                                                    @(DateTimeFormatInfo.CurrentInfo.GetMonthName(month) + " - " + year)
+                                                </option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+
+
+                            <div class="row mt-4">
+                                <div class="col-4">
+                                    <label class="control-label">
+                                        @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lbllocations") <span class="text-danger font-14">*</span>
+                                    </label><br />
+                                    @Html.DropDownList("LocationId", (List<SelectListItem>)ViewBag.locations, "Select a location", new { @class = "chzn-select w-100" })
+                                </div>
+                                <div class="col-4">
+                                    <label class="control-label">
+                                        @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblDepartment") <span class="text-danger font-14">*</span>
+                                    </label><br />
+                                    @Html.DropDownList("DepartmentId", (List<SelectListItem>)ViewBag.departments, "Select a department", new { @class = "chzn-select w-100" })
+                                </div>
+                                <div class="col-4">
+                                    <label class="control-label">
+                                        @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblfunction") <span class="text-danger font-14">*</span>
+                                    </label><br />
+                                    @Html.DropDownList("FunctionId", (List<SelectListItem>)ViewBag.functions, "Select a function", new { @class = "chzn-select w-100" })
+                                </div>
+                            </div>
+
+
+
+                            <div class="row">
+                                <div class="col-12 text-danger">
+                                    @Html.AntiForgeryToken()
+                                    @Html.ValidationSummary()
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <button id="submit" onclick="loadData();" class="btn btn-primary waves-effect waves-light m-t-10">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.search")</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-box">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-12">
+                    <table id="myDataTable" class="table table-striped table-bordered dataTable dt-responsive nowrap no-footer small" style="width: 100%;">
+                        <thead>
+                            <tr>
+
+                                <th id="head1">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.absent")</th>
+                                <th id="head2">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.present")</th>
+                                <th id="head3">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.earlyout")</th>
+                                <th id="head4">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.late")</th>
+                                <th id="head5">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.thours")</th>
+                                <th id="head0">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lbllocations")</th>
+                                <th id="head6">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.empcode")</th>
+                                <th id="head7">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.name")</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row m-t-10">
+                <div class="col-12">
+
+                    <button type="submit" id="btnExport" onclick="exportAsExcel();" class="btn btn-primary waves-effect waves-light">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.exportgrid")</button>
+                    <button type="submit" id="generate-monthly-time-sheet" form="monthly-time-sheet-form" class="btn btn-primary waves-effect waves-light" style="display: @ViewData["PDFDownloadEnabled"];" onclick="exportToPdf()">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("exportPDF")</button>
+                    <span id="export_wait" style="display: none;" class="text-danger"><img src='/images/loader.gif' alt='processing' /></span><span id="pdf-no-data-found" class="text-danger">@ViewData["PDFNoDataFound"]</span>
+                    <span id="demo" class="text-danger"></span>
+                    <p id="export_wait2" style="display: none;" class="text-danger"><img src='/images/loader.gif' alt='processing' /></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section JS {
+    <script src="@Url.Content("/js/jspdf.umd.min.js")"></script>
+    <script src="@Url.Content("/js/jspdf.plugin.autotable.min.js")"></script>
+    <script src="@Url.Content("/js/Amiri-Regular-normal.js")"></script>
+    <script>
+        const columns = [
+            { data: 'totalAbsent', title: '@{@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.absent")}' },
+            { data: 'totalPresent',title: '@{@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.present")}' },
+            { data: 'totalEarlyOut',title: '@{@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.earlyOut")}' },
+            { data: 'totalLate',title: '@{@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.late")}' },
+            { data: 'totalTime',title: '@{@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.thours")}' },
+            { data: 'location', title: `@{@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lbllocations")}` },
+            { data: 'employeeCode', title: '@{@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.empcode")}' },
+            { data: 'employeeName',title: '@{@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.name")}' },
+        ];
+
+        $(document).ready(() => {
+          // Initialize DataTables with pagination
+          $("#myDataTable").DataTable({
+              paging: true,
+              processing: true,
+              columns: columns,
+              "order": [[6, 'asc']],
+              pageLength: 10, // Adjust as needed
+              dom: 'frtip',
+              buttons: [
+                  'excel',
+              ],
+              customize: function (win) {
+                  win.buttons().container().appendTo('#hidden-export-container'); // Hide the button
+              }
+          });
+
+            $('.dataTables_processing').css({
+                "z-index": "1000",
+                "color": "rgb(0, 0, 0)"
+            });
+
+        });
+
+        function addImageWatermark(pdf, imageUrl) {
+            // Load the image
+            var img = new Image();
+            img.src = imageUrl;
+
+            // Get the image dimensions
+            var imgWidth = img.width;
+            var imgHeight = img.height;
+
+            // Calculate position and scale for the watermark
+            var pdfWidth = pdf.internal.pageSize.width;
+            var pdfHeight = pdf.internal.pageSize.height;
+
+            // Add the watermark to each page
+            var totalPages = pdf.internal.getNumberOfPages();
+            for (var i = 1; i <= totalPages; i++) {
+                pdf.setPage(i);
+                pdf.saveGraphicsState();
+                pdf.setGState(new pdf.GState({ opacity: 0.2 }));
+                pdf.addImage(imageUrl, 'JPEG', 5, 30, 200, 300);
+                pdf.restoreGraphicsState();
+            }
+        }
+
+        function loadData() {
+          var url = '@Url.Action("WorkHoursTimeSheetAllData", "Reports", null, Request.Url.Scheme)';
+            let month = $('#monthly-time-sheet-month').val();
+            let location = $('#LocationId').val();
+            let department = $('#DepartmentId').val();
+            let func = $('#FunctionId').val();
+           $('.dataTables_processing').show()
+
+          $("#submit").attr('disabled', 'disabled');
+          $.ajax({
+            url: url,
+            type: "POST",
+            data: {
+                month: month,
+                location: location,
+                function: func,
+                department: department
+            },
+            success: function(response) {
+              var tableData = response;
+              var dataTable = $("#myDataTable").DataTable();
+              dataTable.clear();
+              dataTable.rows.add(tableData).draw();
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+              // Handle errors here
+              console.error("Error:", textStatus, errorThrown);
+
+              },
+              complete: function () {
+                $('.dataTables_processing').hide();
+                $("#submit").attr('disabled', false);
+             }
+          });
+        }
+
+        function exportAsExcel() {
+            $('#myDataTable').DataTable().buttons().container().find('a.buttons-excel').click();
+        }
+
+        function exportToPdf() {
+            // Create a new jsPDF instance
+            const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4'); // Ensure the correct namespace is used
+            const width = pdf.internal.pageSize.getWidth();
+            const height = pdf.internal.pageSize.getHeight();
+            //pdf.addFont = ('ArialUnicodeMS', 'ArialUnicodeMS', 'normal');
+            //pdf.setFont = ('ArialUincodeMS');
+            //pdf.internal.write('charset utf-8');
+            // Add your custom header
+            const date = new Date().toLocaleString();
+            let reportMonth = $('#monthly-time-sheet-month').find(':selected').text().trim();
+
+            pdf.setFont("Amiri-Regular");
+            pdf.setFontSize(20);
+            pdf.text("@{@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("organization.albatinah")}", 150, 15);
+            pdf.setFontSize(15);
+            pdf.text("@{@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.date")}",35, 15);
+            pdf.text(date.split(", ")[0], 5, 15);
+            pdf.text("@{@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.time")}", 35, 25);
+            pdf.text(date.split(", ")[1], 5, 25);
+            pdf.text("@{@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.month")}",35, 35);
+            pdf.text(reportMonth, 5, 35);
+
+            pdf.addImage("/Content/Logos/pngwing.com.png", 'JPEG', 90, 8, 32, 32);
+
+            pdf.setFontSize(20);
+            pdf.text("@{@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.MonthlyAttendanceSummaryReport")}", 75, 50);
+            pdf.line(5, 55, width - 5, 55);
+            //pdf.text(`@{@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.absent")} ${reportMonth}`, 5, 52);
+
+            // Extract DataTable data
+            const dataTableData = $('#myDataTable').DataTable().rows().data().toArray();
+            //const dataTableHeader = $('#myDataTable').dataTable().head().data().toArray();
+
+            // Convert DataTable data to a format suitable for PDF
+            var pdfData = dataTableData.map(row => {
+                return columns.map((m) => { return m.data }).map(columnTitle => {
+                    return row[columnTitle];
+                });
+
+
+
+            });
+            pdfData = pdfData.map(row => {
+                return Object.values(row).map(cell => cell);
+            });
+            //console.log()
+            //const header1 = $('#head1').text().trim();
+            //const header2 = $('#head2').text().trim();
+            //const header3 = $('#head3').text().trim();
+            //const header4 = $('#head4').text().trim();
+            //const header5 = $('#head5').text().trim();
+            //const header6 = $('#head6').text().trim();
+            //const header7 = $('#head7').text().trim();
+
+
+
+            // Add the data to the PDF
+            pdf.autoTable({
+                head: [columns.map((m) => { return m.title })], // Replace with your column headers
+                //head: [[header1, header2, header3, header4, header5, header6, header7]],
+                //head: [['one', 'one', 'one', 'one', 'one', 'one']],
+                //head:
+                body: pdfData,
+                startY: 65, // Adjust the starting Y position to leave space for the header
+                theme: 'grid', // Choose a theme
+                styles: {
+                    fontSize: 10,
+                    lineWidth: 0.25,
+                    lineColor: [0, 0, 0],
+                    //fontfamily: 'ArialUnicodeMS',
+                    font: 'Amiri-Regular',
+
+                },
+                margin: { top: 5, right: 5, bottom: 5, left: 5 },
+                headStyles: {
+                    fillColor: [211, 211, 211, 211],
+                    textColor: [0, 0, 0],
+                    fontWeight: 'normal',
+                    fontSize: 10,
+                    font: 'Amiri-Regular',
+                    halign: 'center', // Align the header text to the center
+                    valign: 'middle', // Align the header text vertically to the middle
+                    cellPadding: 2, // Add padding to the header cells
+                    lineWidth: 0.25,
+                    lineColor: [0, 0, 0],
+                    FontFace: 'ArialUnicodeMS'
+
+                },
+                columnStyles: {
+                    0: { cellWidth: 20 },
+                    1: { cellWidth: 20 },
+                    2: { cellWidth: 20 },
+                    3: { cellWidth: 20 },
+                    4: { cellWidth: 20 },
+                    5: { cellWidth: 20 },
+                    6: { cellWidth: 30 },
+
+                }
+
+            });
+            addImageWatermark(pdf, "/Content/Logos/pngwing.com.png");
+            // Save the PDF or open it in a new window
+            pdf.save('monthlyTimeSheetReport.pdf');
+        }
+
+        $(".chzn-select").chosen();
+
+
+    </script>
+}

@@ -1,0 +1,94 @@
+﻿@{
+    Layout = "~/Areas/Report/Views/Shared/_Layout.cshtml";
+}
+
+@model BLL.ViewModels.LoginModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <title>Time Tune</title>
+
+    <!--<link rel="shortcut icon" href="loginpage/images/favicon.png"> -->
+    <link rel="stylesheet" type="text/css" href="/Content/loginpage/css/style.css" />
+    <!--<script src="loginpage/js/modernizr.custom.63321.js"></script>-->
+    <!--[if lte IE 7]><style>.main{display:none;} .support-note .note-ie{display:block;}</style><![endif]-->
+    <style>
+			@@import url("/Content/loginpage/css/fonts/fonts.css");
+			body {
+				background-color: #999999;
+				-webkit-background-size: cover;
+				-moz-background-size: cover;
+				background-size: cover;
+			}
+			.container > header h1,
+			.container > header h2 {
+				color: #fff;
+				text-shadow: 0 1px 1px rgba(0,0,0,0.7);
+			}
+
+            .validation-summary-errors {
+                margin-top:55px;
+                text-align: center;
+                color: rgb(236,108,74);
+            }
+            
+            .validation-summary-errors li {
+                list-style: none;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+
+
+        <header>
+
+            <h1><strong>Time Tune</strong></h1>
+            <h2><strong>Attendence Management System</strong></h2>
+
+
+        </header>
+
+
+        <p class="message-success">@ViewBag.ErrorMessage</p>
+        <section class="main">
+
+            @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "form-3" }))
+            {
+                
+                <p class="clearfix">
+                    <label for="login">User-id</label>
+                    <!--<input type="text" name="login" id="login" placeholder="Username">-->
+                    <input data-val="true" data-val-required="The User name field is required." id="UserName" name="UserName" type="text" value="" required/>
+                </p>
+                <p class="clearfix">
+                    <label for="password">Password</label>
+                    <!--<input type="password" name="password" id="password" placeholder="Password"> -->
+                    <input data-val="true" data-val-required="The Password field is required." id="Password" name="Password" type="password" required/>
+                </p>
+                <p class="clearfix">
+                    <!--<input type="checkbox" name="remember" id="remember">-->
+                    <input data-val="true" data-val-required="The Remember me? field is required." id="RememberMe" name="RememberMe" type="checkbox" value="true" /><input name="RememberMe" type="hidden" value="false" />
+                    <label for="remember">Remember me</label>
+                </p>
+                <p class="clearfix">
+                    <input type="submit" name="submit" value="Sign in">
+                </p>
+                <div style="display:none">
+                    @Html.AntiForgeryToken()
+                </div>
+                
+                @Html.ValidationSummary(true)
+                
+            }
+        </section>
+        <header>
+            <h2>© 2016 Resco (Pvt) Ltd. All rights reserved</h2>
+        </header>
+    </div>
+</body>
+
+</html>

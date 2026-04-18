@@ -1,0 +1,165 @@
+﻿@{
+    ViewBag.Title = "TRMS - Generate Enrollment Report";
+    Layout = "~/Areas/HR/Views/Shared/_Layout.cshtml";
+}
+
+@model ViewModels.OrganizationProgramCourseEnrollmentView
+
+<style>
+    .monthPicker {
+        z-index: 1000;
+    }
+</style>
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">Welcome <span class="text-danger">'HR'</span>! [Login ID: <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & Name: <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span>]</h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/HR">HR</a></li>
+                    <li class="breadcrumb-item active">Student Portal</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="ti-files"></i> Generate Enrollment Report </h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+
+                    @using (Html.BeginForm("GenerateEnrollmentReport", "OrganizationsManagement", FormMethod.Post, new { id = "enrollment-report-form" }))
+                    {
+                        <div class="row">
+                            <div class="col-4">
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label class="control-label">Year <span class="text-danger font-14">*</span></label>
+                                        <select id="year-id" name="year_id" class="form-control" required>
+                                            @if (Model.list_year != null)
+                                            {
+                                                foreach (ViewModels.GeneralCalendarView item in Model.list_year)
+                                                {
+                                                    <option value="@item.Id">@item.YearName</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label class="control-label">Campus <span class="text-danger font-14">*</span></label>
+                                        <select id="campus-id" name="campus_id" class="form-control" required>
+                                            @if (Model.list_campus != null)
+                                            {
+                                                foreach (ViewModels.OrganizationCampusView item in Model.list_campus)
+                                                {
+                                                    <option value="@item.Id">@item.CampusCode</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label class="control-label">Program <span class="text-danger font-14">*</span></label>
+                                        <select id="program-id" name="program_id" class="form-control" required>
+                                            @if (Model.list_program != null)
+                                            {
+                                                foreach (ViewModels.OrganizationProgramView item in Model.list_program)
+                                                {
+                                                    <option value="@item.Id">@item.ProgramCode</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                            <div class="col-8">
+
+
+                            </div>
+
+                        </div>
+
+                            <div class="row">
+                                <div class="col-12 text-danger">
+                                    @Html.AntiForgeryToken()
+                                    @Html.ValidationSummary()
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <button type="submit" id="search-consolidated-report" onclick="clearr();" class="btn btn-primary waves-effect waves-light m-t-10">Download PDF</button>
+                                    <button type="button" class="btn btn-primary waves-effect waves-light m-t-10" onclick="redirectToPage();">Reset</button>
+                                    <span class="text-danger">
+                                        @if (ViewData["PDFNoDataFound"] != null && ViewData["PDFNoDataFound"].ToString() != "")
+                                        {
+                                            @ViewData["PDFNoDataFound"]
+                                        }
+                                    </span>
+                                </div>
+                            </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- End content -->
+<!-- Custom Modal -->
+<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="mySmallModalLabel">Message Alert</h4>
+            </div>
+            <div class="modal-body">
+                <span id="alert_message"></span>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+@section JS {
+
+    <script type="text/javascript" src="@Href("~/Scripts/chosen.ajaxaddition.jquery.js")"></script>
+    @*<script type="text/javascript" src="@Href("~/Scripts/GenerateReports.js")"></script>*@
+    @*<script type="text/javascript" src="@Href("~/Scripts/monthpicker.js")"></script>*@
+
+
+    <script>
+
+     
+
+
+    </script>
+}

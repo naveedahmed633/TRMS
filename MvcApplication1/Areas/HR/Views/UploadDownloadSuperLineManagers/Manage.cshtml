@@ -1,0 +1,110 @@
+﻿@{
+    ViewBag.Title = "TRMS - Upload Managers via CSV";
+    Layout = "~/Areas/HR/Views/Shared/_Layout.cshtml";
+}
+
+@model ViewModels.Group
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("dashboard.welcome")  <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span></h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/HR">HR</a></li>
+                    <li class="breadcrumb-item active">Roaster Management</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="mdi mdi-format-rotate-90"></i> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("manager.umvc") </h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-12">
+                            @using (Html.BeginForm("DownloadCSVFile", "UploadDownloadSuperLineManagers", FormMethod.Post, new { id = "download-form" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.ValidationSummary()
+
+                            <button id="btnDownload" type="submit" value="Submit" class="btn btn-default waves-effect waves-light">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("group.downloadcurrentdatafile")</button>
+                            }
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    @using (Html.BeginForm("UploadFile", "UploadDownloadSuperLineManagers", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary()
+
+                        <div class="row">
+                            <div class="col-3">
+                                <label class="btn btn-primary" for="my-file-selector">
+                                    <input id="my-file-selector" onchange="alertFilename()" type="file" name="file" value="alert" style="display:none;">
+                                    @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("attendance.click")
+                                </label>
+                                <h4 class="label" id="file-name"></h4>
+                            </div>
+
+                            <div class="col-3">
+                                <button id="btnUpload" type="submit" value="Submit" class="btn btn-danger waves-effect waves-light">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("attendance.uploadfile")</button>
+                                <label class="label"> @ViewBag.Message</label>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End content -->
+
+@section JS {
+
+    <script type="text/javascript">
+
+        function alertFilename() {
+            var thefile = document.getElementById('my-file-selector');
+            document.getElementById('file-name').innerHTML = thefile.value;
+        }
+
+
+        $(document).ready(function () {
+            //$('#accordion').accordion("option", "active", 3);
+            //setActiveLink("Get/Set Super Line Managers");
+
+
+            //$('#btnDownload').button();
+
+            //$('#btnUpload').button();
+
+        });
+
+
+    </script>
+
+
+}

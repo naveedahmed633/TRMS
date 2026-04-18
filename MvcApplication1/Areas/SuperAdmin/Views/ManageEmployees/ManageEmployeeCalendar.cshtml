@@ -1,0 +1,94 @@
+﻿@{
+    ViewBag.Title = "TRMS - Employee Calendar";
+    Layout = "~/Areas/SuperAdmin/Views/Shared/_LayoutCalendar.cshtml";
+}
+
+
+@model List<ViewModels.Employee>
+
+<div class="row">
+    <div class="form-group col-md-12">
+
+
+        <form id="calendar_edit_form">
+            <div class="row">
+                <div class="col-md-3">
+                    <input type="text" name="group" id="group" value="@Model.FirstOrDefault().group_id" hidden />
+                    <label class="control-label">Select Employee</label>
+
+                    <select class="form-control" id="select-employee">
+
+                        <option value="-2" selected="selected" disabled="disabled">Select Employee</option>
+
+                        @foreach (ViewModels.Employee emp in Model)
+                        {
+                            <option value="@emp.id">@emp.employee_code - @emp.first_name @emp.last_name</option>
+                        }
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-3">
+                    <button class="btn btn-primary btn-sm waves-effect waves-light m-t-10" style="margin-top: 10px !important;padding-bottom: 15px !important;height: 35px !important;" id="save_calendar_button">Save Calendar</button>
+                </div>
+                <div class="col-3">
+                    &nbsp;
+                </div>
+                <div class="col-3 text-right">
+                    <a id="btnBack" class="btn btn-default" href="javascript: history.go(-1)">Back</a>
+                </div>
+
+
+            </div>
+
+            <!--<button style="margin-top: 5px" id="save_calendar_button">Save Calendar</button>-->
+
+
+          
+
+
+        </form>
+
+
+
+
+        <h5 id="calendar_title" style="font-weight: bold;"></h5>
+        <div class="row" style="background-color:#eee;padding:55px;margin:15px;border-radius:25px;padding-bottom:10px">
+            <div id="calendar"></div>
+        </div>
+
+
+
+
+    </div>
+
+</div>
+
+
+@section JS {
+    <script src="@Url.Content("/CSCAL/SUemployeeCalendar.js")"></script>
+    <script>
+
+        $(document).ready(function () {
+            $('#accordion').accordion("option", "active", 1);
+            $("#save_calendar_button").button();
+            $(".datepicker").datepicker({
+                dateFormat: "dd-mm-yy"
+            });
+            setActiveLink("Get Group Calendar");
+
+            $('#select-employee').chosen().change(function () {
+                // set a global flag to true.
+                SELECTED_EMPLOYEE = $(this).val();
+
+                loadEmployeeCalendar();
+
+            });
+
+        });
+
+
+    </script>
+
+}

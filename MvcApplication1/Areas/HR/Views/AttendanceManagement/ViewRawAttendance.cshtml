@@ -1,0 +1,74 @@
+﻿<h4 style="font-weight: bold;">Raw Attendance Log</h4>
+<div class="row">
+    <div class="col-md-12">
+
+
+        <table id="attendance_table" class="display cell-border" width="100%">
+            <thead>
+
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Employee Code</th>
+                    <th>Date</th>
+                    <th>Time </th>
+                </tr>
+
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <button type="submit" id="btnExport" style="margin-top:5px">Export Grid Data</button>
+    </div>
+</div>
+@section JS {
+    <script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#accordion').accordion("option", "active", 4);
+        $(".datepicker").datepicker({ dateFormat: 'dd-mm-yy' });
+        setActiveLink("View Raw Attendance");
+
+
+        $('#btnExport').button();
+        $("#btnExport").click(function (e) {
+        setupTableExportButton('#attendance_table', 'ViewRawAttendance');
+        e.preventDefault();
+        });
+        /*
+        $('#btnExport').button();
+        $("#btnExport").click(function (e) {
+            $('#attendance_table').tableExport({ type: 'excel', escape: 'false' });
+            e.preventDefault();
+        });
+        */
+
+
+        var url = '@Url.Action("RawAttendanceDataHandler", "AttendanceManagement", null, Request.Url.Scheme)';
+
+        var columns = [
+
+               { "data": "employee_first_name" },
+               { "data": "employee_last_name" },
+               { "data": "employee_code" },
+               { "data": "date" },
+               { "data": "time" }
+
+        ];
+
+        @*
+               I did this so that like initDataTables the JS
+        for serverside processing can be used for other tables.
+            NOTE: The names of the columns correspond to the View Model.
+        For example in this example the column names, first_name, last_name
+        etc are taken from ViewModels.Employee
+    *@
+
+        initServerSideTable('#attendance_table', url, columns);
+
+
+
+
+    });
+    </script>
+}

@@ -1,0 +1,257 @@
+﻿
+
+<h4 style="font-weight: bold;">Present and Absent Attendance</h4>
+<div class="row">
+    <div id="monthly-time-sheet" class="form-group col-md-3">
+        <form id="pa-form">
+           
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Date From</label>
+                    <input id="date_from" type="text" class="form-control datepicker" name="from_date" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Date To</label>
+                    <input id="date_to" type="text" class="form-control datepicker" name="to_date" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Final Remarks</label>
+                    <select class="form-control" id="final_remarks" name="final_remarks" required>
+
+                        <option value="PP">Present</option>
+                        <option value="AB">Absent</option>
+
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" id="search-pa-report" style="margin-top:5px">Search</button>
+        </form>
+    </div>
+
+</div>
+<div class="row">
+    <div class="col-md-12">
+
+
+
+
+        <table id="attendance_table" class="display cell-border" width="100%">
+            <thead>
+
+                <tr>
+                    <th>Date</th>
+                    <th>Employee Number</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Final Remarks</th>
+
+                </tr>
+
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button type="submit" id="btnExport" style="margin-top:5px">Export excel</button>
+    </div>
+</div>
+
+
+@section JS {
+    <script type="text/javascript" src="@Href("~/Scripts/chosen.ajaxaddition.jquery.js")"></script>
+    <script type="text/javascript" src="@Href("~/Scripts/monthpicker.js")"></script>
+
+    <script type="text/javascript">
+
+
+
+        function searchReport() {
+
+
+            // get the entered string
+            var toSearch = $('attendance_table_filter input').val();
+
+            $('#attendance_table').DataTable().search(toSearch);
+            $('#attendance_table').DataTable().draw();
+
+
+        }
+
+        function initReportDataTable(identifier, url, columns) {
+            var oTable = $(identifier).DataTable({
+                "searchDelay": 2000,
+                "scrollY": "300px",
+                "serverSide": true,
+                "ajax": {
+                    "type": "POST",
+                    "url": url,
+                    "contentType": 'application/json; charset=utf-8',
+                    'data': function (data) {
+                        data.final_remarks = $('#final_remarks').val();
+                        data.from_date = $('#date_from').val();
+                        data.to_date = $('#date_to').val();
+
+
+                        return data = JSON.stringify(data);
+                    }
+                },
+                "scrollX": true,
+                "scrollCollapse": true,
+                "processing": true,
+                "paging": true,
+                "deferRender": true,
+                "columns": columns,
+                "order": [0, "desc"],
+
+                "iDisplayLength": 500,
+                "aLengthMenu": [[10, 25, 50, 100, 500, 1000, 1500,2500,5000], [10, 25, 50, 100, 500, 1000, 1500,2500,5000]]
+
+            });
+
+            oTable.on("draw", function () {
+                var keyword = $(identifier + '_filter > label:eq(0) > input').val();
+                $(identifier).unmark();
+                $(identifier).mark(keyword, {});
+
+
+
+                $(identifier + ' tbody tr').click(function (e) {
+                    $('tr.row_selected').removeClass('row_selected');
+                    $(this).addClass('row_selected');
+                });
+            });
+
+
+            // set the z-index of the 'processing...' overlay
+            // to a great number, so that it may always display
+            // on top of the table. Also set the text color
+            // to black as it is white by default.
+            $(identifier + '_processing').css({
+                "z-index": "1000",
+                "color": "rgb(0, 0, 0)"
+            });
+
+
+            // initiate search one second after the user
+            // stops typing.
+            function setSearchDelayOnDataTable(idSelector) {
+                // remove all events from the search box
+                $(idSelector + '_filter input').off();
+
+
+                function customDataTableSearch() {
+
+                    // get the entered string
+                    var toSearch = $(idSelector + '_filter input').val();
+
+                    // do nothing if the string is null.
+                    // I've not tested this, it is just
+                    // in case.
+                    if (toSearch == null) {
+                        return;
+                    }
+
+                    // initiate search programatically.
+                    $(idSelector).DataTable().search(toSearch).draw();
+                }
+
+                // this variable holds the timer
+                var timeout;
+
+                // register a keypress on the search box
+                $(idSelector + '_filter input').keypress(function () {
+                    if (timeout != null) {
+                        clearTimeout(timeout);
+                        timeout = null;
+                    }
+
+                    // timeout set to 1 second.
+                    timeout = setTimeout(customDataTableSearch, 1000);
+                });
+
+            }
+
+            setSearchDelayOnDataTable(identifier);
+        }
+
+         function submitcheck() {
+
+            fDate = $('#pa-form').find('[name*="from_date"]').val().split("-").reverse();
+            tDate = $('#pa-form').find('[name*="to_date"]').val().split("-").reverse();
+
+            fDate = new Date(fDate[0] + "-" + fDate[1] + "-" + fDate[2]);
+            tDate = new Date(tDate[0] + "-" + tDate[1] + "-" + tDate[2]);
+
+
+            if (tDate < fDate) {
+                alert("To Date should be greater than From Date.");
+                return false;
+            }
+            searchReport();
+            return true;
+
+        }
+
+        $(document).ready(function () {
+            $('#accordion').accordion("option", "active", 5);
+
+            $(".datepicker").datepicker({ dateFormat: 'dd-mm-yy' });
+
+            setActiveLink("View Present Absent Report");
+
+
+
+
+
+            setupTableExportButton('#attendance_table', '#btnExport', 'Present Absent Report');
+
+            //
+            $('#search-pa-report').button();
+            $("#search-pa-report").click(function (e) {
+                submitcheck();
+                e.preventDefault();
+
+
+
+            });
+
+
+
+
+
+            var url = '@Url.Action("PaReportDataHandler", "Reports", null, Request.Url.Scheme)';
+
+            var columns = [
+                  { "data": "date" },
+                   { "data": "employee_code" },
+                   { "data": "employee_first_name" },
+                   { "data": "employee_last_name" },
+                   { "data": "final_remarks" }
+
+            ];
+
+            @*
+                   I did this so that like initDataTables the JS
+            for serverside processing can be used for other tables.
+                NOTE: The names of the columns correspond to the View Model.
+            For example in this example the column names, first_name, last_name
+            etc are taken from ViewModels.Employee
+        *@
+
+            initReportDataTable('#attendance_table', url, columns);
+
+
+
+
+
+
+
+        });
+    </script>
+}

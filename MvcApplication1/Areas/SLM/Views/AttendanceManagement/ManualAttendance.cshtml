@@ -1,0 +1,200 @@
+﻿@{
+    ViewBag.Title = "TRMS - Manual Attendance";
+    Layout = "~/Areas/SLM/Views/Shared/_Layout.cshtml";
+}
+
+@model ViewModels.CreateManualAttendance
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">Welcome <span class="text-danger">'SLM'</span>! [Login ID: <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & Name: <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span>]</h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/SLM/SLM/Dashboard">SLM</a></li>
+                    <li class="breadcrumb-item active">Past Attendance</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="ti-files"></i> Past Attendance </h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-12">
+                            @using (Html.BeginForm("AddManualAttendance", "AttendanceManagement", FormMethod.Post, new { id = "attendance-form" }))
+                            {
+                                <div class="row">
+                                    <div class="col-4">
+                                        <label class="control-label">Employee Code</label>
+                                        <!-- <select id="consolidated-employees" class="form-control" name="employee_id" required></select>-->
+                                        <select id="employees" class="chzn-select" name="employee_code">
+                                            <option selected="selected" disabled="disabled" value="0">Select Employee Code</option>
+                                            @foreach (ViewModels.Employee item in Model.employee)
+                                            {
+                                                <option value="@item.employee_code">@item.employee_code - @item.first_name @item.last_name</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-4">
+                                        <label class="control-label">Date From</label>
+                                        <input id="from_date" type="text" class="form-control datepicker" name="time_in_from" required />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-4">
+                                        <label class="control-label">Date To</label>
+                                        <input id="to_date" type="text" class="form-control datepicker" name="time_in_to" required />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-4">
+                                        <label class="control-label">Reason</label>
+                                        <select class="chzn-select" name="remarks">
+                                            <option disabled="disabled" selected="selected">Select an option</option>
+                                            <option value="AB">Absent - AB</option>
+                                            <option value="PLO">Present Late - PLO</option>
+                                            <option value="PO">Present On Time - PO</option>
+                                            <option value="PLE">Present Late Early Out - PLE</option>
+                                            <option value="POE">Present On Time Early Out - POE</option>
+                                            <option value="OFF">Off Day - OFF</option>
+                                            <option value="OV">Official Visit - OV</option>
+                                            <option value="OM">Official Meeting - OM</option>
+                                            <option value="OT">Official Training - OT</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12 text-danger">
+                                        @Html.AntiForgeryToken()
+                                        @Html.ValidationSummary()
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4">
+                                        <button id="update" type="submit" value="Submit" class="btn btn-primary waves-effect waves-light m-t-10">Update Attendance</button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End content -->
+
+@section JS {
+    <script>
+        $(document).ready(function () {
+            //$('#accordion').accordion("option", "active", 1);
+            //setActiveLink("Manual Attendance");
+            $(".chzn-select").chosen();
+
+            //$("input[type=submit], button").button();
+            $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+
+
+            //setupTableExportButton('#attendance_table', '#btnExport', 'ManualAttendance');
+
+            /*
+            $('#btnExport').button();
+            $("#btnExport").click(function (e) {
+                $('#attendance_table').tableExport({ type: 'excel', escape: 'false' });
+                e.preventDefault();
+            });
+            //initDataTable("#leavebalance_table");*/
+
+            $('#attendance-form').on("submit", function (e) {
+
+
+                fDate = $('#attendance-form').find('[name*="time_in_from"]').val().split("-").reverse();
+                tDate = $('#attendance-form').find('[name*="time_in_to"]').val().split("-").reverse();
+
+
+                fDate = new Date(fDate[2] + "-" + fDate[1] + "-" + fDate[0]);
+                tDate = new Date(tDate[2] + "-" + tDate[1] + "-" + tDate[0]);
+
+
+                var today = new Date();
+                console.log(today,fDate);
+                if (tDate >= today || fDate >= today)
+                {
+                    alert("Please select past date");
+                    return false;
+                }
+
+                var r = confirm("Are you sure you want to Update?");
+                if (r == false) {
+                    return false;
+                }
+
+                return true;
+
+            });
+
+
+
+
+
+
+            var url = '@Url.Action("DataHandler", "Reports", null, Request.Url.Scheme)';
+
+            var columns = [
+                  { "data": "date" },
+                   { "data": "employee_code" },
+                   { "data": "employee_first_name" },
+                   { "data": "employee_last_name" },
+                   { "data": "time_in" },
+                   { "data": "status_in" },
+                   { "data": "time_out" },
+                   { "data": "status_out" },
+                   { "data": "final_remarks" }
+
+            ];
+
+        @*
+               I did this so that like initDataTables the JS
+            for serverside processing can be used for other tables.
+                NOTE: The names of the columns correspond to the View Model.
+            For example in this example the column names, first_name, last_name
+            etc are taken from ViewModels.Employee
+        *@
+
+            //initServerSideTable('#attendance_table', url, columns);
+        });
+
+
+
+    </script>
+}

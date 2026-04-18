@@ -1,0 +1,95 @@
+﻿@model BLL.ViewModels.LocalPasswordModel
+
+
+@*<p class="message-success">@ViewBag.StatusMessage</p>
+
+<p>You're logged in as <strong>@User.Identity.Name</strong>.</p>
+
+<p>Your role is <strong>@ViewBag.LoggedInAs</strong>.</p>*@
+
+
+<h4 style="font-weight: bold;">Change Password</h4>
+<div class="row">
+    <div class="form-group col-md-3">
+        @*<h5 style="font-weight: bold;">Account Information</h5>*@
+        
+@using (Html.BeginForm("Manage", "Account", FormMethod.Post, new { id = "chg_pass" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+
+    <fieldset>
+
+        <div class="row">
+
+            <div class="col-md-12">
+                <label class="control-label">Old Password</label>
+                <input type="password" class="form-control" id="OldPassword" name="OldPassword" required>
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="col-md-12">
+                <label class="control-label">New Password</label>
+                <input type="password" class="form-control" id="NewPassword" name="NewPassword" required>
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="col-md-12">
+                <label class="control-label">Confirm Password</label>
+                <input type="password" class="form-control" id="ConfirmPassword" name="ConfirmPassword" required>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-12" style="margin-top:5px">
+                <input type="submit" value="Change password" />
+            </div>
+        </div>
+        </fieldset>
+}
+</div>
+
+</div>
+
+
+@section JS {
+    @Scripts.Render("~/bundles/jqueryval")
+<script>
+
+   
+    $(document).ready(function () {
+        $('#accordion').accordion("option", "active", 0);
+
+       
+        $("input[type=submit], button").button();
+
+        $('#chg_pass').on("submit", function () {
+            var password = $("#NewPassword").val();
+            var confirmPassword = $("#ConfirmPassword").val();
+            if (password != confirmPassword) {
+                alert("Passwords do not match. Re-enter passwords");
+                return false;
+            } else if(!followsPasswordPolicy(password)) {
+                alert("Your password must be at least 6 characters long and must contain at least, 1 small letter, 1 capital letter, 1 number, and 1 of the following special characters. ! @@ # $ % ^ & * ( ) _ - ");
+                return false;
+            }
+            return true;
+
+        });
+
+    });
+
+
+
+</script>
+
+
+
+
+
+}
+
+

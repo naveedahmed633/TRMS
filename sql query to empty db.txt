@@ -1,0 +1,23 @@
+
+delete  from ConsolidatedAttendances where employee_EmployeeId not in ('1')
+
+delete from PersistentAttendanceLogs where employee_code not in ('000000')
+
+delete from BookingDetails
+
+delete from Bookings
+
+delete from Employees where employee_code not in ('000000')
+
+
+  delete from OrganizationCampus where id != 0 
+
+  delete from OrganizationCampusBuildings
+
+  delete from OrganizationCampusBuildingRooms
+
+  delete from OrganizationCampusRoomCourseSchedules
+
+  delete from OrganizationCampusPrograms
+
+  delete from OrganizationCampusTypes

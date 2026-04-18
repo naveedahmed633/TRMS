@@ -1,0 +1,3206 @@
+USE [master]
+GO
+/****** Object:  Database [UCDB]    Script Date: 3/25/2026 10:02:08 PM ******/
+CREATE DATABASE [UCDB]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'MSSDB_data', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL16.SQLEXPRESS\MSSQL\DATA\UCDB.mdf' , SIZE = 102400KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
+ LOG ON 
+( NAME = N'MSSDB_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL16.SQLEXPRESS\MSSQL\DATA\UCDB_log.ldf' , SIZE = 102400KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
+ WITH CATALOG_COLLATION = DATABASE_DEFAULT, LEDGER = OFF
+GO
+ALTER DATABASE [UCDB] SET COMPATIBILITY_LEVEL = 160
+GO
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [UCDB].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
+ALTER DATABASE [UCDB] SET ANSI_NULL_DEFAULT OFF 
+GO
+ALTER DATABASE [UCDB] SET ANSI_NULLS OFF 
+GO
+ALTER DATABASE [UCDB] SET ANSI_PADDING OFF 
+GO
+ALTER DATABASE [UCDB] SET ANSI_WARNINGS OFF 
+GO
+ALTER DATABASE [UCDB] SET ARITHABORT OFF 
+GO
+ALTER DATABASE [UCDB] SET AUTO_CLOSE ON 
+GO
+ALTER DATABASE [UCDB] SET AUTO_SHRINK OFF 
+GO
+ALTER DATABASE [UCDB] SET AUTO_UPDATE_STATISTICS ON 
+GO
+ALTER DATABASE [UCDB] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+ALTER DATABASE [UCDB] SET CURSOR_DEFAULT  GLOBAL 
+GO
+ALTER DATABASE [UCDB] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+ALTER DATABASE [UCDB] SET NUMERIC_ROUNDABORT OFF 
+GO
+ALTER DATABASE [UCDB] SET QUOTED_IDENTIFIER OFF 
+GO
+ALTER DATABASE [UCDB] SET RECURSIVE_TRIGGERS OFF 
+GO
+ALTER DATABASE [UCDB] SET  ENABLE_BROKER 
+GO
+ALTER DATABASE [UCDB] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+ALTER DATABASE [UCDB] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+ALTER DATABASE [UCDB] SET TRUSTWORTHY OFF 
+GO
+ALTER DATABASE [UCDB] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+GO
+ALTER DATABASE [UCDB] SET PARAMETERIZATION SIMPLE 
+GO
+ALTER DATABASE [UCDB] SET READ_COMMITTED_SNAPSHOT OFF 
+GO
+ALTER DATABASE [UCDB] SET HONOR_BROKER_PRIORITY OFF 
+GO
+ALTER DATABASE [UCDB] SET RECOVERY SIMPLE 
+GO
+ALTER DATABASE [UCDB] SET  MULTI_USER 
+GO
+ALTER DATABASE [UCDB] SET PAGE_VERIFY CHECKSUM  
+GO
+ALTER DATABASE [UCDB] SET DB_CHAINING OFF 
+GO
+ALTER DATABASE [UCDB] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+GO
+ALTER DATABASE [UCDB] SET TARGET_RECOVERY_TIME = 60 SECONDS 
+GO
+ALTER DATABASE [UCDB] SET DELAYED_DURABILITY = DISABLED 
+GO
+ALTER DATABASE [UCDB] SET ACCELERATED_DATABASE_RECOVERY = OFF  
+GO
+ALTER DATABASE [UCDB] SET QUERY_STORE = ON
+GO
+ALTER DATABASE [UCDB] SET QUERY_STORE (OPERATION_MODE = READ_WRITE, CLEANUP_POLICY = (STALE_QUERY_THRESHOLD_DAYS = 30), DATA_FLUSH_INTERVAL_SECONDS = 900, INTERVAL_LENGTH_MINUTES = 60, MAX_STORAGE_SIZE_MB = 1000, QUERY_CAPTURE_MODE = AUTO, SIZE_BASED_CLEANUP_MODE = AUTO, MAX_PLANS_PER_QUERY = 200, WAIT_STATS_CAPTURE_MODE = ON)
+GO
+USE [UCDB]
+GO
+/****** Object:  User [ucuser]    Script Date: 3/25/2026 10:02:08 PM ******/
+CREATE USER [ucuser] FOR LOGIN [ucuser] WITH DEFAULT_SCHEMA=[ucuser]
+GO
+ALTER ROLE [db_owner] ADD MEMBER [ucuser]
+GO
+ALTER ROLE [db_datareader] ADD MEMBER [ucuser]
+GO
+ALTER ROLE [db_datawriter] ADD MEMBER [ucuser]
+GO
+/****** Object:  Schema [ucuser]    Script Date: 3/25/2026 10:02:08 PM ******/
+CREATE SCHEMA [ucuser]
+GO
+/****** Object:  Table [dbo].[auth_logs_202601]    Script Date: 3/25/2026 10:02:08 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[auth_logs_202601](
+	[index_key] [bigint] IDENTITY(1,1) NOT NULL,
+	[terminal_log_index_key] [int] NULL,
+	[terminal_id] [int] NULL,
+	[user_id] [bigint] NULL,
+	[unique_id] [nvarchar](240) NULL,
+	[group_code] [int] NULL,
+	[group_name] [varchar](100) NULL,
+	[position_name] [varchar](64) NULL,
+	[user_name] [nvarchar](240) NULL,
+	[event_time] [datetime] NOT NULL,
+	[server_record_time] [datetime] NULL,
+	[auth_type] [bigint] NULL,
+	[auth_result] [tinyint] NULL,
+	[func] [int] NULL,
+	[func_type] [tinyint] NULL,
+	[card] [varchar](40) NULL,
+	[user_type] [int] NULL,
+	[is_picture] [tinyint] NULL,
+	[property] [char](5) NULL,
+	[latitude] [float] NULL,
+	[longitude] [float] NULL,
+	[reserved] [binary](12) NULL,
+	[terminal_name] [varchar](50) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[index_key] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  View [dbo].[view_alpeta_202601]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE VIEW [dbo].[view_alpeta_202601] AS SELECT * FROM auth_logs_202601
+GO
+/****** Object:  Table [dbo].[auth_logs_202508]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[auth_logs_202508](
+	[index_key] [bigint] IDENTITY(1,1) NOT NULL,
+	[terminal_log_index_key] [int] NULL,
+	[terminal_id] [int] NULL,
+	[user_id] [bigint] NULL,
+	[unique_id] [nvarchar](240) NULL,
+	[group_code] [int] NULL,
+	[group_name] [varchar](100) NULL,
+	[position_name] [varchar](64) NULL,
+	[user_name] [nvarchar](240) NULL,
+	[event_time] [datetime] NOT NULL,
+	[server_record_time] [datetime] NULL,
+	[auth_type] [bigint] NULL,
+	[auth_result] [tinyint] NULL,
+	[func] [int] NULL,
+	[func_type] [tinyint] NULL,
+	[card] [varchar](40) NULL,
+	[user_type] [int] NULL,
+	[is_picture] [tinyint] NULL,
+	[property] [char](5) NULL,
+	[latitude] [float] NULL,
+	[longitude] [float] NULL,
+	[reserved] [binary](12) NULL,
+	[terminal_name] [varchar](50) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[index_key] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  View [dbo].[view_alpeta_202508]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE VIEW [dbo].[view_alpeta_202508] AS SELECT * FROM auth_logs_202508
+GO
+/****** Object:  Table [dbo].[auth_logs_202602]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[auth_logs_202602](
+	[index_key] [bigint] IDENTITY(1,1) NOT NULL,
+	[terminal_log_index_key] [int] NULL,
+	[terminal_id] [int] NULL,
+	[user_id] [bigint] NULL,
+	[unique_id] [nvarchar](240) NULL,
+	[group_code] [int] NULL,
+	[group_name] [varchar](100) NULL,
+	[position_name] [varchar](64) NULL,
+	[user_name] [nvarchar](240) NULL,
+	[event_time] [datetime] NOT NULL,
+	[server_record_time] [datetime] NULL,
+	[auth_type] [bigint] NULL,
+	[auth_result] [tinyint] NULL,
+	[func] [int] NULL,
+	[func_type] [tinyint] NULL,
+	[card] [varchar](40) NULL,
+	[user_type] [int] NULL,
+	[is_picture] [tinyint] NULL,
+	[property] [char](5) NULL,
+	[latitude] [float] NULL,
+	[longitude] [float] NULL,
+	[reserved] [binary](12) NULL,
+	[terminal_name] [varchar](50) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[index_key] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  View [dbo].[view_alpeta_202602]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE VIEW [dbo].[view_alpeta_202602] AS SELECT * FROM auth_logs_202602
+GO
+/****** Object:  Table [dbo].[auth_logs_202603]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[auth_logs_202603](
+	[index_key] [bigint] IDENTITY(1,1) NOT NULL,
+	[terminal_log_index_key] [int] NULL,
+	[terminal_id] [int] NULL,
+	[user_id] [bigint] NULL,
+	[unique_id] [nvarchar](240) NULL,
+	[group_code] [int] NULL,
+	[group_name] [varchar](100) NULL,
+	[position_name] [varchar](64) NULL,
+	[user_name] [nvarchar](240) NULL,
+	[event_time] [datetime] NOT NULL,
+	[server_record_time] [datetime] NULL,
+	[auth_type] [bigint] NULL,
+	[auth_result] [tinyint] NULL,
+	[func] [int] NULL,
+	[func_type] [tinyint] NULL,
+	[card] [varchar](40) NULL,
+	[user_type] [int] NULL,
+	[is_picture] [tinyint] NULL,
+	[property] [char](5) NULL,
+	[latitude] [float] NULL,
+	[longitude] [float] NULL,
+	[reserved] [binary](12) NULL,
+	[terminal_name] [varchar](50) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[index_key] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  View [dbo].[view_alpeta_202603]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE VIEW [dbo].[view_alpeta_202603] AS SELECT * FROM auth_logs_202603
+GO
+/****** Object:  Table [dbo].[access_area_groups]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[access_area_groups](
+	[access_group_id] [int] NOT NULL,
+	[access_area_id] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[access_group_id] ASC,
+	[access_area_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[access_area_terminals]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[access_area_terminals](
+	[access_area_id] [int] NOT NULL,
+	[terminal_id] [int] NOT NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[access_area_users]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[access_area_users](
+	[access_area_id] [int] NOT NULL,
+	[user_id] [bigint] NOT NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[access_areas]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[access_areas](
+	[id] [int] NOT NULL,
+	[name] [nvarchar](30) NULL,
+	[timezone] [int] NULL,
+	[floor] [varchar](30) NULL,
+	[area_type] [int] NULL,
+	[timezone2] [int] NULL,
+	[timezone3] [int] NULL,
+	[timezone4] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[access_groups]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[access_groups](
+	[id] [int] NOT NULL,
+	[name] [nvarchar](50) NULL,
+	[timezone_id] [int] NULL,
+	[visit_enable] [int] NULL,
+	[elevator_set_id] [int] NULL,
+	[code] [varchar](20) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[acu_event_logs]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[acu_event_logs](
+	[event_time] [datetime] NOT NULL,
+	[terminal_id] [int] NOT NULL,
+	[user_id] [bigint] NULL,
+	[category] [int] NULL,
+	[content] [int] NULL,
+	[detail] [nvarchar](50) NULL,
+	[account] [int] NULL,
+	[target] [int] NULL,
+	[partition] [int] NULL,
+	[qualifier] [int] NULL,
+	[event_info] [nvarchar](20) NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[acu_infos]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[acu_infos](
+	[device_id] [int] NULL,
+	[partition_status] [nvarchar](12) NULL,
+	[zone_status] [nvarchar](24) NULL,
+	[lock_status] [nvarchar](12) NULL,
+	[reader_status] [nvarchar](24) NULL,
+	[reader_ver1] [nvarchar](128) NULL,
+	[reader_ver2] [nvarchar](128) NULL,
+	[reader_ver3] [nvarchar](128) NULL,
+	[reader_ver4] [nvarchar](128) NULL,
+	[reader_ver5] [nvarchar](128) NULL,
+	[reader_ver6] [nvarchar](128) NULL,
+	[reader_ver7] [nvarchar](128) NULL,
+	[reader_ver8] [nvarchar](128) NULL,
+	[reader_name1] [nvarchar](128) NULL,
+	[reader_name2] [nvarchar](128) NULL,
+	[reader_name3] [nvarchar](128) NULL,
+	[reader_name4] [nvarchar](128) NULL,
+	[reader_name5] [nvarchar](128) NULL,
+	[reader_name6] [nvarchar](128) NULL,
+	[reader_name7] [nvarchar](128) NULL,
+	[reader_name8] [nvarchar](128) NULL,
+	[wiegand_name1] [nvarchar](128) NULL,
+	[wiegand_name2] [nvarchar](128) NULL,
+	[wiegand_name3] [nvarchar](128) NULL,
+	[wiegand_name4] [nvarchar](128) NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[apb_areas]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[apb_areas](
+	[area_id] [int] NOT NULL,
+	[name] [nvarchar](255) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[area_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[apbs]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[apbs](
+	[terminal_id] [int] NOT NULL,
+	[area_in] [int] NULL,
+	[area_out] [int] NULL,
+	[soft_passback] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[terminal_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[approvers]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[approvers](
+	[user_id] [bigint] NOT NULL,
+	[min_approve_level] [int] NULL,
+	[max_approve_level] [int] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[audit_logs]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[audit_logs](
+	[event_time] [datetime] NOT NULL,
+	[user_id] [bigint] NOT NULL,
+	[category] [int] NULL,
+	[content] [int] NULL,
+	[detail] [nvarchar](50) NULL,
+	[target] [nvarchar](30) NULL,
+	[action] [int] NULL,
+	[location] [int] NULL,
+	[remark] [nvarchar](112) NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[auth_log_images_202508]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[auth_log_images_202508](
+	[index_key] [bigint] NOT NULL,
+	[image_type] [int] NULL,
+	[file_path] [nvarchar](255) NULL,
+	[offset] [bigint] NULL,
+	[length] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[index_key] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[auth_log_images_202601]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[auth_log_images_202601](
+	[index_key] [bigint] NOT NULL,
+	[image_type] [int] NULL,
+	[file_path] [nvarchar](255) NULL,
+	[offset] [bigint] NULL,
+	[length] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[index_key] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[auth_log_images_202602]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[auth_log_images_202602](
+	[index_key] [bigint] NOT NULL,
+	[image_type] [int] NULL,
+	[file_path] [nvarchar](255) NULL,
+	[offset] [bigint] NULL,
+	[length] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[index_key] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[auth_log_images_202603]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[auth_log_images_202603](
+	[index_key] [bigint] NOT NULL,
+	[image_type] [int] NULL,
+	[file_path] [nvarchar](255) NULL,
+	[offset] [bigint] NULL,
+	[length] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[index_key] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[card_layout_data]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[card_layout_data](
+	[l_index] [int] NULL,
+	[l_sector] [int] NULL,
+	[l_block] [int] NULL,
+	[l_start] [int] NULL,
+	[l_length] [int] NULL,
+	[l_key_type] [int] NULL,
+	[l_key_value] [nvarchar](12) NULL,
+	[la_id_code] [nvarchar](16) NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[card_layout_infos]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[card_layout_infos](
+	[l_card_size] [int] NULL,
+	[l_card_type] [int] NULL,
+	[l_read_type] [int] NULL,
+	[l_template_size] [int] NULL,
+	[l_template_count] [int] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[elevator_sets]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[elevator_sets](
+	[elevator_set_id] [int] NOT NULL,
+	[elevator_set_name] [nvarchar](30) NOT NULL,
+	[access_floor] [binary](28) NULL,
+	[reserved] [binary](7) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[elevator_set_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[email_configs]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[email_configs](
+	[flag] [int] NULL,
+	[security] [int] NULL,
+	[host] [nvarchar](100) NULL,
+	[port] [int] NULL,
+	[user] [nvarchar](100) NULL,
+	[userpwd] [nvarchar](100) NULL,
+	[from] [nvarchar](100) NULL,
+	[sender] [nvarchar](100) NULL,
+	[to] [nvarchar](255) NULL,
+	[cc] [nvarchar](255) NULL,
+	[bcc] [nvarchar](255) NULL,
+	[attach_picture] [int] NULL,
+	[disconnect] [int] NULL,
+	[cover_open] [int] NULL,
+	[door_pick] [int] NULL,
+	[not_close] [int] NULL,
+	[lock_error] [int] NULL,
+	[emergency] [int] NULL,
+	[external] [int] NULL,
+	[blacklist] [int] NULL,
+	[matching_fail] [int] NULL,
+	[no_permission] [int] NULL,
+	[duress] [int] NULL,
+	[medical] [int] NULL,
+	[fire_alarms] [int] NULL,
+	[panic_alarms] [int] NULL,
+	[burglar_alarms] [int] NULL,
+	[general_alarms] [int] NULL,
+	[hour_non_burglary] [int] NULL,
+	[system_peripheral_troubles] [int] NULL,
+	[sounder_troubles] [int] NULL,
+	[system_troubles] [int] NULL,
+	[fire_supervisory] [int] NULL,
+	[comm_disables] [int] NULL,
+	[system_peripheral_disables] [int] NULL,
+	[sounder_disables] [int] NULL,
+	[system_disables] [int] NULL,
+	[access_control] [int] NULL,
+	[remote_access] [int] NULL,
+	[open_close] [int] NULL,
+	[sensor] [int] NULL,
+	[protection_loop] [int] NULL,
+	[comm_troubles] [int] NULL,
+	[miscellaneous] [int] NULL,
+	[special_codes] [int] NULL,
+	[personnel_monitoring] [int] NULL,
+	[scheduling] [int] NULL,
+	[event_log] [int] NULL,
+	[test_misc] [int] NULL,
+	[bypasses] [int] NULL,
+	[expand] [int] NULL,
+	[thermal_notify] [int] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[emergency_configs]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[emergency_configs](
+	[fire_range] [int] NULL,
+	[fire_open] [int] NULL,
+	[fire_alarm] [int] NULL,
+	[fire_finish] [int] NULL,
+	[panic_range] [int] NULL,
+	[panic_open] [int] NULL,
+	[panic_alarm] [int] NULL,
+	[panic_finish] [int] NULL,
+	[crisis_range] [int] NULL,
+	[crisis_open] [int] NULL,
+	[crisis_alarm] [int] NULL,
+	[crisis_finish] [int] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[event_logs]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[event_logs](
+	[event_time] [datetime] NOT NULL,
+	[terminal_id] [int] NOT NULL,
+	[category] [int] NULL,
+	[content] [int] NULL,
+	[detail] [nvarchar](50) NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[exdb_temp_auth_logs]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[exdb_temp_auth_logs](
+	[index_key] [bigint] IDENTITY(1,1) NOT NULL,
+	[terminal_log_index_key] [int] NULL,
+	[terminal_id] [int] NULL,
+	[user_id] [bigint] NULL,
+	[unique_id] [nvarchar](240) NULL,
+	[group_code] [int] NULL,
+	[group_name] [varchar](100) NULL,
+	[position_name] [varchar](64) NULL,
+	[user_name] [nvarchar](240) NULL,
+	[event_time] [datetime] NOT NULL,
+	[server_record_time] [datetime] NULL,
+	[auth_type] [bigint] NULL,
+	[auth_result] [tinyint] NULL,
+	[func] [int] NULL,
+	[func_type] [tinyint] NULL,
+	[card] [varchar](40) NULL,
+	[user_type] [int] NULL,
+	[is_picture] [tinyint] NULL,
+	[property] [char](5) NULL,
+	[latitude] [float] NULL,
+	[longitude] [float] NULL,
+	[reserved] [binary](12) NULL,
+	[terminal_name] [varchar](50) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[index_key] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[exportdbs]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[exportdbs](
+	[colname] [nvarchar](50) NULL,
+	[coltype] [nvarchar](50) NULL,
+	[collen] [int] NULL,
+	[colnum] [int] NULL,
+	[colsel] [int] NULL,
+	[colbegin] [int] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[group_access_groups]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[group_access_groups](
+	[group_id] [int] NOT NULL,
+	[access_group_id] [int] NOT NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[groups]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[groups](
+	[group_id] [int] NOT NULL,
+	[parent] [int] NULL,
+	[name] [nvarchar](100) NOT NULL,
+	[description] [nvarchar](100) NULL,
+	[group_code] [varchar](32) NULL,
+	[sort_value] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[group_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[health_counseling_records]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[health_counseling_records](
+	[user_id] [bigint] NOT NULL,
+	[measurement_date] [nvarchar](255) NOT NULL,
+	[risk_types] [nvarchar](255) NULL,
+	[risk_level] [tinyint] NULL,
+	[content] [text] NULL,
+	[saved_at] [nvarchar](255) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[measurement_date] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[health_terms_histories]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[health_terms_histories](
+	[version] [varchar](50) NOT NULL,
+	[modify_date] [datetime] NOT NULL,
+	[writer_id] [bigint] NOT NULL,
+	[summary] [nvarchar](500) NULL,
+	[content] [text] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[version] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[innodep_records]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[innodep_records](
+	[terminal_id] [int] NOT NULL,
+	[dev_name] [nvarchar](32) NULL,
+	[dev_serial] [nvarchar](32) NULL,
+	[event_time] [datetime] NULL,
+	[record_error] [nvarchar](64) NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[innodeps]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[innodeps](
+	[terminal_id] [int] NOT NULL,
+	[dev_name1] [nvarchar](32) NULL,
+	[dev_serial1] [nvarchar](32) NULL,
+	[dev_name2] [nvarchar](32) NULL,
+	[dev_serial2] [nvarchar](32) NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[license_keys]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[license_keys](
+	[data] [varchar](256) NULL,
+	[seriall_key] [varchar](35) NULL,
+	[customer_id] [varchar](20) NULL,
+	[company_name] [nvarchar](50) NULL,
+	[server_address] [nvarchar](64) NULL,
+	[server_port] [int] NULL,
+	[server_address2] [nvarchar](64) NULL,
+	[server_port2] [int] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[licenses]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[licenses](
+	[license_data] [varchar](256) NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[lprs]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[lprs](
+	[device_id] [int] NOT NULL,
+	[password] [nvarchar](64) NULL,
+	[name] [nvarchar](64) NULL,
+	[gate_set] [int] NULL,
+	[in_out_set] [int] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[map_areas]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[map_areas](
+	[map_code] [int] NOT NULL,
+	[name] [nvarchar](255) NULL,
+	[pos_x] [int] NULL,
+	[pos_y] [int] NULL,
+	[image_type] [int] NULL,
+	[image_size] [int] NULL,
+	[image_data] [varbinary](max) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[map_code] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[map_terminals]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[map_terminals](
+	[map_code] [int] NULL,
+	[terminal_id] [int] NOT NULL,
+	[type] [int] NULL,
+	[pos_x] [int] NULL,
+	[pos_y] [int] NULL,
+	[size] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[terminal_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[meal_data]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[meal_data](
+	[code] [char](4) NOT NULL,
+	[name] [nvarchar](30) NULL,
+	[type] [int] NULL,
+	[limit] [int] NULL,
+	[start_time] [int] NULL,
+	[end_time] [int] NULL,
+	[menu1] [nvarchar](20) NULL,
+	[menu1_price] [float] NULL,
+	[menu2] [nvarchar](20) NULL,
+	[menu2_price] [float] NULL,
+	[menu3] [nvarchar](20) NULL,
+	[menu3_price] [float] NULL,
+	[menu4] [nvarchar](20) NULL,
+	[menu4_price] [float] NULL,
+	[start_timeflag] [int] NULL,
+	[end_timeflag] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[code] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[meal_results]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[meal_results](
+	[meal_idx] [bigint] IDENTITY(1,1) NOT NULL,
+	[date_time] [datetime] NOT NULL,
+	[terminal_id] [int] NOT NULL,
+	[terminal_name] [varchar](50) NULL,
+	[user_id] [bigint] NOT NULL,
+	[unique_id] [varchar](112) NULL,
+	[name] [varchar](112) NULL,
+	[group_code] [int] NULL,
+	[group_name] [varchar](100) NULL,
+	[type] [int] NULL,
+	[menu] [nvarchar](20) NULL,
+	[pay] [float] NULL,
+	[result] [float] NULL,
+	[upmode] [float] NULL,
+	[reserved] [varchar](50) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[date_time] ASC,
+	[terminal_id] ASC,
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[meals]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[meals](
+	[code] [char](4) NOT NULL,
+	[name] [nvarchar](30) NULL,
+	[day_limit] [int] NULL,
+	[month_limit] [int] NULL,
+	[start_at] [datetime] NULL,
+	[end_at] [datetime] NULL,
+	[meal_data_code1] [char](4) NULL,
+	[meal_data_code2] [char](4) NULL,
+	[meal_data_code3] [char](4) NULL,
+	[meal_data_code4] [char](4) NULL,
+	[meal_data_code5] [char](4) NULL,
+	[reserved] [varchar](10) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[code] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[menu_groups]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[menu_groups](
+	[menu_group_id] [int] NOT NULL,
+	[user_id] [bigint] NOT NULL,
+	[name] [nvarchar](20) NOT NULL,
+	[pos_x] [int] NOT NULL,
+	[pos_y] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[menu_group_id] ASC,
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[menu_users]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[menu_users](
+	[menu_id] [int] NOT NULL,
+	[user_id] [bigint] NOT NULL,
+	[group_id] [int] NOT NULL,
+	[pos_x] [int] NOT NULL,
+	[pos_y] [int] NOT NULL,
+	[auto_run] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[menu_id] ASC,
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[menus]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[menus](
+	[menu_id] [int] NOT NULL,
+	[parent_id] [int] NOT NULL,
+	[name] [nvarchar](20) NOT NULL,
+	[pos_x] [int] NOT NULL,
+	[pos_y] [int] NOT NULL,
+	[src] [nvarchar](255) NULL,
+	[image] [nvarchar](255) NULL,
+	[license_code] [int] NOT NULL,
+	[brand_type] [int] NOT NULL,
+	[visible] [int] NOT NULL,
+	[description] [nvarchar](255) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[menu_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[mobilecard_admins]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[mobilecard_admins](
+	[server_dns] [nvarchar](100) NULL,
+	[client_id] [nvarchar](45) NULL,
+	[secret] [nvarchar](100) NULL,
+	[email] [nvarchar](100) NULL,
+	[password] [nvarchar](20) NULL,
+	[country_code] [nvarchar](4) NULL,
+	[country] [nvarchar](4) NULL,
+	[phone_no] [nvarchar](12) NULL,
+	[set_type] [int] NULL,
+	[site_code] [nvarchar](5) NULL,
+	[company] [nvarchar](100) NULL,
+	[utc_index] [int] NULL,
+	[auto_login] [int] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[notice_messages]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[notice_messages](
+	[notice_id] [int] IDENTITY(1,1) NOT NULL,
+	[type] [int] NULL,
+	[start_date] [varchar](8) NULL,
+	[end_date] [varchar](8) NULL,
+	[start_time] [varchar](4) NULL,
+	[end_time] [varchar](4) NULL,
+	[message] [nvarchar](128) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[notice_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[nvr_camera_infos]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[nvr_camera_infos](
+	[camera_id] [varchar](40) NULL,
+	[camera_name] [varchar](50) NULL,
+	[product_name] [varchar](100) NULL,
+	[param1] [varchar](50) NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[nvr_connection_infos]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[nvr_connection_infos](
+	[system_type] [int] NOT NULL,
+	[server_address] [varchar](100) NULL,
+	[server_port] [int] NULL,
+	[web_api_id] [varchar](50) NULL,
+	[web_api_password] [varchar](50) NULL,
+	[web_rtc_id] [varchar](50) NULL,
+	[web_rtc_password] [varchar](50) NULL,
+	[tcp_port] [int] NULL,
+	[active] [tinyint] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[nvr_terminal_cameras]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[nvr_terminal_cameras](
+	[terminal_id] [int] NULL,
+	[camera_id] [varchar](40) NULL,
+	[system_type] [int] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[option_auths]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[option_auths](
+	[fp_order] [varbinary](255) NULL,
+	[fp_search_user] [int] NULL,
+	[fp_reg_max] [int] NULL,
+	[fp_lfd_level] [int] NULL,
+	[fp_verify_level] [int] NULL,
+	[fp_identify_level] [int] NULL,
+	[fp_similar_level] [int] NULL,
+	[fp_download_count] [int] NULL,
+	[rf_reg_max] [int] NULL,
+	[similar_fp_check] [int] NULL,
+	[similar_fa_check] [int] NULL,
+	[user_access_control] [int] NULL,
+	[auth_log_image_popup] [int] NULL,
+	[temperature_unit] [int] NULL,
+	[temperature_error_notify] [int] NULL,
+	[template_format] [int] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[option_dashboards]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[option_dashboards](
+	[user_id] [bigint] NULL,
+	[wedget_id] [int] NULL,
+	[layout] [int] NULL,
+	[index] [int] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[option_ddns]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[option_ddns](
+	[used] [int] NULL,
+	[host_name] [nvarchar](32) NULL,
+	[contract_no] [nvarchar](12) NULL,
+	[update_term] [int] NULL,
+	[port1] [int] NULL,
+	[port2] [int] NULL,
+	[port3] [int] NULL,
+	[port4] [int] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[option_elevators]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[option_elevators](
+	[total_floor_count] [int] NULL,
+	[first_floor] [int] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[option_exdbs]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[option_exdbs](
+	[dsn_name] [nvarchar](50) NULL,
+	[dsn_id] [nvarchar](50) NULL,
+	[dsn_pw] [nvarchar](50) NULL,
+	[dsn_table] [nvarchar](50) NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[option_healths]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[option_healths](
+	[use_hr] [int] NULL,
+	[use_mbp] [int] NULL,
+	[use_psi] [int] NULL,
+	[use_msi] [int] NULL,
+	[use_temp] [int] NULL,
+	[use_alcohol] [int] NULL,
+	[weight_hr] [int] NULL,
+	[weight_mbp] [int] NULL,
+	[weight_psi] [int] NULL,
+	[weight_msi] [int] NULL,
+	[weight_temp] [int] NULL,
+	[weight_alcohol] [int] NULL,
+	[range_normal_min] [int] NULL,
+	[range_normal_max] [int] NULL,
+	[range_caution_min] [int] NULL,
+	[range_caution_max] [int] NULL,
+	[range_critical_min] [int] NULL,
+	[range_critical_max] [int] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[option_innodep]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[option_innodep](
+	[server_ip] [nvarchar](32) NULL,
+	[server_port] [int] NULL,
+	[user_id] [nvarchar](32) NULL,
+	[user_pw] [nvarchar](32) NULL,
+	[license] [nvarchar](64) NULL,
+	[use_recording] [int] NULL,
+	[regular_recording] [int] NULL,
+	[before_recording_time] [int] NULL,
+	[after_recording_time] [int] NULL,
+	[player_server_ip] [nvarchar](32) NULL,
+	[player_server_port] [int] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[option_logs]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[option_logs](
+	[save_only_success] [int] NULL,
+	[save_authlog_period] [int] NULL,
+	[save_syslog_period] [int] NULL,
+	[save_terminallog_period] [int] NULL,
+	[check_authlog_duplicate] [int] NULL,
+	[syslog_filter_option] [int] NULL,
+	[syslog_filter_login] [int] NULL,
+	[syslog_filter_user] [int] NULL,
+	[syslog_filter_terminal] [int] NULL,
+	[syslog_filter_group] [int] NULL,
+	[syslog_filter_privilege] [int] NULL,
+	[syslog_filter_tna] [int] NULL,
+	[syslog_filter_meal] [int] NULL,
+	[tlog_filter_option] [int] NULL,
+	[tlog_filter_user] [int] NULL,
+	[tlog_filter_network] [int] NULL,
+	[tlog_filter_door_control] [int] NULL,
+	[tlog_filter_warning_error] [int] NULL,
+	[log_option_task_time] [int] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[option_mails]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[option_mails](
+	[flag] [int] NULL,
+	[security] [int] NULL,
+	[host] [nvarchar](255) NULL,
+	[port] [int] NULL,
+	[user] [nvarchar](255) NULL,
+	[user_password] [nvarchar](255) NULL,
+	[from] [nvarchar](255) NULL,
+	[sender] [nvarchar](255) NULL,
+	[to] [nvarchar](255) NULL,
+	[cc] [nvarchar](255) NULL,
+	[bcc] [nvarchar](255) NULL,
+	[attach_picture] [int] NULL,
+	[disconnect] [int] NULL,
+	[cover_open] [int] NULL,
+	[door_pick] [int] NULL,
+	[not_close] [int] NULL,
+	[lock_error] [int] NULL,
+	[emergency] [int] NULL,
+	[ext_signal] [int] NULL,
+	[blacklist] [int] NULL,
+	[matching_fail] [int] NULL,
+	[no_permission] [int] NULL,
+	[duress] [int] NULL,
+	[medical] [int] NULL,
+	[fire_alarms] [int] NULL,
+	[panic_alarms] [int] NULL,
+	[burglar_alarms] [int] NULL,
+	[general_alarms] [int] NULL,
+	[hour_non_burglary] [int] NULL,
+	[system_peripheral_troubles] [int] NULL,
+	[sounder_troubles] [int] NULL,
+	[system_troubles] [int] NULL,
+	[fire_supervisory] [int] NULL,
+	[comm_disables] [int] NULL,
+	[system_peripheral_disables] [int] NULL,
+	[sounder_disables] [int] NULL,
+	[system_disables] [int] NULL,
+	[access_control] [int] NULL,
+	[remote_access] [int] NULL,
+	[open_close] [int] NULL,
+	[sensor] [int] NULL,
+	[protection_loop] [int] NULL,
+	[comm_troubles] [int] NULL,
+	[miscellaneous] [int] NULL,
+	[special_codes] [int] NULL,
+	[personnel_monitoring] [int] NULL,
+	[scheduling] [int] NULL,
+	[event_log] [int] NULL,
+	[test_misc] [int] NULL,
+	[bypasses] [int] NULL,
+	[expand] [int] NULL,
+	[thermal_notify] [int] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[option_mobile_cards]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[option_mobile_cards](
+	[enable_flag] [int] NULL,
+	[server_address] [varchar](64) NULL,
+	[server_port] [int] NULL,
+	[server_port2] [int] NULL,
+	[master_key] [varchar](64) NULL,
+	[contract_no] [varchar](20) NULL,
+	[sync_period] [int] NULL,
+	[contract_code] [varchar](120) NULL,
+	[expired_date] [varchar](9) NULL,
+	[expired_dday] [int] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[option_systems]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[option_systems](
+	[db_version] [int] NULL,
+	[user_id_length] [int] NULL,
+	[guest_id_range_min] [int] NULL,
+	[guest_id_range_max] [int] NULL,
+	[apb_level] [int] NULL,
+	[brand_type] [int] NULL,
+	[timezone_version] [int] NULL,
+	[master_pw] [varchar](64) NULL,
+	[user_info_encrypt] [int] NULL,
+	[auth_data_encrypt] [int] NULL,
+	[terminal_encrypt] [int] NULL,
+	[web_client_access_time] [int] NULL,
+	[oem_key] [varchar](64) NULL,
+	[server_language] [varchar](10) NULL,
+	[site_name] [varchar](128) NULL,
+	[site_logo] [varbinary](max) NULL,
+	[site_message_warning] [varchar](255) NULL,
+	[last_login_at] [datetime] NULL,
+	[last_login_ip] [varchar](64) NULL,
+	[polltime] [int] NULL,
+	[feature_type] [int] NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[option_terminals]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[option_terminals](
+	[access_default_restrict] [int] NULL,
+	[fire_range] [int] NULL,
+	[fire_open] [int] NULL,
+	[fire_alarm] [int] NULL,
+	[fire_finish] [int] NULL,
+	[panic_range] [int] NULL,
+	[panic_open] [int] NULL,
+	[panic_alarm] [int] NULL,
+	[panic_finish] [int] NULL,
+	[crisis_range] [int] NULL,
+	[crisis_open] [int] NULL,
+	[crisis_alarm] [int] NULL,
+	[crisis_finish] [int] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[option_tnas]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[option_tnas](
+	[auto_proc] [int] NULL,
+	[auto_proc_time] [int] NULL,
+	[money_digit] [int] NULL,
+	[time_shape] [int] NULL,
+	[minute_digit] [int] NULL,
+	[sum_period_type] [int] NULL,
+	[sum_start_day] [int] NULL,
+	[last_result_date] [datetimeoffset](7) NULL,
+	[last_sum_date] [datetimeoffset](7) NULL,
+	[last_sum_week] [int] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[option_users]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[option_users](
+	[terminal_user_sync] [int] NULL,
+	[password_period] [int] NULL,
+	[auth_fail_count] [int] NULL,
+	[pw_change_first] [int] NULL,
+	[pw_not_allow_old] [int] NULL,
+	[pw_not_allow_duplicate_char] [int] NULL,
+	[pw_not_allow_same_id] [int] NULL,
+	[pw_required_upper] [int] NULL,
+	[pw_required_lower] [int] NULL,
+	[pw_required_num] [int] NULL,
+	[pw_required_symbol] [int] NULL,
+	[terminal_user_upload_overwrite] [int] NULL,
+	[user_unique_id_required] [int] NULL,
+	[user_group_required] [int] NULL,
+	[user_access_group_required] [int] NULL,
+	[user_position_required] [int] NULL,
+	[user_department_required] [int] NULL,
+	[user_mobile_required] [int] NULL,
+	[user_email_required] [int] NULL,
+	[user_schedule_code_required] [int] NULL,
+	[user_meal_code_required] [int] NULL,
+	[user_salary_code_required] [int] NULL,
+	[auth_unavailable_time] [int] NULL,
+	[pw_not_allow_asc] [int] NULL,
+	[pw_not_allow_desc] [int] NULL,
+	[pw_required_min] [int] NULL,
+	[pw_length_min] [int] NULL,
+	[pw_not_allow_birth] [int] NULL,
+	[pw_not_allow_mobile] [int] NULL,
+	[pw_not_allow_email] [int] NULL,
+	[pw_not_allow_unique_id] [int] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[option_visitors]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[option_visitors](
+	[server_address] [nvarchar](100) NULL,
+	[server_port] [int] NULL,
+	[visitor_link_title] [nvarchar](100) NULL,
+	[visitor_link_message] [nvarchar](255) NULL,
+	[face_regist_title] [nvarchar](100) NULL,
+	[face_regist_message] [nvarchar](255) NULL,
+	[service_name] [nvarchar](100) NULL,
+	[mendatory_field] [int] NULL,
+	[param1] [int] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[positions]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[positions](
+	[position_id] [int] NOT NULL,
+	[name] [nvarchar](64) NULL,
+	[position_code] [varchar](32) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[position_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[privilege_groups]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[privilege_groups](
+	[privilege_id] [int] NOT NULL,
+	[group_id] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[privilege_id] ASC,
+	[group_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[privilege_infos]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[privilege_infos](
+	[privilege_id] [int] NOT NULL,
+	[name] [nvarchar](100) NOT NULL,
+	[description] [nvarchar](100) NULL,
+	[monitorings] [int] NULL,
+	[monitoring_client] [int] NULL,
+	[monitoring_terminal_status] [int] NULL,
+	[monitoring_auth] [int] NULL,
+	[monitoring_event] [int] NULL,
+	[terminals] [int] NULL,
+	[terminal_regist] [int] NULL,
+	[terminal_update] [int] NULL,
+	[terminal_delete] [int] NULL,
+	[terminal_fw] [int] NULL,
+	[terminal_option] [int] NULL,
+	[terminal_set_manager] [int] NULL,
+	[terminal_user_file] [int] NULL,
+	[terminal_logs] [int] NULL,
+	[users] [int] NULL,
+	[user_regist] [int] NULL,
+	[user_update] [int] NULL,
+	[user_delete] [int] NULL,
+	[user_terminal_user] [int] NULL,
+	[user_file] [int] NULL,
+	[user_regist_admin] [int] NULL,
+	[groups] [int] NULL,
+	[group_regist] [int] NULL,
+	[group_update] [int] NULL,
+	[group_delete] [int] NULL,
+	[group_user] [int] NULL,
+	[guests] [int] NULL,
+	[guest_regist] [int] NULL,
+	[guest_update] [int] NULL,
+	[guest_delete] [int] NULL,
+	[blacklists] [int] NULL,
+	[blacklist_change] [int] NULL,
+	[blacklist_release] [int] NULL,
+	[blacklist_update] [int] NULL,
+	[blacklist_delete] [int] NULL,
+	[ac] [int] NULL,
+	[ac_set] [int] NULL,
+	[map] [int] NULL,
+	[map_set] [int] NULL,
+	[tna] [int] NULL,
+	[tna_set] [int] NULL,
+	[tna_special] [int] NULL,
+	[tna_manage] [int] NULL,
+	[tna_out_state] [int] NULL,
+	[tna_out_exc_record] [int] NULL,
+	[tna_summary] [int] NULL,
+	[tna_send_result] [int] NULL,
+	[tna_delete_result] [int] NULL,
+	[logs] [int] NULL,
+	[log_delete] [int] NULL,
+	[log_backup_restore] [int] NULL,
+	[meals] [int] NULL,
+	[meal_delete_result] [int] NULL,
+	[meal_view_group] [int] NULL,
+	[meal_view_personal] [int] NULL,
+	[meal_set] [int] NULL,
+	[options] [int] NULL,
+	[option_local] [int] NULL,
+	[option_server] [int] NULL,
+	[option_password] [int] NULL,
+	[option_mail] [int] NULL,
+	[option_tna] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[privilege_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[rppg_results]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[rppg_results](
+	[measurement_date] [datetime] NOT NULL,
+	[user_id] [bigint] NULL,
+	[mean_hr] [int] NULL,
+	[mean_rr] [int] NULL,
+	[sdnn] [float] NULL,
+	[rmssd] [float] NULL,
+	[sys] [int] NULL,
+	[dia] [int] NULL,
+	[psi] [float] NULL,
+	[msi] [float] NULL,
+	[temperature] [float] NULL,
+	[alcohol] [float] NULL,
+	[property] [char](5) NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[server_infos]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[server_infos](
+	[server_id] [int] NULL,
+	[name] [nvarchar](50) NULL,
+	[password] [nvarchar](64) NULL,
+	[type] [int] NULL,
+	[type_sub] [int] NULL,
+	[status] [int] NULL,
+	[last_up_time] [datetime] NULL,
+	[ip_address] [nvarchar](64) NULL,
+	[port] [int] NULL,
+	[mac_address] [binary](6) NULL,
+	[create_at] [datetime] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[sessions]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[sessions](
+	[user_id] [bigint] IDENTITY(1,1) NOT NULL,
+	[uuid] [char](36) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[system_notices]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[system_notices](
+	[notice_index] [int] IDENTITY(1,1) NOT NULL,
+	[notice_title] [nvarchar](256) NULL,
+	[regist_at] [datetime] NOT NULL,
+	[start_at] [datetime] NOT NULL,
+	[end_at] [datetime] NOT NULL,
+	[notice_content] [text] NULL,
+	[register_id] [bigint] NULL,
+	[register_name] [nvarchar](64) NULL,
+	[view_count] [int] NULL,
+	[file_name1] [nvarchar](256) NULL,
+	[file_data1] [varbinary](max) NULL,
+	[file_name2] [nvarchar](256) NULL,
+	[file_data2] [varbinary](max) NULL,
+	[file_name3] [nvarchar](256) NULL,
+	[file_data3] [varbinary](max) NULL,
+	[fixed_flag] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[notice_index] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[task_data]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[task_data](
+	[task_id] [int] NOT NULL,
+	[terminal_id] [int] NOT NULL,
+	[offset] [int] NULL,
+	[success] [int] NULL,
+	[fail] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[task_id] ASC,
+	[terminal_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[tasks]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[tasks](
+	[task_id] [int] IDENTITY(1,1) NOT NULL,
+	[owner] [bigint] NULL,
+	[task_type] [int] NULL,
+	[command] [int] NULL,
+	[state] [int] NULL,
+	[total] [int] NULL,
+	[success] [int] NULL,
+	[fail] [int] NULL,
+	[create_at] [datetime] NULL,
+	[finished_at] [datetime] NULL,
+	[task_data] [varbinary](max) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[task_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[terminal_admin_terminals]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[terminal_admin_terminals](
+	[terminal_id] [int] NOT NULL,
+	[user_id] [bigint] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[terminal_id] ASC,
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[terminal_admins]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[terminal_admins](
+	[user_id] [bigint] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[terminal_firmwares]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[terminal_firmwares](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[terminal_type] [int] NULL,
+	[file_name] [nvarchar](100) NULL,
+	[version] [nvarchar](100) NULL,
+	[file_path] [nvarchar](255) NULL,
+	[file_size] [int] NULL,
+	[description] [nvarchar](255) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[terminal_notices]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[terminal_notices](
+	[terminal_id] [int] NOT NULL,
+	[type] [int] NULL,
+	[start_date] [varchar](8) NULL,
+	[end_date] [varchar](8) NULL,
+	[start_time] [varchar](4) NULL,
+	[end_time] [varchar](4) NULL,
+	[message] [nvarchar](128) NULL,
+	[update_dt] [datetime] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[terminal_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[terminal_syncs]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[terminal_syncs](
+	[terminal_id] [int] NOT NULL,
+	[user_id] [bigint] NOT NULL,
+	[sync_type] [int] NULL,
+	[event_time] [datetime] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[terminal_id] ASC,
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[terminal_user_request_logs]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[terminal_user_request_logs](
+	[index_key] [int] NULL,
+	[terminal_id] [int] NULL,
+	[user_id] [bigint] NULL,
+	[result] [int] NULL,
+	[event_at] [datetime] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[terminal_user_requests]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[terminal_user_requests](
+	[index_key] [int] IDENTITY(1,1) NOT NULL,
+	[owner] [bigint] NULL,
+	[command] [int] NULL,
+	[proceed] [int] NULL,
+	[create_at] [datetime] NULL,
+	[finished_at] [datetime] NULL,
+	[terminals] [varbinary](max) NULL,
+	[users] [varbinary](max) NULL,
+	[completed_terminals] [varbinary](max) NULL,
+	[success_count] [int] NULL,
+	[failed_count] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[index_key] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[terminal_users]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[terminal_users](
+	[terminal_id] [int] NOT NULL,
+	[user_id] [bigint] NOT NULL,
+	[saved] [int] NULL,
+	[terminal_admin] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[terminal_id] ASC,
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[terminals]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[terminals](
+	[terminal_id] [int] NOT NULL,
+	[name] [nvarchar](50) NULL,
+	[status] [int] NULL,
+	[ip_address] [binary](16) NULL,
+	[mac_address] [binary](6) NULL,
+	[type] [int] NULL,
+	[func_type] [int] NULL,
+	[version] [nvarchar](255) NULL,
+	[remote_door] [int] NULL,
+	[utc_index] [int] NULL,
+	[group_code] [int] NOT NULL,
+	[description] [nvarchar](255) NULL,
+	[auth_type] [int] NULL,
+	[external_id] [varchar](20) NULL,
+	[register_flag] [int] NULL,
+	[core_flag] [int] NULL,
+	[use_auth] [tinyint] NULL,
+	[healthid_flag] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[terminal_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[timezone_holidays]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[timezone_holidays](
+	[holiday_id] [int] NOT NULL,
+	[name] [nvarchar](255) NULL,
+	[repeat_year] [int] NULL,
+	[holidays] [varbinary](240) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[holiday_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[timezone_sets]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[timezone_sets](
+	[timezone_id] [int] NOT NULL,
+	[name] [nvarchar](255) NULL,
+	[holiday_id] [int] NULL,
+	[holiday] [int] NULL,
+	[sunday] [int] NULL,
+	[monday] [int] NULL,
+	[tuesday] [int] NULL,
+	[wednesday] [int] NULL,
+	[thursday] [int] NULL,
+	[friday] [int] NULL,
+	[saturday] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[timezone_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[timezone_timelines]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[timezone_timelines](
+	[timeline_id] [int] NOT NULL,
+	[name] [nvarchar](255) NULL,
+	[type] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[timeline_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[timezone_vals]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[timezone_vals](
+	[timeline_id] [int] NULL,
+	[type] [int] NULL,
+	[ext_val] [bigint] NULL,
+	[start_time] [int] NULL,
+	[end_time] [int] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[user_cars]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[user_cars](
+	[user_id] [bigint] NOT NULL,
+	[car_number] [varchar](64) NOT NULL,
+	[car_color] [varchar](36) NULL,
+	[car_type] [varchar](36) NULL,
+	[car_blackbox] [int] NULL,
+	[car_access_day] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[car_number] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[user_face_wts]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[user_face_wts](
+	[user_id] [bigint] NOT NULL,
+	[template_size] [int] NOT NULL,
+	[template_data] [varbinary](max) NOT NULL,
+	[template_type] [int] NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[user_faces]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[user_faces](
+	[user_id] [bigint] NULL,
+	[f_index] [int] NOT NULL,
+	[type] [int] NOT NULL,
+	[sub_index] [int] NOT NULL,
+	[template_size] [int] NOT NULL,
+	[template] [varbinary](max) NOT NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[user_fps]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[user_fps](
+	[user_id] [bigint] NOT NULL,
+	[fir_size] [int] NOT NULL,
+	[fir] [varbinary](max) NOT NULL,
+	[enc_type] [int] NULL,
+	[brand_type] [int] NULL,
+	[version] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[user_health_infos]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[user_health_infos](
+	[user_id] [bigint] NOT NULL,
+	[gender] [tinyint] NULL,
+	[age] [int] NULL,
+	[height] [int] NULL,
+	[weight] [int] NULL,
+	[saved_date] [datetime] NULL,
+	[health_manager_id] [bigint] NULL,
+	[risk_flag] [tinyint] NULL,
+	[health_consent_flag] [tinyint] NULL,
+	[calibration_spb] [tinyint] NULL,
+	[calibration_dbp] [tinyint] NULL,
+	[calibration_saved_date] [datetime] NULL,
+	[rgb_data] [varbinary](max) NULL,
+	[remark] [nvarchar](255) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[user_iris]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[user_iris](
+	[user_id] [bigint] NOT NULL,
+	[template_type] [int] NOT NULL,
+	[eye_type] [int] NOT NULL,
+	[reserved] [varbinary](4) NULL,
+	[template_size] [int] NULL,
+	[template_data] [varbinary](max) NOT NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[user_messages]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[user_messages](
+	[message_id] [int] IDENTITY(1,1) NOT NULL,
+	[message] [nvarchar](255) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[message_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[user_mobile_cards]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[user_mobile_cards](
+	[user_id] [bigint] NOT NULL,
+	[card_num] [varchar](32) NOT NULL,
+	[card_type] [int] NULL,
+	[issue_status] [int] NULL,
+	[issue_order] [int] NULL,
+	[card_status] [int] NULL,
+	[expire_at] [datetime] NULL,
+	[issue_at] [datetime] NULL,
+	[update_at] [datetime] NULL,
+	[issuer_type] [int] NULL,
+	[cert_type] [int] NULL,
+UNIQUE NONCLUSTERED 
+(
+	[card_num] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[user_mobilekeys]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[user_mobilekeys](
+	[user_id] [bigint] NOT NULL,
+	[access_period] [varchar](24) NULL,
+	[country_code] [varchar](4) NULL,
+	[phone_number] [varchar](16) NULL,
+	[now_issue] [int] NULL,
+	[key_type] [int] NULL,
+	[issue_count] [int] NULL,
+	[key_no] [varchar](18) NULL,
+	[uuid] [varbinary](128) NULL,
+	[state] [int] NULL,
+	[state_at] [datetimeoffset](7) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[user_pictures]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[user_pictures](
+	[user_id] [bigint] NOT NULL,
+	[image_type] [int] NOT NULL,
+	[image_size] [int] NOT NULL,
+	[image_data] [varbinary](max) NOT NULL,
+	[thumb_size] [int] NULL,
+	[thumb_data] [varbinary](7999) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[user_rfcards]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[user_rfcards](
+	[user_id] [bigint] NOT NULL,
+	[card_num] [varchar](40) NOT NULL,
+UNIQUE NONCLUSTERED 
+(
+	[card_num] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[user_voips]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[user_voips](
+	[user_id] [bigint] NOT NULL,
+	[vo_ip_used] [int] NULL,
+	[door_open] [int] NULL,
+	[auto_answer] [int] NULL,
+	[enable_meta1] [int] NULL,
+	[ring_count1] [int] NULL,
+	[login_id1] [nvarchar](20) NULL,
+	[sip_addr1] [nvarchar](36) NULL,
+	[enable_meta2] [int] NULL,
+	[ring_count2] [int] NULL,
+	[login_id2] [nvarchar](20) NULL,
+	[sip_addr2] [nvarchar](36) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[users]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[users](
+	[user_id] [bigint] NOT NULL,
+	[unique_id] [varchar](112) NULL,
+	[name] [nvarchar](200) NOT NULL,
+	[password] [varchar](48) NULL,
+	[auth_type] [bigint] NULL,
+	[privilege] [int] NULL,
+	[create_at] [datetime] NULL,
+	[use_period_flag] [int] NULL,
+	[regist_at] [datetime] NULL,
+	[expire_at] [datetime] NULL,
+	[last_login_at] [datetime] NULL,
+	[last_login_ip] [varchar](64) NULL,
+	[last_pw_uptime] [datetime] NULL,
+	[group_code] [int] NULL,
+	[access_group_code] [int] NULL,
+	[employee_num] [varchar](50) NULL,
+	[user_type] [int] NULL,
+	[timezone_code] [int] NULL,
+	[black_list] [int] NULL,
+	[fp_identify] [int] NULL,
+	[face_identify] [int] NULL,
+	[duress_finger] [binary](10) NULL,
+	[partition] [int] NULL,
+	[apb_except] [int] NULL,
+	[apb_zone] [int] NULL,
+	[work_code] [varchar](20) NULL,
+	[meal_code] [varchar](20) NULL,
+	[money_code] [varchar](20) NULL,
+	[message_code] [int] NULL,
+	[verify_level] [int] NULL,
+	[position_code] [int] NULL,
+	[department] [nvarchar](100) NULL,
+	[login_pw] [varchar](64) NULL,
+	[oldlogin_pw] [varchar](64) NULL,
+	[login_allowed] [int] NULL,
+	[login_fail_count] [int] NULL,
+	[first_login_flag] [int] NULL,
+	[email] [varchar](64) NULL,
+	[phone] [varchar](32) NULL,
+	[flag] [int] NULL,
+	[basicinfo_encrypt_flag] [int] NULL,
+	[authdata_encrypt_flag] [int] NULL,
+	[iris_identify] [int] NULL,
+	[token] [varchar](255) NULL,
+	[token_type] [int] NULL,
+	[gender] [int] NULL,
+	[mobile] [varchar](32) NULL,
+	[unavailable_time] [varchar](64) NULL,
+	[birthday] [varchar](64) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[visit_application_infos]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[visit_application_infos](
+	[visit_index] [int] IDENTITY(1,1) NOT NULL,
+	[target_user_id] [bigint] NOT NULL,
+	[target_user_name] [nvarchar](100) NULL,
+	[target_group_name] [nvarchar](100) NULL,
+	[target_position_name] [nvarchar](100) NULL,
+	[purpose] [nvarchar](255) NOT NULL,
+	[password] [nvarchar](16) NULL,
+	[start_at] [datetime] NOT NULL,
+	[end_at] [datetime] NOT NULL,
+	[regist_at] [datetime] NOT NULL,
+	[status] [int] NOT NULL,
+	[visit_status] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[visit_index] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[visit_item_infos]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[visit_item_infos](
+	[visit_index] [int] NOT NULL,
+	[item_index] [int] NOT NULL,
+	[item_type] [int] NOT NULL,
+	[name_type] [int] NOT NULL,
+	[name] [nvarchar](64) NULL,
+	[in_out] [int] NOT NULL,
+	[serial_num] [nvarchar](64) NULL,
+	[model] [nvarchar](64) NULL,
+	[purpose] [nvarchar](64) NULL,
+	[unit] [nvarchar](16) NULL,
+	[count] [int] NULL,
+	[desc] [nvarchar](128) NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[visit_manage_privileges]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[visit_manage_privileges](
+	[user_id] [bigint] NOT NULL,
+	[view_privilege] [int] NOT NULL,
+	[approval] [int] NOT NULL,
+	[visitor_regist] [int] NOT NULL,
+UNIQUE NONCLUSTERED 
+(
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[visit_visitor_infos]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[visit_visitor_infos](
+	[visit_index] [int] NOT NULL,
+	[visitor_index] [int] NOT NULL,
+	[visitor_id] [bigint] NOT NULL,
+	[first_name] [nvarchar](50) NOT NULL,
+	[last_name] [nvarchar](50) NOT NULL,
+	[birthday] [nvarchar](8) NULL,
+	[mobile] [nvarchar](16) NOT NULL,
+	[company] [nvarchar](100) NOT NULL,
+	[car_number] [nvarchar](32) NULL,
+	[email] [nvarchar](32) NULL,
+	[photo] [varbinary](max) NULL,
+	[status] [int] NOT NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[vms_camera_infos]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[vms_camera_infos](
+	[camera_id] [varchar](20) NULL,
+	[camera_name] [varchar](50) NULL,
+	[camera_ip] [varchar](100) NULL,
+	[camera_port] [int] NULL,
+	[user_id] [varchar](50) NULL,
+	[user_password] [varchar](50) NULL,
+	[param1] [varchar](50) NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[vms_cctv_options]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[vms_cctv_options](
+	[hik_vision_event_view] [tinyint] NULL,
+	[idis_event_view] [tinyint] NULL,
+	[hanhwa_vision_event_view] [tinyint] NULL,
+	[recording_path] [varchar](1024) NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[vms_connection_infos]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[vms_connection_infos](
+	[vms_type] [int] NOT NULL,
+	[server_address] [varchar](100) NULL,
+	[server_port] [int] NULL,
+	[user_id] [varchar](50) NULL,
+	[user_password] [varchar](50) NULL,
+	[stream_server] [varchar](100) NULL,
+	[stream_port] [int] NULL,
+	[pop_up_count] [int] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[vms_hik_camera_infos]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[vms_hik_camera_infos](
+	[camera_id] [int] NOT NULL,
+	[camera_type] [tinyint] NULL,
+	[camera_name] [varchar](50) NULL,
+	[camera_ip] [varchar](100) NULL,
+	[camera_port] [int] NULL,
+	[user_id] [varchar](50) NULL,
+	[user_password] [varchar](50) NULL,
+	[mjpeg_url] [nvarchar](255) NULL,
+	[rtsp_port] [int] NULL,
+	[rtsp_url] [nvarchar](255) NULL,
+	[recording] [tinyint] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[camera_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[vms_hik_terminal_cameras]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[vms_hik_terminal_cameras](
+	[terminal_id] [int] NULL,
+	[camera_id] [int] NULL,
+	[camera_type] [tinyint] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[vms_multi_view_infos]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[vms_multi_view_infos](
+	[dms_url] [varchar](100) NULL,
+	[vms_id] [varchar](30) NULL,
+	[trans_code] [varchar](10) NULL,
+	[vurix_api_url] [varchar](100) NULL,
+	[vurix_id] [varchar](50) NULL,
+	[vurix_pass] [varchar](100) NULL,
+	[vurix_group] [varchar](50) NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[vms_terminal_cameras]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[vms_terminal_cameras](
+	[terminal_id] [int] NULL,
+	[camera_id] [varchar](20) NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[web_notices]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[web_notices](
+	[title] [nvarchar](128) NULL,
+	[start_date] [varchar](8) NULL,
+	[end_date] [varchar](8) NULL,
+	[start_time] [varchar](4) NULL,
+	[end_time] [varchar](4) NULL,
+	[message] [nvarchar](1024) NULL,
+	[is_popup] [int] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[wiegand_ins]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[wiegand_ins](
+	[code] [int] NOT NULL,
+	[name] [nvarchar](255) NULL,
+	[size] [int] NULL,
+	[data] [varbinary](1024) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[code] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[wiegand_outs]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[wiegand_outs](
+	[code] [int] NOT NULL,
+	[name] [nvarchar](255) NULL,
+	[size] [int] NULL,
+	[data] [varbinary](1024) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[code] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[work_configs]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[work_configs](
+	[auto_proc] [int] NOT NULL,
+	[auto_proc_time] [int] NULL,
+	[money_digit] [int] NULL,
+	[time_shape] [int] NULL,
+	[minute_digit] [int] NULL,
+	[sum_period_type] [int] NULL,
+	[sum_start_day] [int] NULL,
+	[last_result_date] [nvarchar](255) NULL,
+	[last_sum_date] [nvarchar](255) NULL,
+	[last_sum_week] [int] NULL,
+	[neis_used] [int] NULL,
+	[neis_save_path] [nvarchar](255) NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[work_except_records]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[work_except_records](
+	[user_id] [bigint] NULL,
+	[unique_id] [nvarchar](21) NULL,
+	[name] [nvarchar](100) NULL,
+	[group_id] [int] NULL,
+	[department] [nvarchar](255) NULL,
+	[position_code] [int] NULL,
+	[work_date] [nvarchar](8) NULL,
+	[shift_code] [nvarchar](4) NULL,
+	[except_type] [int] NULL,
+	[except_start_time] [int] NULL,
+	[except_end_time] [int] NULL,
+	[except_time] [int] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[work_payments]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[work_payments](
+	[code] [nvarchar](4) NOT NULL,
+	[name] [nvarchar](30) NULL,
+	[pay_unit] [int] NULL,
+	[w1_money] [bigint] NULL,
+	[w2_money] [bigint] NULL,
+	[w3_money] [bigint] NULL,
+	[w4_money] [bigint] NULL,
+	[w5_money] [bigint] NULL,
+	[w6_money] [bigint] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[code] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[work_results]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[work_results](
+	[work_date] [varchar](8) NOT NULL,
+	[user_id] [bigint] NOT NULL,
+	[unique_id] [varchar](21) NULL,
+	[name] [varchar](112) NULL,
+	[group_id] [int] NULL,
+	[position_id] [int] NULL,
+	[shift_code] [varchar](4) NULL,
+	[shift_name] [varchar](30) NULL,
+	[complete] [int] NULL,
+	[work_state] [int] NULL,
+	[in_time] [int] NULL,
+	[out_time] [int] NULL,
+	[late_time] [int] NULL,
+	[lack_time] [int] NULL,
+	[multi_range] [int] NULL,
+	[wt1_in] [int] NULL,
+	[wt1_out] [int] NULL,
+	[wt1_late] [int] NULL,
+	[wt1_lack] [int] NULL,
+	[wt1_time] [int] NULL,
+	[wt2_in] [int] NULL,
+	[wt2_out] [int] NULL,
+	[wt2_late] [int] NULL,
+	[wt2_lack] [int] NULL,
+	[wt2_time] [int] NULL,
+	[wt3_in] [int] NULL,
+	[wt3_out] [int] NULL,
+	[wt3_late] [int] NULL,
+	[wt3_lack] [int] NULL,
+	[wt3_time] [int] NULL,
+	[wt4_in] [int] NULL,
+	[wt4_out] [int] NULL,
+	[wt4_late] [int] NULL,
+	[wt4_lack] [int] NULL,
+	[wt4_time] [int] NULL,
+	[wt5_in] [int] NULL,
+	[wt5_out] [int] NULL,
+	[wt5_late] [int] NULL,
+	[wt5_lack] [int] NULL,
+	[wt5_time] [int] NULL,
+	[wt6_in] [int] NULL,
+	[wt6_out] [int] NULL,
+	[wt6_late] [int] NULL,
+	[wt6_lack] [int] NULL,
+	[wt6_time] [int] NULL,
+	[payment] [bigint] NULL,
+	[modify] [int] NULL,
+	[remark] [nvarchar](255) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[work_date] ASC,
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[work_schedules]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[work_schedules](
+	[code] [nvarchar](4) NOT NULL,
+	[name] [nvarchar](30) NULL,
+	[basic_day] [nvarchar](8) NULL,
+	[holiday_code] [nvarchar](4) NULL,
+	[holi_shift] [nvarchar](4) NULL,
+	[spin_count] [int] NULL,
+	[shift_code] [nvarchar](120) NULL,
+	[wt1_unit] [int] NULL,
+	[wt1_add_time] [int] NULL,
+	[wt1_add_condi] [int] NULL,
+	[wt1_del_time] [int] NULL,
+	[wt1_del_condi] [int] NULL,
+	[wt1_min] [int] NULL,
+	[wt1_max] [int] NULL,
+	[wt1_rate] [int] NULL,
+	[wt2_unit] [int] NULL,
+	[wt2_add_time] [int] NULL,
+	[wt2_add_condi] [int] NULL,
+	[wt2_del_time] [int] NULL,
+	[wt2_del_condi] [int] NULL,
+	[wt2_min] [int] NULL,
+	[wt2_max] [int] NULL,
+	[wt2_rate] [int] NULL,
+	[wt3_unit] [int] NULL,
+	[wt3_add_time] [int] NULL,
+	[wt3_add_condi] [int] NULL,
+	[wt3_del_time] [int] NULL,
+	[wt3_del_condi] [int] NULL,
+	[wt3_min] [int] NULL,
+	[wt3_max] [int] NULL,
+	[wt3_rate] [int] NULL,
+	[wt4_unit] [int] NULL,
+	[wt4_add_time] [int] NULL,
+	[wt4_add_condi] [int] NULL,
+	[wt4_del_time] [int] NULL,
+	[wt4_del_condi] [int] NULL,
+	[wt4_min] [int] NULL,
+	[wt4_max] [int] NULL,
+	[wt4_rate] [int] NULL,
+	[wt5_unit] [int] NULL,
+	[wt5_add_time] [int] NULL,
+	[wt5_add_condi] [int] NULL,
+	[wt5_del_time] [int] NULL,
+	[wt5_del_condi] [int] NULL,
+	[wt5_min] [int] NULL,
+	[wt5_max] [int] NULL,
+	[wt5_rate] [int] NULL,
+	[wt6_unit] [int] NULL,
+	[wt6_add_time] [int] NULL,
+	[wt6_add_condi] [int] NULL,
+	[wt6_del_time] [int] NULL,
+	[wt6_del_condi] [int] NULL,
+	[wt6_min] [int] NULL,
+	[wt6_max] [int] NULL,
+	[wt6_rate] [int] NULL,
+	[st1_add_time] [int] NULL,
+	[st1_add_condi] [int] NULL,
+	[st1_del_time] [int] NULL,
+	[st1_del_condi] [int] NULL,
+	[st1_min] [int] NULL,
+	[st1_max] [int] NULL,
+	[st1_trans] [int] NULL,
+	[st2_add_time] [int] NULL,
+	[st2_add_condi] [int] NULL,
+	[st2_del_time] [int] NULL,
+	[st2_del_condi] [int] NULL,
+	[st2_min] [int] NULL,
+	[st2_max] [int] NULL,
+	[st2_trans] [int] NULL,
+	[st3_add_time] [int] NULL,
+	[st3_add_condi] [int] NULL,
+	[st3_del_time] [int] NULL,
+	[st3_del_condi] [int] NULL,
+	[st3_min] [int] NULL,
+	[st3_max] [int] NULL,
+	[st3_trans] [int] NULL,
+	[st4_add_time] [int] NULL,
+	[st4_add_condi] [int] NULL,
+	[st4_del_time] [int] NULL,
+	[st4_del_condi] [int] NULL,
+	[st4_min] [int] NULL,
+	[st4_max] [int] NULL,
+	[st4_trans] [int] NULL,
+	[st5_add_time] [int] NULL,
+	[st5_add_condi] [int] NULL,
+	[st5_del_time] [int] NULL,
+	[st5_del_condi] [int] NULL,
+	[st5_min] [int] NULL,
+	[st5_max] [int] NULL,
+	[st5_trans] [int] NULL,
+	[st6_add_time] [int] NULL,
+	[st6_add_condi] [int] NULL,
+	[st6_del_time] [int] NULL,
+	[st6_del_condi] [int] NULL,
+	[st6_min] [int] NULL,
+	[st6_max] [int] NULL,
+	[st6_trans] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[code] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[work_shifts]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[work_shifts](
+	[code] [nvarchar](4) NOT NULL,
+	[name] [nvarchar](30) NULL,
+	[inout_mode] [int] NULL,
+	[range_time1] [int] NULL,
+	[range_time2] [int] NULL,
+	[ignore_absent] [int] NULL,
+	[late_time] [int] NULL,
+	[lack_time] [int] NULL,
+	[auto_in_time] [int] NULL,
+	[auto_out_time] [int] NULL,
+	[multi_range] [int] NULL,
+	[range1_time1] [int] NULL,
+	[range1_time2] [int] NULL,
+	[range2_time1] [int] NULL,
+	[range2_time2] [int] NULL,
+	[range3_time1] [int] NULL,
+	[range3_time2] [int] NULL,
+	[range4_time1] [int] NULL,
+	[range4_time2] [int] NULL,
+	[except_exit] [int] NULL,
+	[except_return_mode] [int] NULL,
+	[except_out] [int] NULL,
+	[except_in_mode] [int] NULL,
+	[except1_time1] [int] NULL,
+	[except1_time2] [int] NULL,
+	[except2_time1] [int] NULL,
+	[except2_time2] [int] NULL,
+	[except3_time1] [int] NULL,
+	[except3_time2] [int] NULL,
+	[except4_time1] [int] NULL,
+	[except4_time2] [int] NULL,
+	[except5_time1] [int] NULL,
+	[except5_time2] [int] NULL,
+	[shift1_work] [int] NULL,
+	[shift1_type] [int] NULL,
+	[shift1_time1] [int] NULL,
+	[shift1_time2] [int] NULL,
+	[shift1_range] [int] NULL,
+	[shift1_auto_out] [int] NULL,
+	[shift1_unit] [int] NULL,
+	[shift1_min] [int] NULL,
+	[shift1_max] [int] NULL,
+	[shift1_rate] [int] NULL,
+	[shift2_work] [int] NULL,
+	[shift2_type] [int] NULL,
+	[shift2_time1] [int] NULL,
+	[shift2_time2] [int] NULL,
+	[shift2_range] [int] NULL,
+	[shift2_auto_out] [int] NULL,
+	[shift2_unit] [int] NULL,
+	[shift2_min] [int] NULL,
+	[shift2_max] [int] NULL,
+	[shift2_rate] [int] NULL,
+	[shift3_work] [int] NULL,
+	[shift3_type] [int] NULL,
+	[shift3_time1] [int] NULL,
+	[shift3_time2] [int] NULL,
+	[shift3_range] [int] NULL,
+	[shift3_auto_out] [int] NULL,
+	[shift3_unit] [int] NULL,
+	[shift3_min] [int] NULL,
+	[shift3_max] [int] NULL,
+	[shift3_rate] [int] NULL,
+	[shift4_work] [int] NULL,
+	[shift4_type] [int] NULL,
+	[shift4_time1] [int] NULL,
+	[shift4_time2] [int] NULL,
+	[shift4_range] [int] NULL,
+	[shift4_auto_out] [int] NULL,
+	[shift4_unit] [int] NULL,
+	[shift4_min] [int] NULL,
+	[shift4_max] [int] NULL,
+	[shift4_rate] [int] NULL,
+	[shift5_work] [int] NULL,
+	[shift5_type] [int] NULL,
+	[shift5_time1] [int] NULL,
+	[shift5_time2] [int] NULL,
+	[shift5_range] [int] NULL,
+	[shift5_auto_out] [int] NULL,
+	[shift5_unit] [int] NULL,
+	[shift5_min] [int] NULL,
+	[shift5_max] [int] NULL,
+	[shift5_rate] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[code] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[work_special_shifts]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[work_special_shifts](
+	[work_date] [nvarchar](8) NOT NULL,
+	[user_id] [bigint] NULL,
+	[shift_code] [nvarchar](4) NOT NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[work_sum_results]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[work_sum_results](
+	[sum_date] [nvarchar](8) NOT NULL,
+	[user_id] [bigint] NOT NULL,
+	[unique_id] [nvarchar](21) NULL,
+	[name] [nvarchar](100) NULL,
+	[group_id] [int] NULL,
+	[schedule_code] [nvarchar](4) NULL,
+	[schedule_name] [nvarchar](30) NULL,
+	[start_date] [nvarchar](8) NULL,
+	[end_date] [nvarchar](8) NULL,
+	[late_time] [int] NULL,
+	[lack_time] [int] NULL,
+	[st1_late] [int] NULL,
+	[st1_lack] [int] NULL,
+	[st1_time] [int] NULL,
+	[st2_late] [int] NULL,
+	[st2_lack] [int] NULL,
+	[st2_time] [int] NULL,
+	[st3_late] [int] NULL,
+	[st3_lack] [int] NULL,
+	[st3_time] [int] NULL,
+	[st4_late] [int] NULL,
+	[st4_lack] [int] NULL,
+	[st4_time] [int] NULL,
+	[st5_late] [int] NULL,
+	[st5_lack] [int] NULL,
+	[st5_time] [int] NULL,
+	[st6_late] [int] NULL,
+	[st6_lack] [int] NULL,
+	[st6_time] [int] NULL,
+	[pay_money] [int] NULL,
+	[modify] [int] NULL,
+	[remark] [nvarchar](255) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[sum_date] ASC,
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[work_temp_results]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[work_temp_results](
+	[work_date] [nvarchar](255) NULL,
+	[user_id] [bigint] NULL,
+	[access_time] [int] NULL,
+	[mode] [int] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[work_today_results]    Script Date: 3/25/2026 10:02:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[work_today_results](
+	[work_date] [varchar](8) NOT NULL,
+	[user_id] [bigint] NOT NULL,
+	[complete] [int] NULL,
+	[work_state] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[work_date] ASC,
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Index [idx_acu_event_logs_event_time]    Script Date: 3/25/2026 10:02:09 PM ******/
+CREATE NONCLUSTERED INDEX [idx_acu_event_logs_event_time] ON [dbo].[acu_event_logs]
+(
+	[event_time] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [uix_approvers_user_id]    Script Date: 3/25/2026 10:02:09 PM ******/
+CREATE UNIQUE NONCLUSTERED INDEX [uix_approvers_user_id] ON [dbo].[approvers]
+(
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [idx_auth_logs_202508_event_time]    Script Date: 3/25/2026 10:02:09 PM ******/
+CREATE NONCLUSTERED INDEX [idx_auth_logs_202508_event_time] ON [dbo].[auth_logs_202508]
+(
+	[event_time] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [idx_auth_logs_202508_terminal_id]    Script Date: 3/25/2026 10:02:09 PM ******/
+CREATE NONCLUSTERED INDEX [idx_auth_logs_202508_terminal_id] ON [dbo].[auth_logs_202508]
+(
+	[terminal_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [idx_auth_logs_202508_user_id]    Script Date: 3/25/2026 10:02:09 PM ******/
+CREATE NONCLUSTERED INDEX [idx_auth_logs_202508_user_id] ON [dbo].[auth_logs_202508]
+(
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [idx_auth_logs_202601_event_time]    Script Date: 3/25/2026 10:02:09 PM ******/
+CREATE NONCLUSTERED INDEX [idx_auth_logs_202601_event_time] ON [dbo].[auth_logs_202601]
+(
+	[event_time] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [idx_auth_logs_202601_terminal_id]    Script Date: 3/25/2026 10:02:09 PM ******/
+CREATE NONCLUSTERED INDEX [idx_auth_logs_202601_terminal_id] ON [dbo].[auth_logs_202601]
+(
+	[terminal_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [idx_auth_logs_202601_user_id]    Script Date: 3/25/2026 10:02:09 PM ******/
+CREATE NONCLUSTERED INDEX [idx_auth_logs_202601_user_id] ON [dbo].[auth_logs_202601]
+(
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [idx_auth_logs_202602_event_time]    Script Date: 3/25/2026 10:02:09 PM ******/
+CREATE NONCLUSTERED INDEX [idx_auth_logs_202602_event_time] ON [dbo].[auth_logs_202602]
+(
+	[event_time] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [idx_auth_logs_202602_terminal_id]    Script Date: 3/25/2026 10:02:09 PM ******/
+CREATE NONCLUSTERED INDEX [idx_auth_logs_202602_terminal_id] ON [dbo].[auth_logs_202602]
+(
+	[terminal_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [idx_auth_logs_202602_user_id]    Script Date: 3/25/2026 10:02:09 PM ******/
+CREATE NONCLUSTERED INDEX [idx_auth_logs_202602_user_id] ON [dbo].[auth_logs_202602]
+(
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [idx_auth_logs_202603_event_time]    Script Date: 3/25/2026 10:02:09 PM ******/
+CREATE NONCLUSTERED INDEX [idx_auth_logs_202603_event_time] ON [dbo].[auth_logs_202603]
+(
+	[event_time] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [idx_auth_logs_202603_terminal_id]    Script Date: 3/25/2026 10:02:09 PM ******/
+CREATE NONCLUSTERED INDEX [idx_auth_logs_202603_terminal_id] ON [dbo].[auth_logs_202603]
+(
+	[terminal_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [idx_auth_logs_202603_user_id]    Script Date: 3/25/2026 10:02:09 PM ******/
+CREATE NONCLUSTERED INDEX [idx_auth_logs_202603_user_id] ON [dbo].[auth_logs_202603]
+(
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [idx_event_logs_event_time]    Script Date: 3/25/2026 10:02:09 PM ******/
+CREATE NONCLUSTERED INDEX [idx_event_logs_event_time] ON [dbo].[event_logs]
+(
+	[event_time] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [idx_exdb_temp_auth_logs_event_time]    Script Date: 3/25/2026 10:02:09 PM ******/
+CREATE NONCLUSTERED INDEX [idx_exdb_temp_auth_logs_event_time] ON [dbo].[exdb_temp_auth_logs]
+(
+	[event_time] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [idx_exdb_temp_auth_logs_terminal_id]    Script Date: 3/25/2026 10:02:09 PM ******/
+CREATE NONCLUSTERED INDEX [idx_exdb_temp_auth_logs_terminal_id] ON [dbo].[exdb_temp_auth_logs]
+(
+	[terminal_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [idx_exdb_temp_auth_logs_user_id]    Script Date: 3/25/2026 10:02:09 PM ******/
+CREATE NONCLUSTERED INDEX [idx_exdb_temp_auth_logs_user_id] ON [dbo].[exdb_temp_auth_logs]
+(
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [idx_health_counseling_records_measurement_date]    Script Date: 3/25/2026 10:02:09 PM ******/
+CREATE NONCLUSTERED INDEX [idx_health_counseling_records_measurement_date] ON [dbo].[health_counseling_records]
+(
+	[measurement_date] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [idx_health_counseling_records_user_id]    Script Date: 3/25/2026 10:02:09 PM ******/
+CREATE NONCLUSTERED INDEX [idx_health_counseling_records_user_id] ON [dbo].[health_counseling_records]
+(
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [idx_user_date]    Script Date: 3/25/2026 10:02:09 PM ******/
+CREATE NONCLUSTERED INDEX [idx_user_date] ON [dbo].[rppg_results]
+(
+	[measurement_date] ASC,
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [uix_user_face_wts_user_id]    Script Date: 3/25/2026 10:02:09 PM ******/
+CREATE UNIQUE NONCLUSTERED INDEX [uix_user_face_wts_user_id] ON [dbo].[user_face_wts]
+(
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [user_id_eye_type_user_iris_user_id]    Script Date: 3/25/2026 10:02:09 PM ******/
+CREATE UNIQUE NONCLUSTERED INDEX [user_id_eye_type_user_iris_user_id] ON [dbo].[user_iris]
+(
+	[user_id] ASC,
+	[eye_type] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [uix_work_sum_results_unique_id]    Script Date: 3/25/2026 10:02:09 PM ******/
+CREATE UNIQUE NONCLUSTERED INDEX [uix_work_sum_results_unique_id] ON [dbo].[work_sum_results]
+(
+	[unique_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [uix_work_sum_results_user_id]    Script Date: 3/25/2026 10:02:09 PM ******/
+CREATE UNIQUE NONCLUSTERED INDEX [uix_work_sum_results_user_id] ON [dbo].[work_sum_results]
+(
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[menus] ADD  DEFAULT ((255)) FOR [brand_type]
+GO
+ALTER TABLE [dbo].[option_mobile_cards] ADD  DEFAULT ((8048)) FOR [server_port]
+GO
+ALTER TABLE [dbo].[option_mobile_cards] ADD  DEFAULT ((8046)) FOR [server_port2]
+GO
+ALTER TABLE [dbo].[option_mobile_cards] ADD  DEFAULT ((0)) FOR [expired_dday]
+GO
+ALTER TABLE [dbo].[task_data] ADD  DEFAULT ((0)) FOR [offset]
+GO
+ALTER TABLE [dbo].[task_data] ADD  DEFAULT ((0)) FOR [success]
+GO
+ALTER TABLE [dbo].[task_data] ADD  DEFAULT ((0)) FOR [fail]
+GO
+ALTER TABLE [dbo].[tasks] ADD  DEFAULT ((0)) FOR [success]
+GO
+ALTER TABLE [dbo].[tasks] ADD  DEFAULT ((0)) FOR [fail]
+GO
+ALTER TABLE [dbo].[terminals] ADD  DEFAULT ((0)) FOR [core_flag]
+GO
+ALTER TABLE [dbo].[terminals] ADD  DEFAULT ((0)) FOR [use_auth]
+GO
+ALTER TABLE [dbo].[terminals] ADD  DEFAULT ((0)) FOR [healthid_flag]
+GO
+ALTER TABLE [dbo].[access_area_groups]  WITH CHECK ADD  CONSTRAINT [access_area_groups_access_area_id_access_areas_id_foreign] FOREIGN KEY([access_area_id])
+REFERENCES [dbo].[access_areas] ([id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[access_area_groups] CHECK CONSTRAINT [access_area_groups_access_area_id_access_areas_id_foreign]
+GO
+ALTER TABLE [dbo].[access_area_groups]  WITH CHECK ADD  CONSTRAINT [access_area_groups_access_group_id_access_groups_id_foreign] FOREIGN KEY([access_group_id])
+REFERENCES [dbo].[access_groups] ([id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[access_area_groups] CHECK CONSTRAINT [access_area_groups_access_group_id_access_groups_id_foreign]
+GO
+ALTER TABLE [dbo].[access_area_terminals]  WITH CHECK ADD  CONSTRAINT [access_area_terminals_access_area_id_access_areas_id_foreign] FOREIGN KEY([access_area_id])
+REFERENCES [dbo].[access_areas] ([id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[access_area_terminals] CHECK CONSTRAINT [access_area_terminals_access_area_id_access_areas_id_foreign]
+GO
+ALTER TABLE [dbo].[access_area_users]  WITH CHECK ADD  CONSTRAINT [access_area_users_access_area_id_access_areas_id_foreign] FOREIGN KEY([access_area_id])
+REFERENCES [dbo].[access_areas] ([id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[access_area_users] CHECK CONSTRAINT [access_area_users_access_area_id_access_areas_id_foreign]
+GO
+ALTER TABLE [dbo].[apbs]  WITH CHECK ADD  CONSTRAINT [apbs_terminal_id_terminals_terminal_id_foreign] FOREIGN KEY([terminal_id])
+REFERENCES [dbo].[terminals] ([terminal_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[apbs] CHECK CONSTRAINT [apbs_terminal_id_terminals_terminal_id_foreign]
+GO
+ALTER TABLE [dbo].[approvers]  WITH CHECK ADD  CONSTRAINT [approvers_user_id_users_user_id_foreign] FOREIGN KEY([user_id])
+REFERENCES [dbo].[users] ([user_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[approvers] CHECK CONSTRAINT [approvers_user_id_users_user_id_foreign]
+GO
+ALTER TABLE [dbo].[auth_log_images_202508]  WITH CHECK ADD  CONSTRAINT [auth_log_images_202508_index_key_auth_logs_202508_index_key_foreign] FOREIGN KEY([index_key])
+REFERENCES [dbo].[auth_logs_202508] ([index_key])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[auth_log_images_202508] CHECK CONSTRAINT [auth_log_images_202508_index_key_auth_logs_202508_index_key_foreign]
+GO
+ALTER TABLE [dbo].[auth_log_images_202601]  WITH CHECK ADD  CONSTRAINT [auth_log_images_202601_index_key_auth_logs_202601_index_key_foreign] FOREIGN KEY([index_key])
+REFERENCES [dbo].[auth_logs_202601] ([index_key])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[auth_log_images_202601] CHECK CONSTRAINT [auth_log_images_202601_index_key_auth_logs_202601_index_key_foreign]
+GO
+ALTER TABLE [dbo].[auth_log_images_202602]  WITH CHECK ADD  CONSTRAINT [auth_log_images_202602_index_key_auth_logs_202602_index_key_foreign] FOREIGN KEY([index_key])
+REFERENCES [dbo].[auth_logs_202602] ([index_key])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[auth_log_images_202602] CHECK CONSTRAINT [auth_log_images_202602_index_key_auth_logs_202602_index_key_foreign]
+GO
+ALTER TABLE [dbo].[auth_log_images_202603]  WITH CHECK ADD  CONSTRAINT [auth_log_images_202603_index_key_auth_logs_202603_index_key_foreign] FOREIGN KEY([index_key])
+REFERENCES [dbo].[auth_logs_202603] ([index_key])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[auth_log_images_202603] CHECK CONSTRAINT [auth_log_images_202603_index_key_auth_logs_202603_index_key_foreign]
+GO
+ALTER TABLE [dbo].[group_access_groups]  WITH CHECK ADD  CONSTRAINT [group_access_groups_access_group_id_access_groups_id_foreign] FOREIGN KEY([access_group_id])
+REFERENCES [dbo].[access_groups] ([id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[group_access_groups] CHECK CONSTRAINT [group_access_groups_access_group_id_access_groups_id_foreign]
+GO
+ALTER TABLE [dbo].[group_access_groups]  WITH CHECK ADD  CONSTRAINT [group_access_groups_group_id_groups_group_id_foreign] FOREIGN KEY([group_id])
+REFERENCES [dbo].[groups] ([group_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[group_access_groups] CHECK CONSTRAINT [group_access_groups_group_id_groups_group_id_foreign]
+GO
+ALTER TABLE [dbo].[map_terminals]  WITH CHECK ADD  CONSTRAINT [map_terminals_map_code_map_areas_map_code_foreign] FOREIGN KEY([map_code])
+REFERENCES [dbo].[map_areas] ([map_code])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[map_terminals] CHECK CONSTRAINT [map_terminals_map_code_map_areas_map_code_foreign]
+GO
+ALTER TABLE [dbo].[map_terminals]  WITH CHECK ADD  CONSTRAINT [map_terminals_terminal_id_terminals_terminal_id_foreign] FOREIGN KEY([terminal_id])
+REFERENCES [dbo].[terminals] ([terminal_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[map_terminals] CHECK CONSTRAINT [map_terminals_terminal_id_terminals_terminal_id_foreign]
+GO
+ALTER TABLE [dbo].[menu_users]  WITH CHECK ADD  CONSTRAINT [menu_users_menu_id_menus_menu_id_foreign] FOREIGN KEY([menu_id])
+REFERENCES [dbo].[menus] ([menu_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[menu_users] CHECK CONSTRAINT [menu_users_menu_id_menus_menu_id_foreign]
+GO
+ALTER TABLE [dbo].[privilege_groups]  WITH CHECK ADD  CONSTRAINT [privilege_groups_group_id_groups_group_id_foreign] FOREIGN KEY([group_id])
+REFERENCES [dbo].[groups] ([group_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[privilege_groups] CHECK CONSTRAINT [privilege_groups_group_id_groups_group_id_foreign]
+GO
+ALTER TABLE [dbo].[privilege_groups]  WITH CHECK ADD  CONSTRAINT [privilege_groups_privilege_id_privilege_infos_privilege_id_foreign] FOREIGN KEY([privilege_id])
+REFERENCES [dbo].[privilege_infos] ([privilege_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[privilege_groups] CHECK CONSTRAINT [privilege_groups_privilege_id_privilege_infos_privilege_id_foreign]
+GO
+ALTER TABLE [dbo].[task_data]  WITH CHECK ADD  CONSTRAINT [task_data_task_id_tasks_task_id_foreign] FOREIGN KEY([task_id])
+REFERENCES [dbo].[tasks] ([task_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[task_data] CHECK CONSTRAINT [task_data_task_id_tasks_task_id_foreign]
+GO
+ALTER TABLE [dbo].[terminal_admin_terminals]  WITH CHECK ADD  CONSTRAINT [terminal_admin_terminals_terminal_id_terminals_terminal_id_foreign] FOREIGN KEY([terminal_id])
+REFERENCES [dbo].[terminals] ([terminal_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[terminal_admin_terminals] CHECK CONSTRAINT [terminal_admin_terminals_terminal_id_terminals_terminal_id_foreign]
+GO
+ALTER TABLE [dbo].[terminal_admin_terminals]  WITH CHECK ADD  CONSTRAINT [terminal_admin_terminals_user_id_users_user_id_foreign] FOREIGN KEY([user_id])
+REFERENCES [dbo].[users] ([user_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[terminal_admin_terminals] CHECK CONSTRAINT [terminal_admin_terminals_user_id_users_user_id_foreign]
+GO
+ALTER TABLE [dbo].[terminal_admins]  WITH CHECK ADD  CONSTRAINT [terminal_admins_user_id_users_user_id_foreign] FOREIGN KEY([user_id])
+REFERENCES [dbo].[users] ([user_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[terminal_admins] CHECK CONSTRAINT [terminal_admins_user_id_users_user_id_foreign]
+GO
+ALTER TABLE [dbo].[terminal_user_request_logs]  WITH CHECK ADD  CONSTRAINT [terminal_user_request_logs_index_key_terminal_user_requests_index_key_foreign] FOREIGN KEY([index_key])
+REFERENCES [dbo].[terminal_user_requests] ([index_key])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[terminal_user_request_logs] CHECK CONSTRAINT [terminal_user_request_logs_index_key_terminal_user_requests_index_key_foreign]
+GO
+ALTER TABLE [dbo].[timezone_vals]  WITH CHECK ADD  CONSTRAINT [timezone_vals_timeline_id_timezone_timelines_timeline_id_foreign] FOREIGN KEY([timeline_id])
+REFERENCES [dbo].[timezone_timelines] ([timeline_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[timezone_vals] CHECK CONSTRAINT [timezone_vals_timeline_id_timezone_timelines_timeline_id_foreign]
+GO
+ALTER TABLE [dbo].[user_cars]  WITH CHECK ADD  CONSTRAINT [user_cars_user_id_users_user_id_foreign] FOREIGN KEY([user_id])
+REFERENCES [dbo].[users] ([user_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[user_cars] CHECK CONSTRAINT [user_cars_user_id_users_user_id_foreign]
+GO
+ALTER TABLE [dbo].[user_face_wts]  WITH CHECK ADD  CONSTRAINT [user_face_wts_user_id_users_user_id_foreign] FOREIGN KEY([user_id])
+REFERENCES [dbo].[users] ([user_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[user_face_wts] CHECK CONSTRAINT [user_face_wts_user_id_users_user_id_foreign]
+GO
+ALTER TABLE [dbo].[user_faces]  WITH CHECK ADD  CONSTRAINT [user_faces_user_id_users_user_id_foreign] FOREIGN KEY([user_id])
+REFERENCES [dbo].[users] ([user_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[user_faces] CHECK CONSTRAINT [user_faces_user_id_users_user_id_foreign]
+GO
+ALTER TABLE [dbo].[user_fps]  WITH CHECK ADD  CONSTRAINT [user_fps_user_id_users_user_id_foreign] FOREIGN KEY([user_id])
+REFERENCES [dbo].[users] ([user_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[user_fps] CHECK CONSTRAINT [user_fps_user_id_users_user_id_foreign]
+GO
+ALTER TABLE [dbo].[user_health_infos]  WITH CHECK ADD  CONSTRAINT [user_health_infos_user_id_users_user_id_foreign] FOREIGN KEY([user_id])
+REFERENCES [dbo].[users] ([user_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[user_health_infos] CHECK CONSTRAINT [user_health_infos_user_id_users_user_id_foreign]
+GO
+ALTER TABLE [dbo].[user_iris]  WITH CHECK ADD  CONSTRAINT [user_iris_user_id_users_user_id_foreign] FOREIGN KEY([user_id])
+REFERENCES [dbo].[users] ([user_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[user_iris] CHECK CONSTRAINT [user_iris_user_id_users_user_id_foreign]
+GO
+ALTER TABLE [dbo].[user_mobile_cards]  WITH CHECK ADD  CONSTRAINT [user_mobile_cards_user_id_users_user_id_foreign] FOREIGN KEY([user_id])
+REFERENCES [dbo].[users] ([user_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[user_mobile_cards] CHECK CONSTRAINT [user_mobile_cards_user_id_users_user_id_foreign]
+GO
+ALTER TABLE [dbo].[user_mobilekeys]  WITH CHECK ADD  CONSTRAINT [user_mobilekeys_user_id_users_user_id_foreign] FOREIGN KEY([user_id])
+REFERENCES [dbo].[users] ([user_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[user_mobilekeys] CHECK CONSTRAINT [user_mobilekeys_user_id_users_user_id_foreign]
+GO
+ALTER TABLE [dbo].[user_pictures]  WITH CHECK ADD  CONSTRAINT [user_pictures_user_id_users_user_id_foreign] FOREIGN KEY([user_id])
+REFERENCES [dbo].[users] ([user_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[user_pictures] CHECK CONSTRAINT [user_pictures_user_id_users_user_id_foreign]
+GO
+ALTER TABLE [dbo].[user_rfcards]  WITH CHECK ADD  CONSTRAINT [user_rfcards_user_id_users_user_id_foreign] FOREIGN KEY([user_id])
+REFERENCES [dbo].[users] ([user_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[user_rfcards] CHECK CONSTRAINT [user_rfcards_user_id_users_user_id_foreign]
+GO
+ALTER TABLE [dbo].[user_voips]  WITH CHECK ADD  CONSTRAINT [user_voips_user_id_users_user_id_foreign] FOREIGN KEY([user_id])
+REFERENCES [dbo].[users] ([user_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[user_voips] CHECK CONSTRAINT [user_voips_user_id_users_user_id_foreign]
+GO
+USE [master]
+GO
+ALTER DATABASE [UCDB] SET  READ_WRITE 
+GO

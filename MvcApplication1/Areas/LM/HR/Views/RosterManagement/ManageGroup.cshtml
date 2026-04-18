@@ -1,0 +1,220 @@
+﻿@model ViewModels.Group
+<h4 style="font-weight: bold;">Roster Management</h4>
+<div class="row">
+
+    <div class="form-group col-md-3">
+        <h5 style="font-weight: bold;">Add Group</h5>
+
+
+
+        @using (Html.BeginForm("AddGroup", "RosterManagement", FormMethod.Post, new { id = "employee-form" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary()
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Line Manager ID</label>
+                    <select id="line-managers" class="form-control" name="line_manager">
+                        <option value="-1">none</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Group Employees</label>
+                    <select id="group-employees" name="group_employees" style="width:100%" multiple>
+                        <option value=""></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Group Shifts</label>
+                    <select id="group-shifts" name="group_shifts" style="width:100%" multiple>
+                        <option value=""></option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Follows General Calendar</label>
+                    <input type="checkbox" class="checkbox" name="follows_general_calendar" value="true" checked="checked" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12" style="margin-top:5px">
+                    <button type="submit" value="Add Group">Add Group</button>
+                </div>
+            </div>
+        }
+
+    </div>
+    <div class="col-md-9">
+        <h5 style="font-weight: bold;">Current Groups</h5>
+        <table id="groups_table" class="display cell-border" style="width:100%;">
+            <thead>
+                <tr>
+                    <th>Group ID</th>
+                    <th>Line Manager</th>
+                    <th>Line Manager Name</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button type="submit" id="btnExport" style="margin-top:5px">Export excel</button>
+    </div>
+
+    <div style="display:none">
+        <div id='group-edit-form' class='jqUI-modal' title='Edit Group'>
+             
+            <p class='validationTips'>All form fields are required.</p> 
+            <form id='shift_edit_modal'>
+                 
+                <fieldset>
+                     
+                    <div class='row'>
+                         
+                        <div class='col-md-12'>
+                             
+                            <label class='control-label'>Line Manager ID</label>
+                            <select id='modal-line-manager' name='line_manager'>
+                                 
+                                <option value='-1'>none</option> 
+                            </select> 
+                        </div> 
+                    </div> 
+                    <div class='row'>
+                         
+                        <div class='col-md-12'>
+                             
+                            <label class='control-label'>Group Employees</label> 
+                            <select id='modal-group-employees' name='group_employees' multiple>
+                                 
+                                <option value=''></option> 
+                            </select> 
+                        </div> 
+                    </div> 
+                    <div class='row'>
+                         
+                        <div class='col-md-12'>
+                             
+                            <label class='control-label'>Group Shifts</label> 
+                            <select id='modal-group-shifts' name='group_shifts' multiple>
+                                <option value=''></option> 
+                            </select> 
+                        </div> 
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="control-label">Follows General Calendar</label>
+                            <input type="checkbox" class="checkbox" name="follows_general_calendar" id='modal-group-follows-gc' value="true" checked="checked" />
+                        </div>
+                    </div>
+                    
+                    <input type='submit' tabindex='-1' style='position:absolute; top:-1000px'> 
+                </fieldset> 
+            </form> 
+        </div> 
+    </div>
+</div>
+
+
+
+@section JS {
+
+    <script type="text/javascript" src="@Href("~/Scripts/chosen.ajaxaddition.jquery.js")"></script>
+
+    <script type="text/javascript" src="@Href("~/Scripts/groupCRUD.js")"></script>
+
+    <script>
+
+        function initializeChosenSelects() {
+
+            function initializeSelect(identifier,url) {
+                $(identifier).ajaxChosen({
+                    dataType: 'json',
+                    type: 'POST',
+                    url: url
+                }, {
+                    loadingImg: '@Href("~/Content/ChosenAutoComplete/loading.gif")'
+                });
+            }
+
+            initializeSelect('#line-managers', '@Url.Action("lineManagersDataHandler", "RosterManagement", null, Request.Url.Scheme)');
+            initializeSelect('#group-employees', '@Url.Action("employeesDataHandler", "RosterManagement", null, Request.Url.Scheme)');
+            initializeSelect('#group-shifts', '@Url.Action("shiftsDataHandler", "RosterManagement", null, Request.Url.Scheme)');
+            
+            // modal
+            initializeSelect('#modal-line-manager', '@Url.Action("lineManagersDataHandler", "RosterManagement", null, Request.Url.Scheme)');
+            initializeSelect('#modal-group-employees', '@Url.Action("employeesDataHandler", "RosterManagement", null, Request.Url.Scheme)');
+            initializeSelect('#modal-group-shifts', '@Url.Action("shiftsDataHandler", "RosterManagement", null, Request.Url.Scheme)');
+
+
+
+        }
+
+        function initializeDataTable() {
+
+            var url = '@Url.Action("groupEditDeleteDataHandler", "RosterManagement", null, Request.Url.Scheme)';
+
+            var columns = [
+
+                   { "data": "id" },
+                   { "data": "line_manager_code" },
+                   { "data": "line_manager_name" },
+                   { "data": "action" }
+
+            ];
+
+            initServerSideTable('#groups_table', url, columns);
+
+
+        }
+
+        $(document).ready(function () {
+            $('#accordion').accordion("option", "active", 3);
+
+            $("input[type=submit], button").button();
+            setActiveLink("Manage Groups");
+
+
+            setupTableExportButton('#groups_table', '#btnExport', 'ManageGroups');
+            /*
+            $('#btnExport').button();
+            $("#btnExport").click(function (e) {
+                $('#groups_table').tableExport({ type: 'excel', escape: 'false' });
+                e.preventDefault();
+            });
+            */
+
+
+
+
+
+            initializeChosenSelects();
+
+            initializeDataTable();
+
+            
+
+
+            deleteGroup = initDeleteGroupModal('@Url.Action("groupDelete", "RosterManagement", null, Request.Url.Scheme)');
+
+
+            editGroup = initEditGroupModal('@Url.Action("editGroup", "RosterManagement", null, Request.Url.Scheme)');
+
+        });
+
+
+
+    </script>
+
+
+}

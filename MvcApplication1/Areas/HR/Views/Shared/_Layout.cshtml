@@ -1,0 +1,722 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="A fully featured biometric attendance managment system having various modules to manage like users, departments, designations, functions, regions, locations, grups and grades. View reports include Monthly timesheet, Consolidated Attendance and Department wise reports.">
+    <meta name="author" content="Coderthemes">
+
+    <link rel="shortcut icon" href="/images/favicon.ico">
+
+    <title>
+        @{
+            if (ViewBag.Title == null)
+            {
+                <text>TRMS - Time Resourse Management System</text>;
+            }
+            else
+            {
+                @ViewBag.Title;
+            }
+        }
+    </title>
+
+    <link href="@Href("~/Content/ui-darkness/jquery-ui-1.9.2.custom.css")" rel="stylesheet"> <!-- JQuery UI theme -->
+
+    <link href="@Href("~/plugins/datatables/dataTables.bootstrap4.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Href("~/plugins/datatables/buttons.bootstrap4.min.css")" rel="stylesheet" type="text/css" />
+    <!-- Responsive datatable examples -->
+    <link href="@Href("~/plugins/datatables/responsive.bootstrap4.min.css")" rel="stylesheet" type="text/css" />
+    <!-- Multi Item Selection examples -->
+    <link href="@Href("~/plugins/datatables/select.bootstrap4.min.css")" rel="stylesheet" type="text/css" />
+
+    <link href="@Href("/plugins/custombox/dist/custombox.min.css")" rel="stylesheet">
+
+    <link rel="stylesheet" href="@Href("~/plugins/morris/morris.css")">
+
+    <!--Chartist Chart CSS -->
+    <link rel="stylesheet" href="/plugins/chartist/dist/chartist.min.css">
+
+    <link href="/plugins/jquery-circliful/css/jquery.circliful.css" rel="stylesheet" type="text/css" />
+
+    <link href="/plugins/nvd3/build/nv.d3.min.css" rel="stylesheet" type="text/css" />
+    <!-- Sweet Alert css -->
+
+    <link href="/plugins/sweet-alert/sweetalert2.min.css" rel="stylesheet" type="text/css" />
+    <link href="/plugins/switchery/switchery.min.css" rel="stylesheet" />
+
+
+    <link href="@Href("~/Content/timepicki.css")" rel="stylesheet" />  <!-- CSS for TimePicker -->
+    <link href="@Href("~/Content/chosen.css")" rel="stylesheet" /> <!-- CSS for Chosen -->
+
+    <link href="~/css/editor.css" rel="stylesheet" />
+
+
+    <link href="~/plugins/jquery.steps/css/jquery.steps.css" rel="stylesheet" />
+    <link href="@Href("~/plugins/switchery/switchery.min.css")" rel="stylesheet" />
+    <link href="@Href("~/css/bootstrap.min.css")" rel="stylesheet" type="text/css">
+    <link href="@Href("~/css/icons.css")" rel="stylesheet" type="text/css">
+    <link href="@Href("~/css/style_dark.css")" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="fixed-left">
+
+    @{
+        var userRole = (User.IsInRole(BLL.TimeTuneRoles.ROLE_HR)) ? "HR: " + User.Identity.Name :
+            (User.IsInRole(BLL.TimeTuneRoles.ROLE_EMP)) ? "EMPLOYEE: " + User.Identity.Name :
+            (User.IsInRole(BLL.TimeTuneRoles.ROLE_LM)) ? "LINE MANAGER: " + User.Identity.Name : "unauthorized";
+    }
+
+    <!-- Begin page -->
+    <div id="wrapper">
+
+        <!-- Top Bar Start -->
+        <div class="topbar">
+
+            <!-- LOGO -->
+            <div class="topbar-left">
+                <div class="text-center">
+                    <a href="/Account/Login" class="logo"><img src="/images/TRMS-LM.png" style="height: 40%; width: 30%;"></a>
+                </div>
+            </div>
+
+            <!-- Button mobile view to collapse sidebar menu -->
+            <nav class="navbar-custom">
+
+                <ul class="list-inline float-right mb-0">
+                    <li class="nav-link waves-light waves-effect">
+                        @using (Html.BeginForm("Languagechange", "Account", FormMethod.Post, new { id = "chg_pass" }))
+                        {
+
+                            <table>
+                                <tr>
+                                    @*<td><label class="control-label" style="font-size: smaller;">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("languagechange")<span class="text-danger font-14"></span></label></td>*@
+                                    <td>
+                                        <select id="ddl_language" name="ddl_language" class="form-control" style="width: 100px; height: 30px;font-size: smaller; margin-bottom: -3px;">
+                                            <option value="En">English</option>
+                                            <option value="Ar">Arabic</option>
+                                        </select>
+                                    </td>
+                                    <td><button type="submit" class="btn btn-primary waves-effect" style="font-size: smaller; background-color:#2a3142; ">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("hr.changelang")</button></td>
+                                </tr>
+
+                            </table>
+                        }
+                    </li>
+                    <li class="list-inline-item notification-list hide-phone">
+                        <span id="toast2" class="toast-message" style='display:none'>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.msg")</span>
+                        <a class="nav-link waves-light waves-effect" href="#" id="btn-fullscreen">
+                            <i class="mdi mdi-crop-free noti-icon"></i>
+                        </a>
+                    </li>
+
+                    @*<li class="list-inline-item notification-list">
+                            <a class="nav-link right-bar-toggle waves-light waves-effect" href="#">
+                                <i class="mdi mdi-dots-horizontal noti-icon"></i>
+                            </a>
+                        </li>*@
+
+                    <li class="list-inline-item dropdown notification-list">
+                        <a class="nav-link dropdown-toggle arrow-none waves-light waves-effect" data-toggle="dropdown" href="#" role="button"
+                           aria-haspopup="false" aria-expanded="false" id="test">
+                            <i class="mdi mdi-bell noti-icon"></i>
+                            <span class="badge badge-pink noti-icon-badge">@( MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_BadgeSumForHR))</span>
+                            @*<span class="badge badge-pink noti-icon-badge">0</span>*@
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right dropdown-arrow dropdown-menu-lg" aria-labelledby="Preview">
+                            <!-- item-->
+                            <div class="dropdown-item noti-title">
+                                <h5 class="font-16"><span class="badge badge-danger float-right"></span>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.noti")</h5>
+                            </div>
+                            <!-- item-->
+                            <a href="/HR/LeavesManagement/ApproveApplication" class="dropdown-item notify-item">
+                                <div class="notify-icon bg-success"><i class="mdi mdi-comment-account"></i></div>
+                                <p class="notify-details" style="overflow: visible;">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.leavenoti") (@( MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_PendingLeavesCountHR)))<small class="text-muted">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.viewdetails")</small></p>
+                            </a>
+                            <a href="/HR/EmployeeManagement/EmployeeMissingInfo" class="dropdown-item notify-item">
+                                <div class="notify-icon bg-success"><i class="mdi mdi-comment-account"></i></div>
+                                <p class="notify-details" style="overflow: visible;">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.missinfonoti") (@( MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeesMissingInfoCountHR)))<small class="text-muted">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.viewdetails")</small></p>
+                            </a>
+                            <!-- item-->
+                            <!-- <a href="javascript:void(0);" class="dropdown-item notify-item">
+                                <div class="notify-icon bg-info"><i class="mdi mdi-account"></i></div>
+                                <p class="notify-details">New user registered.<small class="text-muted">1 min ago</small></p>
+                            </a>-->
+                            <!-- item-->
+                            <!-- <a href="javascript:void(0);" class="dropdown-item notify-item">
+                                <div class="notify-icon bg-danger"><i class="mdi mdi-airplane"></i></div>
+                                <p class="notify-details">Carlos Crouch liked <b>Admin</b><small class="text-muted">1 min ago</small></p>
+                            </a>-->
+                            <!-- All-->
+                            <a href="/HR/LeavesManagement/ApproveApplication" class="dropdown-item notify-item notify-all">
+                                @*View All*@
+                            </a>
+
+                        </div>
+                    </li>
+                    <li class="list-inline-item dropdown notification-list">
+                        <a class="nav-link dropdown-toggle waves-effect waves-light nav-user" data-toggle="dropdown" href="#" role="button"
+                           aria-haspopup="false" aria-expanded="false">
+                            <img src="/Content/UserDocs/@MvcApplication1.ViewModel.GlobalVariables.GV_EmployeePhoto.ToString()" alt="user" class="rounded-circle">
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right profile-dropdown " aria-labelledby="Preview">
+
+                            <!-- item-->
+                            @Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Menu.emp.changepassword"), "Manage", "Account", null, new { @class = "dropdown-item notify-item" })
+
+
+                            <!-- item-->
+                            @if (Request.IsAuthenticated)
+                            {
+                                using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <a href="javascript:document.getElementById('logoutForm').submit()" class="dropdown-item notify-item">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.logoff")</a>
+                                }
+                            }
+
+                        </div>
+                    </li>
+
+                </ul>
+
+                @{
+                    string msgDisplay = "none";
+                    var dtCurrent = DateTime.Now;
+                    if (dtCurrent.Month == 12 && dtCurrent.Day > 15)
+                    {
+                        msgDisplay = "none"; //"inline-block";
+                    }
+                }
+
+                <ul class="list-inline menu-left mb-0">
+                    <li class="float-left">
+                        <button class="button-menu-mobile open-left waves-light waves-effect">
+                            <i class="mdi mdi-menu"></i>
+                        </button>
+                    </li>
+
+                    @if (MvcApplication1.ViewModel.GlobalVariables.GV_SiteTitle != null && MvcApplication1.ViewModel.GlobalVariables.GV_SiteTitle.ToString() != "")
+                    {
+                        if (MvcApplication1.ViewModel.GlobalVariables.GV_SiteTitle.ToString().ToLower().Contains("prin") || MvcApplication1.ViewModel.GlobalVariables.GV_SiteTitle.ToString().ToLower().Contains("vc") || MvcApplication1.ViewModel.GlobalVariables.GV_SiteTitle.ToString().ToLower().Contains("hod"))
+                        {
+                            <li class="text-dark h2 p-t-10">@MvcApplication1.ViewModel.GlobalVariables.GV_SiteTitle.ToString()</li>
+                        }
+                    }
+
+
+                    <li class="hide-phone app-search">
+                        <form role="search" class="d-none">
+                            <input type="text" placeholder="Search..." class="form-control">
+                            <a href=""><i class="fa fa-search"></i></a>
+                        </form>
+
+                        <span style="display: @msgDisplay; padding-left: 10px; font-size: 22px; color: #808000;">Set New Year Calendar for @{ <text>@DateTime.Now.AddYears(1).Year.ToString()</text> } @*using <a style="display: inline-block; color: red;" href="/HR/ShiftManagement/CalendarInfo">Page</a>*@</span>
+                    </li>
+                </ul>
+
+            </nav>
+
+        </div>
+        <!-- Top Bar End -->
+        <!-- ========== Left Sidebar Start ========== -->
+        <div class="left side-menu">
+            <div class="sidebar-inner slimscrollleft">
+                <!--- Divider -->
+                <div id="sidebar-menu">
+                    <ul>
+                        <!--<li class="menu-title">Main</li> -->
+
+                        <li class="has_sub">
+                            <a href="javascript:void(0);" class="waves-effect waves-primary">
+                                <i class="mdi mdi-account-box"></i> <span>@User.Identity.Name </span><span class="menu-arrow"></span>
+                                <span class="menu-arrow"></span>
+                            </a>
+                            <ul class="list-unstyled">
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.mydash"), "Dashboard", "HR")</li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.orgstats"), "MyTeam", "HR")</li>
+                                @*<li>@Html.ActionLink("Configuration Manager", "ConfigurationManager", "HR")</li>*@
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.changepass"), "Manage", "Account")</li>
+                            </ul>
+                        </li>
+
+                        <li class="has_sub" id="HREmpManagementMenu">
+                            <a href="javascript:void(0);" class="waves-effect waves-primary">
+                                <i class="mdi mdi-file-document"></i><span> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.empportal") </span> <span class="menu-arrow"></span>
+                            </a>
+                            <ul class="list-unstyled">
+                                @*<li>@Html.ActionLink("User Profile", "EmployeeProfile", "EmployeeManagement")</li>*@
+                                @*<li>@Html.ActionLink("User Status", "EmployeeStatus", "EmployeeManagement")</li>*@
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.manuser"), "ManageEmployee", "EmployeeManagement")</li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.dlemp"), "GenerateEmployeesReport", "OrganizationsManagement")</li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.dlempbytype"), "GenerateEmployeesByTypeReport", "OrganizationsManagement")</li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.manunisuser"), "UNISUserAdd", "EmployeeManagement")</li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.mangeo"), "ManageGeoPhencing", "EmployeeManagement")</li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.exempted"), "EmployeeExempted", "EmployeeManagement")</li>
+                                <li style="padding-left: 60px;"><img src="/images/separator.png" style="width: 150px;height:15px" /></li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.dep"), "Department", "EmployeeManagement")</li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.des"), "Designation", "EmployeeManagement")</li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.loc"), "Location", "EmployeeManagement")</li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.func"), "Function", "EmployeeManagement")</li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.grades"), "Grade", "EmployeeManagement")</li>
+
+
+                                @*<li>@Html.ActionLink("Employee Hierarchy", "EmployeeHierarchy", "EmployeeManagement")</li>
+                <li>@Html.ActionLink("Hierarchy Transfer", "HierarchyTransfer", "EmployeeManagement")</li>
+                <li>@Html.ActionLink("Manual Uploads", "ManualUploads", "EmployeeManagement")</li>*@
+                                <li style="padding-left: 60px;"><img src="/images/separator.png" style="width: 150px;height:15px" /></li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.changeuserpass"), "ChangeEmployeePassword", "EmployeeManagement")</li>
+                                @*<li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.skillset"), "SkillsSet", "EmployeeManagement")</li>*@
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.typesofemp"), "TypeOfEmployment", "EmployeeManagement")</li>
+                            </ul>
+                        </li>
+
+                        @*<li class="has_sub" id="MenuHR">
+            <a href="javascript:void(0);" class="waves-effect waves-primary">
+                <i class="ti-files"></i><span> HR </span> <span class="menu-arrow"></span>
+            </a>
+            <ul class="list-unstyled">
+                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.birthdays"), "EmpBirthdays", "EmployeeManagement")</li>
+                <li style="padding-left: 60px;"><img src="/images/separator.png" style="width: 150px;height:15px" /></li>
+                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.pereva"), "EmployeeEvaluation", "EmployeeManagement")</li>
+                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.perrep"), "PerformanceReport", "Reports")</li>
+                <li>@Html.ActionLink("Evaluation", "MonthlyTimeSheetOvertime", "Reports")</li>
+                <li>@Html.ActionLink("Letters", "Letters", "EmployeeManagement")</li>
+            </ul>
+        </li>*@
+
+
+
+                        <li class="has_sub" id="HRManualMenu">
+                            @*<a href="javascript:void(0);" class="waves-effect waves-primary">
+                <i class="mdi mdi-account-box"></i> <span> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.org") </span><span class="menu-arrow"></span>
+                <span class="menu-arrow"></span>
+            </a>
+            <ul class="list-unstyled">
+                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.manorg"), "ManageOrganization", "OrganizationsManagement")</li>
+                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.manins"), "ManageOrganizationCampus", "OrganizationsManagement")</li>
+                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.manbuilding"), "ManageOrganizationBuilding", "OrganizationsManagement")</li>
+                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.manrooms"), "ManageOrganizationRoom", "OrganizationsManagement")</li>
+            </ul>*@
+                        </li>
+
+                        <li class="has_sub" id="HRPayrollLoanMenu">
+                            <a href="javascript:void(0);" class="waves-effect waves-primary">
+                                <i class="mdi mdi-account-box"></i> <span> Student Portal </span><span class="menu-arrow"></span>
+                                <span class="menu-arrow"></span>
+                            </a>
+                            <ul class="list-unstyled">
+                                <li>@Html.ActionLink("D/L Student", "GenerateStudentsReport", "OrganizationsManagement")</li>
+                                <li style="padding-left: 60px;"><img src="/images/separator.png" style="width: 150px;height:15px" /></li>
+                                <li>@Html.ActionLink("Manage Schedule", "ManageOrganizationSchedule", "OrganizationsManagement")</li>
+                                <li>@Html.ActionLink("D/L Schedule", "GenerateScheduleReport", "OrganizationsManagement")</li>
+                                <li style="padding-left: 60px;"><img src="/images/separator.png" style="width: 150px;height:15px" /></li>
+                                <li>@Html.ActionLink("Manage Programs", "ManageOrganizationProgram", "OrganizationsManagement")</li>
+                                <li>@Html.ActionLink("Manage Campus-Prog", "ManageOrganizationCampusProgram", "OrganizationsManagement")</li>
+                                <li>@Html.ActionLink("Program Shifts", "ProgramShift", "EmployeeManagement")</li>
+                                <li>@Html.ActionLink("Program Groups", "Region", "EmployeeManagement")</li>
+                                <li style="padding-left: 60px;"><img src="/images/separator.png" style="width: 150px;height:15px" /></li>
+                                <li>@Html.ActionLink("Manage Courses", "ManageOrganizationCourse", "OrganizationsManagement")</li>
+                                <li>@Html.ActionLink("D/L Courses", "GenerateCoursesReport", "OrganizationsManagement")</li>
+                                <li style="padding-left: 60px;"><img src="/images/separator.png" style="width: 150px;height:15px" /></li>
+                                <li>@Html.ActionLink("Manage Enrollment", "ManageOrganizationEnrollment", "OrganizationsManagement")</li>
+                                <li>@Html.ActionLink("D/L Enrollment", "GenerateEnrollmentReport", "OrganizationsManagement")</li>
+                                <li style="padding-left: 60px;"><img src="/images/separator.png" style="width: 150px;height:15px" /></li>
+                                <li>@Html.ActionLink("Manage Attendance", "ManageCourseAttendanceStudent", "OrganizationsManagement")</li>
+                                <li>@Html.ActionLink("D/L By Student", "GenerateCourseAttendanceStudentReport", "OrganizationsManagement")</li>
+                                <li>@Html.ActionLink("D/L By Campus", "GenerateCourseAttendanceCampusReport", "OrganizationsManagement")</li>
+                            </ul>
+                        </li>
+
+                        <li class="has_sub" id="HRLeavesMenu">
+                            <a href="javascript:void(0);" class="waves-effect waves-primary">
+                                <i class="mdi mdi-file-document"></i><span> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.leavesman") </span> <span class="menu-arrow"></span>
+                            </a>
+                            <ul class="list-unstyled">
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.applynow"), "LeaveApplication", "LeavesManagement")</li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.applyonbehalf"), "LeaveApplicationOnBehalf", "LeavesManagement")</li>
+                                <li style="padding-left: 60px;"><img src="/images/separator.png" style="width: 150px;height:15px" /></li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.approval"), "ApproveApplication", "LeavesManagement")</li>
+                                <li style="padding-left: 60px;"><img src="/images/separator.png" style="width: 150px;height:15px" /></li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.ltype"), "LeaveType", "EmployeeManagement")</li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.sessman"), "LeaveSession", "EmployeeManagement")</li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.lreasons"), "LeaveReason", "EmployeeManagement")</li>
+                                <li style="padding-left: 60px;"><img src="/images/separator.png" style="width: 150px;height:15px" /></li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.lvalidity"), "LeavesValidityStatusReport", "Reports")</li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.lapplystatus"), "LeavesApplyStatusReport", "Reports")</li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.empleaves"), "LeavesListReport", "Reports")</li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.leavessumm"), "LeavesReportByUser", "Reports")</li>
+                                @*<li>@Html.ActionLink("Leaves Statistics", "LeavesStatistics", "Reports")</li>*@
+                            </ul>
+                        </li>
+
+                        <li class="has_sub d-none" id="HRPayrollLoanMenu" style="display: none;">
+                            <a href="javascript:void(0);" class="waves-effect waves-primary">
+                                <i class="mdi mdi-desktop-classic"></i><span> Payroll & Loan </span> <span class="menu-arrow"></span>
+                            </a>
+                            <ul class="list-unstyled">
+                                <li>@Html.ActionLink("Set Payroll", "SetsPayroll", "PayrollsManagement")</li>
+                                <li>@Html.ActionLink("Set Amounts", "PayrollAmount", "PayrollsManagement")</li>
+                                <li>@Html.ActionLink("Payroll Management", "PayrollGenerate", "Reports")</li>
+                                <li>@Html.ActionLink("Payroll By Month", "PayrollReportByMonth", "Reports")</li>
+                                <li>@Html.ActionLink("Bank Names", "BankNames", "PayrollsManagement")</li>
+                                <li style="padding-left: 60px;"><img src="/images/separator.png" style="width: 150px;height:15px" /></li>
+                                <li>@Html.ActionLink("Loan Management", "LoanApplication", "LoansManagement")</li>
+                                <li>@Html.ActionLink("Report By Date", "LoanReportByDate", "Reports")</li>
+                                @*<li>@Html.ActionLink("Report By Month", "LoanReportByMonth", "Reports")</li>*@
+                                <li>@Html.ActionLink("Report By Employee", "LoanReportByEmployee", "Reports")</li>
+                            </ul>
+                        </li>
+
+                        <li class="has_sub" id="HROvertimeMenu">
+                            @*<a href="javascript:void(0);" class="waves-effect waves-primary">
+                <i class="mdi mdi-dna"></i><span> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.overtime") </span> <span class="menu-arrow"></span>
+            </a>
+            <ul class="list-unstyled">
+                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.monovertime"), "MonthlyTimeSheetOvertime", "Reports")</li>
+                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.conovertime"), "ConsolidatedAttendanceOvertime", "Reports")</li>
+            </ul>*@
+                        </li>
+
+
+
+                        <li class="has_sub" id="HRShiftManagementMenu">
+                            <a href="javascript:void(0);" class="waves-effect waves-primary">
+                                <i class="mdi mdi-calendar-clock"></i><span> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.shiftman") </span> <span class="menu-arrow"></span>
+                            </a>
+                            <ul class="list-unstyled">
+                                @*<li>@Html.ActionLink("Add Group", "AddGroup", "ShiftManagement")</li>
+                <li>@Html.ActionLink("Authorize Shift", "ShiftAuthorization", "ShiftManagement")</li>*@
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.manshift"), "ManageShift", "ShiftManagement")</li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.gencal"), "Calendar", "ShiftManagement")</li>
+                            </ul>
+                        </li>
+
+                        <li class="has_sub" id="HRRoasterManagementMenu">
+                            @*<a href="javascript:void(0);" class="waves-effect waves-primary">
+                <i class="mdi mdi-format-rotate-90"></i><span> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.roastman") </span> <span class="menu-arrow"></span>
+            </a>*@
+                            <ul class="list-unstyled">
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.mangrp"), "ManageGroup", "RosterManagement")</li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.upgrp"), "Manage", "UploadDownloadLineManagers")</li>
+                                <li style="padding-left: 60px;"><img src="/images/separator.png" style="width: 150px;height:15px" /></li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.manman"), "Manage", "SuperLineManagers")</li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.upman"), "Manage", "UploadDownloadSuperLineManagers")</li>
+
+                                <!--    <li>@Html.ActionLink("Manage Roster", "ManageRoster", "RosterManagement")</li>
+            <li>@Html.ActionLink("Employee WO Shift", "EmployeeWOShift", "RosterManagement")</li>
+            <li>@Html.ActionLink("View Self Roster", "ViewSelfRoster", "RosterManagement")</li> -->
+
+                            </ul>
+                        </li>
+
+                        <li class="has_sub" id="HRAttendanceManagementMenu">
+                            <a href="javascript:void(0);" class="waves-effect waves-primary">
+                                <i class="mdi mdi-chart-bar"></i><span> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.attadj") </span> <span class="menu-arrow"></span>
+                            </a>
+                            <ul class="list-unstyled">
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.todayatt"), "ViewAttendance", "AttendanceManagement")</li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.postadj"), "ManualAttendance", "AttendanceManagement")</li>
+                                <li>@Html.ActionLink("Manual Time Adjustment", "ManualTimeAdjustment", "AttendanceManagement")</li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.preadj"), "FutureManualAttendance", "AttendanceManagement")</li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.reatt"), "MarkAttendance", "Admin")</li>
+                                <!--     <li>@Html.ActionLink("Upload Raw Attendance", "UploadRawAttendance", "AttendanceManagement")</li> -->
+                                <!--   <li>@Html.ActionLink("View Raw Attendance", "ViewRawAttendance", "AttendanceManagement")</li>-->
+                                <!--  <li>@Html.ActionLink("Change Session Time Out", "ChangeSessionTimeOut", "Admin")</li>-->
+                            </ul>
+                        </li>
+
+                        <li class="has_sub" id="HRReportMenu">
+                            <a href="javascript:void(0);" class="waves-effect waves-primary">
+                                <i class="ti-files"></i><span> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.reports") </span> <span class="menu-arrow"></span>
+                            </a>
+                            <ul class="list-unstyled">
+                                @*<li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.attsumm"), "AttendanceSummary", "Reports")</li>*@
+                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.montimesheet"), "MonthlyTimeSheet", "Reports")</li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.montimehours"), "WorkHoursTimeSheetNew", "Reports")</li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.monthattendancesummary"), "WorkHoursTimeSheetAll", "Reports")</li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.conatt"), "ConsolidatedAttendanceShort", "Reports")</li>
+                                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.bulktimesheet"), "MonthlyDepartmentalTimeSheet", "Reports")</li>
+                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.capphotos"), "MonthlyCapturedPhoto", "Reports")</li>
+                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.punchphotos"), "MonthlyPunchedPhoto", "Reports")</li>
+                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.geo"), "MonthlyGeoPhencing", "Reports")</li>
+                                <li>@Html.ActionLink("Present and Absent Report", "PaReport", "Reports")</li>
+                                <li style="padding-left: 60px;"><img src="/images/separator.png" style="width: 150px;height:15px" /></li>
+                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.orgtoday"), "DepartmentTodaysReport", "Reports")</li>
+                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.orgatt"), "DepartmentAttendanceReport", "Reports")</li>
+                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.orgper"), "DepartmentPerformanceReport", "Reports")</li>
+                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.deptrep"), "DepartmentReport", "Reports")</li>
+                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.missprep"), "MissPunchReport", "Reports")</li>
+                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.manualprep"), "ManualPunchReport", "Reports")</li>
+                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.usertrep"), "UserTrackingReport", "Reports")</li>
+                <li style="padding-left: 60px;"><img src="/images/separator.png" style="width: 150px;height:15px" /></li>
+                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.workhrs"), "WorkHoursTimeSheet", "Reports")</li>
+                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.hrrep"), "HourlyReport", "Reports")</li>
+                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.preabsrep"), "PresentAbsentReport", "Reports")</li>
+               
+
+                <li>@Html.ActionLink(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.devstatusrep"), "DevicesStatusCountReport", "Reports")</li>
+                                <li>@Html.ActionLink("Devices Status Report", "DevicesStatusReportHR", "Reports")</li>
+                                <li>@Html.ActionLink("Working Hours Report", "WorkHourReport", "Reports")</li>
+                                <li>@Html.ActionLink("Devices Status", "DevicesStatusReport", "Reports")</li>
+                                <li>@Html.ActionLink("Devices Unregistered", "DevicesUnregistered", "Reports")</li>
+                                <li>@Html.ActionLink("View Attendance Report", "ConsolidateAttendance", "Reports")</li>
+                            </ul>
+                        </li>
+                        <li class="has_sub" id="Fleetmgmnt">
+                            @*TimeTune.Reports.getAllConsolidateAttendanceMatchin*@
+
+                            <a href="javascript:void(0);" class="waves-effect waves-primary">
+                                <i class="ti-files"></i><span>Fleet Management </span> <span class="menu-arrow"></span>
+                            </a>
+                            <ul class="list-unstyled">
+                                <li>Vehicle Management</li>
+                                <li>Vehicle Request</li>
+                                <li>Vehicle Approvals</li>
+                            </ul>
+                        </li>
+
+                        <li class="has_sub" id="HRManualMenu0">
+                            <a href="javascript:void(0);" class="waves-effect waves-primary">
+                                <i class="mdi mdi-book-open"></i><span> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.trainman") </span>
+                            </a>
+                            <ul class="list-unstyled">
+                                @{
+                                    if (@MvcApplication1.ViewModel.GlobalVariables.GV_Langauge == "En")
+                                    {
+                                        <li><a href="@Href("~/Content/TrainingManuals/TRMSManualHR.pdf")" target="_blank">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.dlman")</a></li>
+
+                                    }
+                                    else
+                                    {
+                                        <li><a href="@Href("~/Content/TrainingManuals/TRMSManualHRAR.pdf")" target="_blank">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.dlman")</a></li>
+
+                                    }
+
+                                }
+                            </ul>
+                        </li>
+
+                        <li>
+                            <a onclick="javascript:document.getElementById('logoutForm').submit()" class="waves-effect waves-primary">
+                                <i class="mdi mdi-logout"></i><span> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.logoff") </span>
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="clearfix"></div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+        <!-- Left Sidebar End -->
+        <!-- ============================================================== -->
+        <!-- Start right Content here -->
+        <!-- ============================================================== -->
+        <div class="content-page">
+            <div class="content">
+                @RenderBody()
+                <div id="toast2Test" class="toast-message" style='width: 500px; display:none'>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.msg")</div>
+            </div>
+
+            <!--<footer class="footer">
+        @DateTime.Now.Year © TRMS by IOT Systems All rights reserved <span class="hide-phone">- <a href="http://www.iotsystems.com">http://www.iotsystems.com</a></span>
+    </footer>-->
+
+            <footer class="footer">
+                @DateTime.Now.Year @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.copyright")
+            </footer>
+
+            <div style="display:none;height:0px;width:0px;">
+
+                <form id="csvDownloadForm" method="POST" action="/CSV/getFile" enctype="multipart/form-data">
+                    <input id="csvDownloadData" type="hidden" name="base64stream" value="" />
+                    <input id="csvDownloadName" type="hidden" name="fileName" value="" />
+                </form>
+
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Right content here -->
+        <!-- ============================================================== -->
+
+    </div>
+    <!-- END wrapper -->
+
+    <script>
+        var resizefunc = [];
+    </script>
+
+
+    <!-- Plugins  -->
+
+    <script src="@Url.Content("/js/jquery.min.js")"></script>
+    <script src="@Url.Content("/Scripts/jquery-1.10.2.min.js")"></script>
+    <script src="@Url.Content("/js/popper.min.js")"></script><!-- Popper for Bootstrap -->
+    <script src="@Url.Content("/js/bootstrap.min.js")"></script>
+    <script src="@Url.Content("/js/detect.js")"></script>
+    <script src="@Url.Content("/js/fastclick.js")"></script>
+    <script src="@Url.Content("/js/jquery.slimscroll.js")"></script>
+    <script src="@Url.Content("/js/jquery.blockUI.js")"></script>
+    <script src="@Url.Content("/js/waves.js")"></script>
+    <script src="@Url.Content("/js/wow.min.js")"></script>
+    <script src="@Url.Content("/js/jquery.nicescroll.js")"></script>
+    <script src="@Url.Content("/js/jquery.scrollTo.min.js")"></script>
+    <script src="@Url.Content("/plugins/switchery/switchery.min.js")"></script>
+
+    <!-- Required datatable js -->
+    <script src="@Url.Content("/plugins/datatables/jquery.dataTables.min.js")"></script>
+    <script src="@Url.Content("/plugins/datatables/dataTables.bootstrap4.min.js")"></script>
+    <!-- Buttons examples -->
+    <script src="@Url.Content("/plugins/datatables/dataTables.buttons.min.js")"></script>
+    <script src="@Url.Content("/plugins/datatables/buttons.bootstrap4.min.js")"></script>
+    <script src="@Url.Content("/plugins/datatables/jszip.min.js")"></script>
+    <script src="@Url.Content("/plugins/datatables/pdfmake.min.js")"></script>
+    <script src="@Url.Content("/plugins/datatables/vfs_fonts.js")"></script>
+    <script src="@Url.Content("/plugins/datatables/buttons.html5.min.js")"></script>
+    <script src="@Url.Content("/plugins/datatables/buttons.print.min.js")"></script>
+    <!-- Key Tables -->
+    <script src="@Url.Content("/plugins/datatables/dataTables.keyTable.min.js")"></script>
+    <!-- Responsive examples -->
+    <script src="@Url.Content("/plugins/datatables/dataTables.responsive.min.js")"></script>
+    <script src="@Url.Content("/plugins/datatables/responsive.bootstrap4.min.js")"></script>
+    <!-- Selection table -->
+    <script src="@Url.Content("/plugins/datatables/dataTables.select.min.js")"></script>
+
+    <!-- Modal-Effect -->
+    <script src="@Url.Content("/plugins/custombox/dist/custombox.min.js")"></script>
+    <script src="@Url.Content("/plugins/custombox/dist/legacy.min.js")"></script>
+
+    <!--Morris Chart-->
+    <script src="/plugins/morris/morris.min.js"></script>
+    <script src="/plugins/raphael/raphael-min.js"></script>
+
+    <!-- Nvd3 js -->
+    <script src="/plugins/d3/d3.min.js"></script>
+    <script src="/plugins/nvd3/build/nv.d3.min.js"></script>
+
+    <!--Chartist Chart-->
+    <script src="/plugins/chartist/dist/chartist.min.js"></script>
+
+    <!-- Sweet Alert -->
+    <script src="/plugins/sweet-alert/sweetalert2.min.js"></script>
+
+    <!--Wizard Form-->
+    <script src="~/plugins/jquery.steps/js/jquery.steps.min.js"></script>
+    <script src="~/plugins/jquery-validation/js/jquery.validate.min.js"></script>
+
+
+    <!-- Custom main Js -->
+    <script src="@Url.Content("/js/jquery.core.js")"></script>
+    <script src="@Url.Content("/js/jquery.app.js")"></script>
+
+    <script src="@Url.Content("/Scripts/bootstrap-year-calendar.min.js")" type="text/javascript"></script> <!-- Jquery for bootstrap calendar -->
+    <script src="@Url.Content("/Scripts/jquery-ui-1.9.2.custom.js")" type="text/javascript"></script> <!-- Jquery UI Theme -->
+    <script src="@Url.Content("/Scripts/mark.min.js")" type="text/javascript"></script> <!-- JS for marking text -->
+    <script src="@Url.Content("/Scripts/modal.js")" type="text/javascript"></script> <!-- JS for modal making -->
+    <script src="@Url.Content("/Scripts/timepicki.js")" type="text/javascript"></script> <!-- TimePicker JavaScript -->
+    <script src="@Url.Content("/Scripts/chosen.jquery.js")" type="text/javascript"></script> <!-- Chosen JavaScript -->
+    <script type="text/javascript" src="@Url.Content("/Scripts/tableexport.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Scripts/jquery.base64.js")"></script>
+    <script src="@Url.Content("/Scripts/custom.js")" type="text/javascript"></script> <!-- custom JavaScript -->
+    <script src="@Url.Content("/Scripts/idle_timer.js")" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        jQuery(document).ready(function (e) {
+
+            var data = '@Session["GV_Langauge"]';
+            $("#ddl_language").val(data);
+
+
+
+
+
+            @*var empCode= @Html.Raw(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeCode);
+            if (empCode=="000187") {
+                $('#MenuPayroll').hide();
+                $('#MenuHR').hide();
+            }*@
+
+
+
+
+            var empCode= @Html.Raw(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId);
+
+            $.ajax({
+                url: '/HR/HR/VerfiyDataHandler',
+                type: "POST",
+                data: { empId: empCode },
+                dataType: "json",
+
+                success: function (data) {
+
+
+                    if (data.HREmployeeManagement == false) {
+                        $("#HREmpManagementMenu").hide();
+                    }
+                    if (data.HRHR == false) {
+                        $("#MenuHR").hide();
+                    }
+                    if (data.HRLeaves == false) {
+                        $("#HRLeavesMenu").hide();
+                    }
+                    if (data.HRPayrollLoan == false) {
+                        $("#HRPayrollLoanMenu").hide();
+                    }
+                    if (data.HROvertime == false) {
+                        $("#HROvertimeMenu").hide();
+                    }
+                    if (data.HRShiftManagement == false) {
+                        $("#HRShiftManagementMenu").hide();
+                    }
+                    if (data.HRRoasterManagement == false) {
+                        $("#HRRoasterManagementMenu").hide();
+                    }
+                    if (data.HRAttendanceManagement == false) {
+                        $("#HRAttendanceManagementMenu").hide();
+                    }
+                    if (data.HRReport == false) {
+                        $("#HRReportMenu").hide();
+                    }
+                    if (data.HRManual == false) {
+                        $("#HRManualMenu").hide();
+                    }
+
+                    console.log(data);
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+
+
+            var tt_exp = "20"; //set the exp time in min
+            tt_exp = (parseInt(tt_exp) * 60000);
+            jQuery(document).bind("idle.idleTimer", function () {
+                //alert("Session Timeout"); //here you can attach any function for timeout action even ajax call too.
+                location.reload();
+            });
+
+            jQuery.idleTimer(tt_exp);
+
+
+        });
+        function changeText() {
+            $('#test span').text('0');
+        };
+
+    </script>
+
+    @RenderSection("JS", required: false)
+
+    <div id="modals">
+
+    </div>
+
+    <div id="toast" class="toast-message" style='display:none;'>Message!</div>
+
+
+</body>
+</html>

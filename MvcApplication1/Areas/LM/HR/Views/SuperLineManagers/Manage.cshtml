@@ -1,0 +1,138 @@
+﻿@model ViewModels.Group
+<h4 style="font-weight: bold;">Roster Management</h4>
+<div class="row">
+
+    <div class="col-md-11">
+
+        <h5 style="font-weight: bold;">Current Groups</h5>
+        <table id="slms_table" class="display cell-border" style="width:100%;">
+            <thead>
+                <tr>
+                    <th>SLM Number</th>
+                    <th>Name</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button type="submit" id="btnExport" style="margin-top:5px">Export excel</button>
+
+    </div>
+
+    <div style="display:none">
+        <div id='edit-slm-form' class='jqUI-modal' title='Manage Tagging'>
+
+            <p class='validationTips'>All form fields are required.</p>
+            <form id='shift_edit_modal'>
+
+                <fieldset>
+
+                    <div class='row'>
+
+                        <div class='col-md-12'>
+
+                            <label class='control-label'>Tagged Employees</label>
+                            <select id='modal-employees' name='group_employees' multiple>
+
+                                <option value=''></option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                   
+
+                    <input type='submit' tabindex='-1' style='position:absolute; top:-1000px'>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+@section JS {
+
+    <script type="text/javascript" src="@Href("~/Scripts/chosen.ajaxaddition.jquery.js")"></script>
+
+    <script type="text/javascript" src="@Href("~/Scripts/editSLMs.js")"></script>
+
+    <script>
+
+        function initializeChosenSelects() {
+
+            function initializeSelect(identifier,url) {
+                $(identifier).ajaxChosen({
+                    dataType: 'json',
+                    type: 'POST',
+                    url: url
+                }, {
+                    loadingImg: '@Href("~/Content/ChosenAutoComplete/loading.gif")'
+                });
+            }
+
+            initializeSelect('#modal-employees', '@Url.Action("getAllEmployees", "SuperLineManagers", null, Request.Url.Scheme)');
+            
+
+
+
+        }
+
+        function initializeDataTable() {
+
+            var url = '@Url.Action("getAllSLMsDataHandler", "SuperLineManagers", null, Request.Url.Scheme)';
+
+            var columns = [
+
+                   { "data": "slm_employee_code" },
+                   { "data": "slm_name" },
+                   { "data": "action" }
+
+            ];
+
+            initServerSideTable('#slms_table', url, columns);
+
+
+        }
+
+        $(document).ready(function () {
+            $('#accordion').accordion("option", "active", 3);
+
+            $("input[type=submit], button").button();
+            setActiveLink("Manage Super Line Managers");
+
+
+            setupTableExportButton('#slms_table', '#btnExport', 'SuperLineManagers');
+
+            /*
+            $('#btnExport').button();
+            $("#btnExport").click(function (e) {
+                $('#slms_table').tableExport({ type: 'excel', escape: 'false' });
+                e.preventDefault();
+            });
+            */
+
+
+
+
+
+            initializeChosenSelects();
+
+            initializeDataTable();
+
+
+
+
+            
+
+
+            editSLM = initEditSLMModal('@Url.Action("editSLM", "SuperLineManagers", null, Request.Url.Scheme)');
+
+        });
+
+
+
+    </script>
+
+
+}

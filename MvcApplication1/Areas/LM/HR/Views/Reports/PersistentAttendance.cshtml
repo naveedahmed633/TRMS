@@ -1,0 +1,67 @@
+﻿
+
+
+<h4 style="font-weight: bold;">Persistent Attendance Management</h4>
+<div class="row">
+    <div class="col-md-12">
+        <h5 style="font-weight: bold;">Attendance Log</h5>
+
+
+        <table id="attendance_table" class="display cell-border" width="100%">
+            <thead>
+
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Employee Code</th>
+                    <th>Date</th>
+                    <th>Time In</th>
+                    <th>Time Out</th>
+                </tr>
+
+            </thead>
+            <tbody></tbody>
+        </table>
+
+    </div>
+</div>
+@section JS {
+    <script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#accordion').accordion("option", "active", 1);
+        $(".datepicker").datepicker({ dateFormat: 'dd-mm-yy' });
+        setActiveLink("Reports");
+
+
+
+
+        var url = '@Url.Action("PersistentDataHandler", "Reports", null, Request.Url.Scheme)';
+
+        var columns = [
+              
+               { "data": "employee_first_name" },
+               { "data": "employee_last_name" },
+               { "data": "employee_code" },
+               { "data": "date" },
+               { "data": "time_in" },
+               { "data": "time_out" },
+
+        ];
+
+        @*
+               I did this so that like initDataTables the JS
+        for serverside processing can be used for other tables.
+            NOTE: The names of the columns correspond to the View Model.
+        For example in this example the column names, first_name, last_name
+        etc are taken from ViewModels.Employee
+    *@
+
+        initServerSideTable('#attendance_table', url, columns);
+
+
+
+
+    });
+    </script>
+}

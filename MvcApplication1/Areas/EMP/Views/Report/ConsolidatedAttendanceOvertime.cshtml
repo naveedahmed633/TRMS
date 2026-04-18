@@ -1,0 +1,503 @@
+﻿@{
+    ViewBag.Title = "TRMS - Consolidated Attendance Overtime";
+    Layout = "~/Areas/EMP/Views/Shared/_Layout.cshtml";
+
+    string EMP_STD_LEC_LoginUserType = "";
+    if (MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeFunctionSLSID.ToString().Contains("student"))
+    {
+        EMP_STD_LEC_LoginUserType = "STD";
+    }
+    else if (MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeFunctionSLSID.ToString().Contains("lecturer"))
+    {
+        EMP_STD_LEC_LoginUserType = "LEC";
+    }
+    else
+    {
+        EMP_STD_LEC_LoginUserType = "EMP";
+    }
+}
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("dashboard.welcome")  <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span></h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/EMP/EMP/Dashboard">@EMP_STD_LEC_LoginUserType</a></li>
+                    <li class="breadcrumb-item active">Consolidated Attendance - Overtime</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="mdi mdi-dna"></i>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("consloe.title")</h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-4">
+
+                            <form id="attendance-form">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("consloe.from") <span class="text-danger font-14">*</span></label>
+                                        <input id="from_date" type="text" class="form-control datepicker" autocomplete="off" name="time_in_from" style="background-color: #FFF" required>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-12">
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("consloe.to") <span class="text-danger font-14">*</span></label>
+                                        <input id="to_date" type="text" class="form-control datepicker" autocomplete="off" name="time_in_to" style="background-color: #FFF" required>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <button type="submit" id="search-consolidated-report" onclick="clearr();" class="btn btn-primary waves-effect waves-light m-t-10">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.search")</button>&nbsp;
+                                        <button type="button" class="btn btn-primary waves-effect waves-light m-t-10" onclick="redirectToPage();">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.reset")</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                        </div>
+
+                        <div class="form-group col-3">
+                        </div>
+                        <div class="form-group col-5" style="font-style: italic;">
+                            <h4>Legends:</h4>
+                            <table style="line-height: 16px; width: 70%;">
+                                <tr><td style="width: 20%"></td><td style="width: 10%"></td><td style="width: 70%"></td></tr>
+                                <tr><td>AB</td><td>:</td><td>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblAbsent")</td></tr>
+                                <tr><td>LV</td><td>:</td><td>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblLeave")</td></tr>
+                                <tr><td>PLO</td><td>:</td><td>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblPresentLate")</td></tr>
+                                <tr><td>PO</td><td>:</td><td>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblPresentOnTime")</td></tr>
+                                <tr><td>PLE</td><td>:</td><td>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblPresentLateEarlyOut")</td></tr>
+                                <tr><td>POE</td><td>:</td><td>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblPresentOnTimeEarlyOut")</td></tr>
+                                <tr><td>PLM</td><td>:</td><td>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblPresent")</td></tr>
+                                <tr><td>OV</td><td>:</td><td>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblov")</td></tr>
+                                <tr><td>OM</td><td>:</td><td>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblom")</td></tr>
+                                <tr><td>OT</td><td>:</td><td>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblot")</td></tr>
+                                <tr><td>*</td><td>:</td><td>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblmu")</td></tr>
+                            </table>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+               
+                <div class="panel-body">
+                    
+
+                    <div class="row">
+                        <div class="col-12">
+                            <table id="attendance_table" class="table table-striped table-bordered dataTable dt-responsive nowrap no-footer small" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("monthly.date")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("monthly.epcode")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("monthly.fn")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("monthly.ln")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("monthly.timein")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("monthly.timeout")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("monthly.ovt")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("monthly.st")</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row m-t-10">
+                        <div class="col-12">
+                            <button type="submit" id="btnExport" onclick="CheckData();" class="btn btn-primary waves-effect waves-light">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("emp.expo")</button>
+                            <button type="submit" id="btn-excel-download" form="attendance-form" onclick="HideBarr();" class="btn btn-primary waves-effect waves-light">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.downloadexcel")</button>
+                            <span id="export_wait" style="display: none;" class="text-danger"><img src='/images/loader.gif' alt='processing' /></span>
+                            <span id="demo" class="text-danger"></span>
+                            <p id="export_wait2" style="display: none;" class="text-danger"><img src='/images/loader.gif' alt='processing' /></p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End content -->
+
+
+
+@section JS {
+    @*<script src="~/Scripts/zingchart.min.js"></script>*@
+    <script type="text/javascript" src="@Href("~/Scripts/chosen.ajaxaddition.jquery.js")"></script>
+    @*<script type="text/javascript" src="@Href("~/Scripts/monthpicker.js")"></script>*@
+
+    <script>
+        function HideBarr() { HideMessage(); }
+
+        function redirectToPage() {
+            window.location.reload();
+        }
+        function CheckData() {
+            var ss = $("#attendance_table tr").children("td:first").text();
+            if (ss == "No data available in table" || ss == "" || ss == " ") {
+                $('#export_wait2').show();
+                document.getElementById("demo").innerHTML = "No Data Found.";
+                HideBarExcle2();
+            }
+            else {
+
+                setupTableExportButton('#attendance_table', 'ConsolidatedAttendance');
+                $('#export_wait2').show();
+                HideBarExcle2();
+
+            }
+        }
+        function HideMessage() { setTimeout(function () { $('#export_wait').hide(); document.getElementById("btn-excel-download").disabled = false; }, 5000); }
+        function HideBarExcle2() { setTimeout(function () { $('#export_wait2').hide(); document.getElementById("demo").innerHTML = ""; }, 1500); }
+
+
+
+        function searchReport() {
+
+
+            // get the entered string
+            var toSearch = $('attendance_table_filter input').val();
+
+            $('#attendance_table').DataTable().search(toSearch);
+            $('#attendance_table').DataTable().draw();
+
+
+        }
+        function clearr() {
+            $('input[type="search"]').focus();
+            $('input[type="search"]').val("");
+            $('#attendance_table').DataTable().search("");
+            $('#attendance_table').DataTable().draw();
+            $('input[type="search"]').blur();
+
+            document.getElementById("btn-excel-download").disabled = false;
+            $('#export_wait').hide();
+            $('#export_wait2').hide();
+            document.getElementById("demo").innerHTML = "";
+
+        }
+
+
+        function initReportDataTable(identifier, url, columns) {
+            var oTable = $(identifier).DataTable({
+                "searchDelay": 2000,
+                "scrollY": "300px",
+                "serverSide": true,
+                "ajax": {
+                    "type": "POST",
+                    "url": url,
+                    "contentType": 'application/json; charset=utf-8',
+                    'data': function (data) {
+
+                        //data.employee_id = $('#consolidated-employees').val();
+                        data.from_date = $('#from_date').val();
+                        data.to_date = $('#to_date').val();
+
+                        return data = JSON.stringify(data);
+                    }
+                },
+                "scrollX": true,
+                "scrollCollapse": true,
+                "processing": true,
+                "paging": true,
+                "deferRender": true,
+                //"ordering": false,
+                "columns": columns,
+                "order": [0, "desc"],
+                "iDisplayLength": 100,
+                "aLengthMenu": [[10, 20, 50, 100, 500], [10, 20, 50, 100, 500]],
+                "responsive": true
+
+            });
+
+            oTable.on("draw", function () {
+                var keyword = $(identifier + '_filter > label:eq(0) > input').val();
+                $(identifier).unmark();
+                $(identifier).mark(keyword, {});
+
+
+
+                $(identifier + ' tbody tr').click(function (e) {
+                    $('tr.row_selected').removeClass('row_selected');
+                    $(this).addClass('row_selected');
+                });
+            });
+
+
+            // set the z-index of the 'processing...' overlay
+            // to a great number, so that it may always display
+            // on top of the table. Also set the text color
+            // to black as it is white by default.
+            $(identifier + '_processing').css({
+                "z-index": "1000",
+                "color": "rgb(0, 0, 0)"
+            });
+
+
+            // initiate search one second after the user
+            // stops typing.
+            function setSearchDelayOnDataTable(idSelector) {
+                // remove all events from the search box
+                $(idSelector + '_filter input').off();
+
+
+                function customDataTableSearch() {
+
+                    // get the entered string
+                    var toSearch = $(idSelector + '_filter input').val();
+
+                    // do nothing if the string is null.
+                    // I've not tested this, it is just
+                    // in case.
+                    if (toSearch == null) {
+                        return;
+                    }
+
+                    // initiate search programatically.
+                    $(idSelector).DataTable().search(toSearch).draw();
+                }
+
+                // this variable holds the timer
+                var timeout;
+
+                // register a keypress on the search box
+                $(idSelector + '_filter input').keypress(function () {
+                    if (timeout != null) {
+                        clearTimeout(timeout);
+                        timeout = null;
+                    }
+
+                    // timeout set to 1 second.
+                    timeout = setTimeout(customDataTableSearch, 1000);
+                });
+
+            }
+
+            setSearchDelayOnDataTable(identifier);
+        }
+
+
+        $(document).ready(function () {
+            //$('#accordion').accordion("option", "active", 2);
+            //initDataTable("#attendance_table");
+            //setActiveLink("Consolidated Report");
+
+            $(".datepicker").datepicker({ dateFormat: 'dd-mm-yy' });
+
+            $('.hasDatepicker').keydown(function (e) {
+                var unicode = e.keyCode ? e.keyCode : e.charCode;
+                if (unicode != 13 && unicode != 8 && unicode != 9) { e.preventDefault(); }
+            });
+
+            $('.hasDatepicker').keydown(function (e) {
+                var unicode = e.keyCode ? e.keyCode : e.charCode;
+                if (unicode == 8) { e.preventDefault(); e.stopPropagation(); }
+            });
+            //$('#btnExport').button();
+
+            //setupTableExportButton('#attendance_table', 'AttendanceReport');
+            var present = 0;
+            var absent = 0;
+            var late = 0;
+            var onTime = 0;
+            var earlyGone = 0;
+
+            var check = false;
+
+
+
+            /*
+            $('#btnExport').button();
+            $("#btnExport").click(function (e) {
+                $('#attendance_table').tableExport({ type: 'excel', escape: 'false' });
+                e.preventDefault();
+            });
+            */
+
+            //
+            //$('#search-consolidated-report').button();
+            $("#search-consolidated-report").click(function (e) {
+
+                if ($('#from_date').val() == "") {
+                    alert("Please select 'From Date'");
+                    $('#from_date').focus();
+                    return false;
+                }
+
+                if ($('#to_date').val() == "") {
+                    alert("Please select 'To Date'");
+                    $('#to_date').focus();
+                    return false;
+                }
+
+                e.preventDefault();
+
+                //$('input[type="search"]').focus();
+                //$('input[type="search"]').val("");
+
+                if (validateForm()) {
+
+                    //serializeAndSend();
+                    searchReport();
+                }
+
+                //$('input[type="search"]').blur();
+
+            });
+
+
+            var url = '@Url.Action("ConsolidatedReportDataHandler", "Report", null, Request.Url.Scheme)';
+
+            var columns = [
+                  { "data": "date" },
+                   { "data": "employee_code" },
+                   { "data": "employee_first_name" },
+                   { "data": "employee_last_name" },
+                   { "data": "time_in" },
+                   //{ "data": "status_in" },
+                   { "data": "time_out" },
+                   //{ "data": "status_out" },
+                   //{ "data": "final_remarks" },
+                   //{ "data": "terminal_in" },
+                   //{ "data": "terminal_out" },
+                   { "data": "overtime" },
+                   { "data": "overtime_status" }
+            ];
+
+            @*
+                   I did this so that like initDataTables the JS
+            for serverside processing can be used for other tables.
+                NOTE: The names of the columns correspond to the View Model.
+            For example in this example the column names, first_name, last_name
+            etc are taken from ViewModels.Employee
+        *@
+
+            initReportDataTable('#attendance_table', url, columns);
+
+            // ---------------------------- IR ----------------------------
+
+            //download excel
+            $("#btn-excel-download").click(function (e) {
+
+                if ($('#from_date').val() == "") {
+                    alert("Please select 'From Date'");
+                    $('#from_date').focus();
+                    return false;
+                }
+
+                if ($('#to_date').val() == "") {
+                    alert("Please select 'To Date'");
+                    $('#to_date').focus();
+                    return false;
+                }
+
+                //alert($('#export_wait').html());
+
+                if ($('#export_wait').html() == "No Data Found.") {
+                    $('#export_wait').html("<img src='/images/loader.gif' style='width: 110px; margin-left:34%;' alt='processing'>");
+                }
+
+                $('#export_wait').show();
+
+                var post_data = {
+                    //"employee_id": "TYPE_EMP", //$('#employee_id').val(),
+                    "from_date": $('#from_date').val(),
+                    "to_date": $('#to_date').val()
+                };
+
+                $("#btn-excel-download").attr("disabled", "disabled");
+
+                $.ajax({
+                    cache: false,
+                    type: 'post',
+                    url: '/EMP/Report/ConsolidatedReportOvertimeExcelDownload',
+                    data: post_data,
+                    //contentType: 'application/json;charset=utf-8',
+                    dataType: 'json',
+                    success: function (data) {
+
+                        if (data.FileGuid != "" & data.FileName != "") {
+
+                            $('#export_wait').hide();
+                            $("#btn-excel-download").removeAttr("disabled");
+
+                            //console.log('export done successfully InShaAllah!!!');
+                            //var response = JSON.stringify(data);
+                            //alert(data.FileGuid + ' >> ' + data.FileName);
+
+                            window.location = '/EMP/Report/Download?fileGuid=' + data.FileGuid + '&fileName=' + data.FileName;
+                        }
+                        else {
+                            $('#export_wait').html("No Data Found.");
+                        }
+                    },
+                    error: function (jq) {
+                        console.log('Error: ' + jq.responseText);
+                    }
+
+                });
+                //  serializeAndSend();
+                e.preventDefault();
+            });
+
+            // ------------------------------------------------------------
+
+        });
+
+
+
+        function validateForm() {
+            fDate = $('#attendance-form').find('[name*="time_in_from"]').val().split("-").reverse();
+            tDate = $('#attendance-form').find('[name*="time_in_to"]').val().split("-").reverse();
+
+            fDate = new Date(fDate[0] + "-" + fDate[1] + "-" + fDate[2]);
+            tDate = new Date(tDate[0] + "-" + tDate[1] + "-" + tDate[2]);
+
+
+            if (tDate < fDate) {
+                alert("To Date should be greater than From Date.");
+                return false;
+            }
+
+            /*var r = confirm("Are you sure you want to Reprocess?");
+            if (r == false) {
+                return false;
+            }*/
+
+            return true;
+        }
+
+    </script>
+}

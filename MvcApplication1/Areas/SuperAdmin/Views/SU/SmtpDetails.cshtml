@@ -1,0 +1,355 @@
+﻿@{
+    ViewBag.Title = "TRMS - Config Page";
+    Layout = "~/Areas/SuperAdmin/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">Welcome <span class="text-danger">'SuperAdmin'</span>! [Login ID: <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & Name: <span class="text-success">@User.Identity.Name</span>]</h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/SuperAdmin">Super Admin</a></li>
+                    <li class="breadcrumb-item active">SET Info - Update</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="mdi mdi-account-box"></i> SET Info - Update </h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    @using (Html.BeginForm("SmtpDetails", "SU", FormMethod.Post, new { id = "manual_att_stride" }))
+                    {
+                        <div class="row">
+
+                            <div class="col-6">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h4 class="control-label text-primary">Email Configuration</h4>
+                                    </div>
+                                </div>
+
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        &nbsp;
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label class="control-label">Set SMTP Host</label>
+                                        <input type="text" class="form-control" id="smtp_host" name="smtp_host" value="@ViewBag.SmtpHost" required>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-md-12">
+                                        <label class="control-label">Set SMTP Port</label>
+                                        <input type="number" class="form-control" id="smtp_port" name="smtp_port" value="@ViewBag.SmtpPort" required>
+                                    </div>
+
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-md-12">
+                                        <label class="control-label">Set SMTP Email (email or 'na')</label>
+                                        <input type="text" class="form-control" id="smtp_email" name="smtp_email" value="@ViewBag.SmtpEmail" required>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-md-12">
+                                        <label class="control-label">Set SMTP Password</label>
+                                        <input type="password" class="form-control" id="smtp_password" name="smtp_password" value="@ViewBag.SmtpPassword" required>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-md-12">
+                                        <label class="control-label">Test Email (email or 'na')</label>
+                                        <input type="text" class="form-control" id="test_email" name="test_email" value="@ViewBag.SmtpTestEmail" required>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-md-12">
+                                        <label class="control-label">Set CC Email (email or 'na')</label>
+                                        <input type="text" class="form-control" id="cc_email" name="cc_email" value="@ViewBag.SmtpCCEmail" required>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-md-12">
+                                        <label class="control-label">Set BCC Email (email or 'na')</label>
+                                        <input type="text" class="form-control" id="bcc_email" name="bcc_email" value="@ViewBag.SmtpBCCEmail" required>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-md-12">
+                                        <label class="control-label">Set Email Delay (in Minutes)</label>
+                                        <input type="number" class="form-control" id="smtp_email_delay" name="smtp_email_delay" value="@ViewBag.SmtpEmailDelay" required>
+                                    </div>
+                                </div>
+
+
+                                <div class="row m-t-10">
+                                    <div class="col-md-12">
+                                        <label class="control-label">Enable SSL (0 or 1)</label>
+                                        <input type="number" class="form-control" id="enable_ssl" name="enable_ssl" value="@ViewBag.EnableSSL" required>
+                                    </div>
+                                </div>
+
+                                @*<div class="row">
+                                        <div class="col-12">
+                                            <h4 class="control-label text-primary">Titles to Set for Leave Types</h4>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="row">
+                                        <div class="col-12">
+                                            &nbsp;
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <label class="control-label">Title of Leave Type 01 <span class="text-danger">(Sick / Medical)</span></label>
+                                            <input type="text" class="form-control" id="title_leave_01" name="title_leave_01" value="@ViewBag.TitleLeave01" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="row m-t-10">
+                                        <div class="col-md-12">
+                                            <label class="control-label">Title of Leave Type 02 <span class="text-danger">(Casual / General)</span></label>
+                                            <input type="text" class="form-control" id="title_leave_02" name="title_leave_02" value="@ViewBag.TitleLeave02" required>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="row m-t-10">
+                                        <div class="col-md-12">
+                                            <label class="control-label">Title of Leave Type 03 <span class="text-danger">(Annual / Yearly)</span></label>
+                                            <input type="text" class="form-control" id="title_leave_03" name="title_leave_03" value="@ViewBag.TitleLeave03" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="row m-t-10">
+                                        <div class="col-md-12">
+                                            <label class="control-label">Title of Leave Type 04 <span class="text-danger">(Other / Miscellenous)</span></label>
+                                            <input type="text" class="form-control" id="title_leave_04" name="title_leave_04" value="@ViewBag.TitleLeave04" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="row m-t-10">
+                                        <div class="col-md-12">
+                                            <label class="control-label">Title of Leave Type 05</label>
+                                            <input type="text" class="form-control" id="title_leave_05" name="title_leave_05" value="@ViewBag.TitleLeave05" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="row m-t-10">
+                                        <div class="col-md-12">
+                                            <label class="control-label">Title of Leave Type 06</label>
+                                            <input type="text" class="form-control" id="title_leave_06" name="title_leave_06" value="@ViewBag.TitleLeave06" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="row m-t-10">
+                                        <div class="col-md-12">
+                                            <label class="control-label">Title of Leave Type 07</label>
+                                            <input type="text" class="form-control" id="title_leave_07" name="title_leave_07" value="@ViewBag.TitleLeave07" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="row m-t-10">
+                                        <div class="col-md-12">
+                                            <label class="control-label">Title of Leave Type 08</label>
+                                            <input type="text" class="form-control" id="title_leave_08" name="title_leave_08" value="@ViewBag.TitleLeave08" required>
+                                        </div>
+                                    </div>*@
+
+
+                            </div>
+
+                            <div class="col-6">
+
+                                <div class="row m-t-20">
+                                    <div class="col-12">
+                                        <h4 class="control-label text-primary">Forgot Password</h4>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-md-12">
+                                        <label class="control-label">Access to Forgot Password Page (1 or 0)</label>
+                                        <input type="number" class="form-control" id="forgot_password_link" name="forgot_password_link" value="@ViewBag.ForgotPasswordLink" required>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-md-12">
+                                        <label class="control-label">Validate Internet Connection (0 or 1)</label>
+                                        <input type="number" class="form-control" id="validate_internet_connection" name="validate_internet_connection" value="@ViewBag.ValidateInternetConnection" required>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-20">
+                                    <div class="col-12">
+                                        <h4 class="control-label text-primary">Super Admin</h4>
+                                    </div>
+                                </div>
+
+
+                                <div class="row m-t-10">
+                                    <div class="col-md-12">
+                                        <label class="control-label">Set Employee Code (default: 000000)</label>
+                                        <input type="text" class="form-control" id="super_admin_code" name="super_admin_code" value="@ViewBag.SuperAdminCode" required>
+                                    </div>
+                                </div>
+
+
+
+
+                                <div class="row m-t-20">
+                                    <div class="col-12">
+                                        <h4 class="control-label text-primary">License Key</h4>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-md-12">
+                                        <label class="control-label">Access Validation</label>
+                                        <input type="text" class="form-control" id="access_validation" name="access_validation" value="@ViewBag.AccessValidation" required>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-20">
+                                    <div class="col-12">
+                                        <h4 class="control-label text-primary">Student Lectures - Flexi Minutes</h4>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-md-12">
+                                        <label class="control-label">Minimum - Flexi Minutes (must 15-20 min)</label>
+                                        <input type="text" class="form-control" id="min_flexi_minutes" name="min_flexi_minutes" value="@ViewBag.MinFlexiMinutes" required>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-md-12">
+                                        <label class="control-label">Maximum - Flexi Minutes (must 21-25 min)</label>
+                                        <input type="text" class="form-control" id="max_flexi_minutes" name="max_flexi_minutes" value="@ViewBag.MaxFlexiMinutes" required>
+                                    </div>
+                                </div>
+
+
+
+
+
+
+                            </div>
+
+
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-10 text-danger">
+                                @Html.AntiForgeryToken()
+                                @Html.ValidationSummary()
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary waves-effect waves-light">Update Info</button>&nbsp;@Html.Raw(ViewBag.Message01)
+                            </div>
+                        </div>
+                    }
+
+                    <br />
+                    <br />
+                    <br />
+                    <hr>
+
+                    <div class="form-group row">
+                        <div class="col-12">
+                            <h4 style="font-weight: bold;">SMTP - Send Test Email using above Info</h4>
+                        </div>
+                    </div>
+
+                    @using (Html.BeginForm("SmtpSendTestEmail", "SU", FormMethod.Post, new { id = "smtp_send_email" }))
+                    {
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary waves-effect waves-light">Send Test Email</button>&nbsp;@Html.Raw(ViewBag.MessageEmail)
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End content -->
+
+
+    @section JS {
+        @Scripts.Render("~/bundles/jqueryval")
+        <script>
+
+
+            $(document).ready(function () {
+                //$('#accordion').accordion("option", "active", 0);
+
+                $('.datepicker').datepicker({ dateFormat: 'dd-mm-yy' });
+
+                //$("input[type=submit], button").button();
+
+                //setActiveLink("SMTP Info & Test Email");
+
+                $('#manual_att_stride').on("submit", function () {
+
+                    return true;
+
+                });
+
+            });
+
+
+
+        </script>
+    }
+
+
+
+
+
+
+
+
+
+

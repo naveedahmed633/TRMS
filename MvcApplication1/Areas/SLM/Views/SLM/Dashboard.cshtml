@@ -1,0 +1,348 @@
+﻿@{
+    ViewBag.Title = "TRMS - My Dashboard";
+    Layout = "~/Areas/SLM/Views/Shared/_Layout.cshtml";
+}
+
+@model ViewModels.DashboardManager
+
+    <!-- Start content -->
+    <div class="container-fluid">
+        <!-- Page-Title -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="page-title-box">
+                    <h4 class="page-title">Welcome <span class="text-danger">'SLM'</span>! [Login ID: <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & Name: <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span>]</h4>
+                    <ol class="breadcrumb float-right">
+                        <li class="breadcrumb-item"><a href="/SLM/SLM/Dashboard">SLM</a></li>
+                        <li class="breadcrumb-item active">My Dashboard</li>
+                    </ol>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page-Content -->
+        <div class="row">
+            <div class="col-12">
+                <div class="">
+                    <!-- <div class="panel-heading">
+                        <h4>Invoice</h4>
+                    </div> -->
+                    <div class="panel-body">
+                        <div class="clearfix">
+                            <div class="pull-left">
+                                <h3 class="text-right"><i class="mdi mdi-account-box"></i>My Dashboard</h3>
+                            </div>
+                            <div class="pull-right small text-muted">
+                                @DateTime.Now.ToString("f")
+                            </div>
+                        </div>
+
+                        <hr>
+                        
+                        @{
+                            //ViewBag.CounterPercent = "P=" + perPresent + ",L=" + perLeave + ",A=" + perAbsent + ",O=" + perOnTime + ",T=" + perLate + ",E=" + perEarlyGone;
+
+                            string perPresent = "0", perLeave = "0", perAbsent = "0", perOnTime = "0", perLate = "0", perEarlyGone = "0";
+
+                            if (ViewBag.CounterPercent != null && ViewBag.CounterPercent != "")
+                            {
+                                string strCounterPercent = ViewBag.CounterPercent.ToString();
+                                string[] strMain = strCounterPercent.Split(',');
+
+                                if (strMain.Length == 6)
+                                {
+                                    string[] strInner0 = strMain[0].Split('=');
+                                    string[] strInner1 = strMain[1].Split('=');
+                                    string[] strInner2 = strMain[2].Split('=');
+                                    string[] strInner3 = strMain[3].Split('=');
+                                    string[] strInner4 = strMain[4].Split('=');
+                                    string[] strInner5 = strMain[5].Split('=');
+
+                                    perPresent = strInner0[1].ToString();
+                                    perLeave = strInner1[1].ToString();
+                                    perAbsent = strInner2[1].ToString();
+                                    perOnTime = strInner3[1].ToString();
+                                    perLate = strInner4[1].ToString();
+                                    perEarlyGone = strInner5[1].ToString();
+                                }
+                            }
+                        }
+                        <div class="row">
+                            <div class="col-lg-4 col-md-4">
+                                <div class="widget-simple-chart text-right card-box">
+                                    <div class="circliful-chart" data-dimension="90" data-text="@perPresent%" data-width="5" data-fontsize="14" data-percent="@perPresent" data-fgcolor="#00b19d" data-bgcolor="#ebeff2"></div>
+                                    <h3 class="text-success m-t-10" title="@Model.lineManager.dashboardElement.present">Present</h3>
+                                    <p class="text-muted m-b-10">in @DateTime.Now.ToString("MMM yyyy")</p>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4">
+                                <div class="widget-simple-chart text-right card-box">
+                                    <div class="circliful-chart" data-dimension="90" data-text="@perLeave%" data-width="5" data-fontsize="14" data-percent="@perLeave" data-fgcolor="#6f42c1" data-bgcolor="#ebeff2"></div>
+                                    <h3 class="text-purple m-t-10" title="@Model.lineManager.dashboardElement.leave">Leave</h3>
+                                    <p class="text-muted m-b-10">in @DateTime.Now.ToString("MMM yyyy")</p>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4">
+                                <div class="widget-simple-chart text-right card-box">
+                                    <div class="circliful-chart" data-dimension="90" data-text="@perAbsent%" data-width="5" data-fontsize="14" data-percent="@perAbsent" data-fgcolor="#ef5350" data-bgcolor="#ebeff2"></div>
+                                    <h3 class="text-danger m-t-10" title="@Model.lineManager.dashboardElement.absent">Absent</h3>
+                                    <p class="text-muted m-b-10">in @DateTime.Now.ToString("MMM yyyy")</p>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!-- end row -->
+
+                        <div class="row">
+
+                            <div class="col-lg-4 col-md-4">
+                                <div class="widget-simple-chart text-right card-box">
+                                    <div class="circliful-chart" data-dimension="90" data-text="@perOnTime%" data-width="5" data-fontsize="14" data-percent="@perOnTime" data-fgcolor="#039cfd" data-bgcolor="#ebeff2"></div>
+                                    <h3 class="text-primary m-t-10" title="@Model.lineManager.dashboardElement.onTime">On Time</h3>
+                                    <p class="text-muted m-b-10">in @DateTime.Now.ToString("MMM yyyy")</p>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4">
+                                <div class="widget-simple-chart text-right card-box">
+                                    <div class="circliful-chart" data-dimension="90" data-text="@perLate%" data-width="5" data-fontsize="14" data-percent="@perLate" data-fgcolor="#f1b53d" data-bgcolor="#ebeff2"></div>
+                                    <h3 class="text-warning m-t-10" title="@Model.lineManager.dashboardElement.late">Late</h3>
+                                    <p class="text-muted m-b-10">in @DateTime.Now.ToString("MMM yyyy")</p>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4">
+                                <div class="widget-simple-chart text-right card-box">
+                                    <div class="circliful-chart" data-dimension="90" data-text="@perEarlyGone%" data-width="5" data-fontsize="14" data-percent="@perEarlyGone" data-fgcolor="#e83e8c" data-bgcolor="#ebeff2"></div>
+                                    <h3 class="text-pink m-t-10" title="@Model.lineManager.dashboardElement.earlyGone">Early Out</h3>
+                                    <p class="text-muted m-b-10">in @DateTime.Now.ToString("MMM yyyy")</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end row -->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="p-t-10">
+                    <h3><i class="mdi mdi-account-box"></i>Attendance Graphical View</h3>
+                </div>
+
+                <hr />
+
+                <div class="row">
+
+                    <div class="col-md-1">
+                    </div>
+
+                    <div class="col-md-5">
+                        <div class="card-box">
+
+                            <h4 class="m-t-0 header-title">Presence in @DateTime.Now.ToString("MMM yyyy")</h4>
+
+                            <div id="chartPresence">
+                                <svg style="height:350px;width:100%"></svg>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+
+                    <div class="col-md-5">
+                        <div class="card-box">
+
+                            <h4 class="m-t-0 header-title">Punctuality in @DateTime.Now.ToString("MMM yyyy")</h4>
+
+                            <div id="chartPunctuality">
+                                <svg style="height:350px;width:100%"></svg>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-1">
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+    <!-- End content -->
+
+
+    @section JS {
+
+        <script>
+
+            function loadChart(a, b, c, d, e, f) {
+
+                (function ($) {
+                    'use strict';
+
+                    //Donut chart2
+                    nv.addGraph(function () {
+                        var chart = nv.models.pieChart()
+                            .x(function (d) { return d.label })
+                            .y(function (d) { return d.value })
+                            .showLabels(true)     //Display pie labels
+                            .labelThreshold(.05)  //Configure the minimum slice size for labels to show up
+                            .labelType("percent") //Configure what type of data to show in the label. Can be "key", "value" or "percent"
+                            .donut(true)          //Turn on Donut mode. Makes pie chart look tasty!
+                            .donutRatio(0.35)     //Configure how big you want the donut hole size to be.
+
+                        ;
+
+                        d3.select("#chartPunctuality svg")
+                            .datum(PunctualityChartData())
+                            .transition().duration(350)
+                            .call(chart);
+
+                        return chart;
+                    });
+                    //Donut chart3
+                    nv.addGraph(function () {
+                        var chart = nv.models.pieChart()
+                            .x(function (d) { return d.label })
+                            .y(function (d) { return d.value })
+                            .showLabels(true)     //Display pie labels
+                            .labelThreshold(.05)  //Configure the minimum slice size for labels to show up
+                            .labelType("percent") //Configure what type of data to show in the label. Can be "key", "value" or "percent"
+                            .donut(true)          //Turn on Donut mode. Makes pie chart look tasty!
+                            .donutRatio(0.35)     //Configure how big you want the donut hole size to be.
+
+                        ;
+
+                        d3.select("#chartPresence svg")
+                            .datum(PresenceChartData())
+                            .transition().duration(350)
+                            .call(chart);
+
+                        return chart;
+                    });
+
+                    //Pie chart data
+                    function PunctualityChartData() {
+                        return [
+                            {
+                                "label": "On Time",
+                                "value": d,
+                                "color": "#007bff"
+                            },
+                            {
+                                "label": "Late",
+                                "value": e,
+                                'color': '#ffaa00'
+                            },
+                            {
+                                "label": "Early Out",
+                                "value": f,
+                                'color': '#f76397'
+                            }
+
+
+                        ];
+                    }
+                    function PresenceChartData() {
+                        return [
+                            {
+                                "label": "Present",
+                                "value": a,
+                                "color": "#00b19d"
+                            },
+                            {
+                                "label": "Leave",
+                                "value": b,
+                                'color': '#7266ba'
+                            },
+                            {
+                                "label": "Absent",
+                                "value": c,
+                                'color': '#ef5350'
+                            }
+
+
+                        ];
+                    }
+                })(jQuery);
+
+
+
+
+            }
+
+            $(document).ready(function () {
+                loadChart(0, 0, 0, 0, 0, 0, 0);
+            });
+
+
+
+
+
+        </script>
+
+        <!-- Counter Up  -->
+        <script src="/plugins/waypoints/lib/jquery.waypoints.min.js"></script>
+        <script src="/plugins/counterup/jquery.counterup.min.js"></script>
+
+        <!-- Sparkline -->
+        <script src="/plugins/jquery-sparkline/jquery.sparkline.min.js"></script>
+
+        <!-- Circliful -->
+        <script src="/plugins/jquery-circliful/js/jquery.circliful.min.js"></script>
+
+        <script type="text/javascript">
+            jQuery(document).ready(function ($) {
+                $('.counter').counterUp({
+                    delay: 100,
+                    time: 1200
+                });
+                $('.circliful-chart').circliful();
+
+
+                //donuts
+                var data = "@ViewBag.CounterPercent.ToString()";
+                console.log("1: " + data);
+                if (data.length > 0) {
+                    var strMain = data.split(',');
+
+                    var strInner0 = strMain[0].split('=');
+                    var strInner1 = strMain[1].split('=');
+                    var strInner2 = strMain[2].split('=');
+                    var strInner3 = strMain[3].split('=');
+                    var strInner4 = strMain[4].split('=');
+                    var strInner5 = strMain[5].split('=');
+
+                    var present = strInner0[1];
+                    var leave = strInner1[1];
+                    var absent = strInner2[1];
+                    var ontime = strInner3[1];
+                    var late = strInner4[1];
+                    var early = strInner5[1];
+                    console.log("2: " + present + " : " + leave + " : " + absent + " : " + ontime + " : " + late + " : " + early);
+
+                    //loadChart(20, 30, 50, 10, 90);
+                    loadChart(present, leave, absent, ontime, late, early);
+                }
+
+
+            });
+
+
+
+        </script>
+
+    }
+

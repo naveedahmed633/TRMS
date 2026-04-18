@@ -1,0 +1,109 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="A fully featured biometric attendance managment system having various modules to manage like users, departments, designations, functions, regions, locations, grups and grades. View reports include Monthly timesheet, Consolidated Attendance and Department wise reports.">
+    <meta name="author" content="Coderthemes">
+
+    <link rel="shortcut icon" href="/images/favicon.png">
+
+    <title>TRMS - Time Resource Management System</title>
+
+    <link href="@Href("~/plugins/switchery/switchery.min.css")" rel="stylesheet" />
+
+    <link href="@Href("~/css/bootstrap.min.css")" rel="stylesheet" type="text/css">
+    <link href="@Href("~/css/icons.css")" rel="stylesheet" type="text/css">
+    <link href="@Href("~/css/style_dark.css")" rel="stylesheet" type="text/css">
+
+    <script src="@Url.Content("/js/modernizr.min.js")"></script>
+
+</head>
+<body>
+
+    @RenderBody()
+
+    <script>
+        var resizefunc = [];
+    </script>
+
+    <!-- Plugins  -->
+    <script src="@Url.Content("/js/jquery.min.js")"></script>
+    <script src="@Url.Content("/js/popper.min.js")"></script><!-- Popper for Bootstrap -->
+    <script src="@Url.Content("/js/bootstrap.min.js")"></script>
+    <script src="@Url.Content("/js/detect.js")"></script>
+    <script src="@Url.Content("/js/fastclick.js")"></script>
+    <script src="@Url.Content("/js/jquery.slimscroll.js")"></script>
+    <script src="@Url.Content("/js/jquery.blockUI.js")"></script>
+    <script src="@Url.Content("/js/waves.js")"></script>
+    <script src="@Url.Content("/js/wow.min.js")"></script>
+    <script src="@Url.Content("/js/jquery.nicescroll.js")"></script>
+    <script src="@Url.Content("/js/jquery.scrollTo.min.js")"></script>
+    <script src="@Url.Content("/plugins/switchery/switchery.min.js")"></script>
+
+    <!-- Custom main Js -->
+    <script src="@Url.Content("/js/jquery.core.js")"></script>
+    <script src="@Url.Content("/js/jquery.app.js")"></script>
+
+    @RenderSection("JS", required: false)
+
+</body>
+</html>
+
+
+
+@*<!DOCTYPE html>
+<html lang="us">
+
+<head>
+    <meta charset="utf-8">
+    <title>Time Tune</title>
+
+
+    <!-- Section CSS -->
+
+    <link href="@Href("~/Content/ui-darkness/jquery-ui-1.9.2.custom.css")" rel="stylesheet"> <!-- JQuery UI theme -->
+    <link href="@Href("~/Content/bootstrap.min.css")" rel="stylesheet">  <!-- Bootstrap -->
+    <link href="@Href("~/Content/bootstrap-year-calendar.min.css")" rel="stylesheet"> <!-- bootstrap for calendar -->
+    <link href="@Href("~/Content/datatables.min.css")" rel="stylesheet" /> <!-- CSS for DataTables -->
+    <link href="@Href("~/Content/timepicki.css")" rel="stylesheet" /> <!-- CSS for TimePicker -->
+
+    <link href="@Href("~/Content/chosen.css")" rel="stylesheet" /> <!-- CSS for Chosen -->
+    <link href="@Href("~/Content/Site.css")" rel="stylesheet"> <!-- custom Stylesheet -->
+
+</head>
+
+<body>
+
+    @RenderBody()
+
+
+    @{// SECTION for Javascript
+// Keeping JS as the end of the page decreases apparent load time.
+    }
+    <script src="@Url.Content("/Scripts/jquery-1.10.2.min.js")" type="text/javascript"></script> <!-- Jquery -->
+
+
+
+    <script src="@Url.Content("/Scripts/bootstrap-year-calendar.min.js")" type="text/javascript"></script> <!-- Jquery for bootstrap calendar -->
+
+    <script src="@Url.Content("/Scripts/bootstrap.min.js")" type="text/javascript"></script> <!-- Bootstrap JavaScript-->
+    <script src="@Url.Content("/Scripts/jquery-ui-1.9.2.custom.js")" type="text/javascript"></script> <!-- Jquery UI Theme -->
+    <script src="@Url.Content("/Scripts/datatables.min.js")" type="text/javascript"></script> <!-- DataTables JS -->
+    <script src="@Url.Content("/Scripts/mark.min.js")" type="text/javascript"></script> <!-- JS for marking text -->
+    <script src="@Url.Content("/Scripts/modal.js")" type="text/javascript"></script> <!-- JS for modal making -->
+    <script src="@Url.Content("/Scripts/timepicki.js")" type="text/javascript"></script> <!-- TimePicker JavaScript -->
+    <script src="@Url.Content("/Scripts/chosen.jquery.js")" type="text/javascript"></script> <!-- Chosen JavaScript -->
+    <script src="@Url.Content("/Scripts/custom.js")" type="text/javascript"></script> <!-- custom JavaScript -->
+
+    @RenderSection("JS", required: false)
+
+
+    <div id="modals">
+
+    </div>
+
+    <div id="toast" class="toast-message" style='display:none'>Message!</div>
+</body>
+
+</html>*@

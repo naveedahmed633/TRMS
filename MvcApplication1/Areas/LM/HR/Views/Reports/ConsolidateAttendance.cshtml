@@ -1,0 +1,489 @@
+﻿<style>
+    #myChart {
+        height: 362px;
+        width: 498px;
+    }
+</style>
+
+<h4 style="font-weight: bold;">Consolidated Attendance</h4>
+<div class="row">
+    <div id="monthly-time-sheet" class="form-group col-md-3">
+        <form id="consolidate-form">
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Employee Number</label>
+
+                    <select id="consolidated-employees" class="form-control" name="employee_id" required></select>
+                </div>
+            </div>
+
+
+            @*<div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Month</label>
+
+                    <input id="consolidated-month" type="text" name="month" class="form-control monthPicker" required />
+
+                </div>
+            </div>*@
+
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Date From</label>
+                    <input id="date_from" type="text" class="form-control datepicker" name="from_date" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Date To</label>
+                    <input id="date_to" type="text" class="form-control datepicker" name="to_date" required>
+                </div>
+            </div>
+
+
+            <button type="submit" id="search-consolidated-report" style="margin-top:5px">Search</button>
+        </form>
+       
+    </div>
+    @*<section>
+        <div id='myChart'><a class="zc-ref"></a></div>
+    </section>*@ 
+     
+</div>
+<div class="row">
+    <div class="col-md-12">
+
+
+
+
+        <table id="attendance_table" class="display cell-border" width="100%">
+            <thead>
+
+                <tr>
+                    <th>Date</th>
+                    <th>Employee Number</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Time In</th>
+                    <th>Remarks</th>
+                    <th>Time Out</th>
+                    <th>Remarks</th>
+                    <th>Final Remarks</th>
+                    <th>Device In</th>
+                    <th>Device Out</th>
+                </tr>
+
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button type="submit" id="btnExport" style="margin-top:5px">Export excel</button>
+    </div>
+</div>
+<br><br><br><br><br><br><br><br>
+
+@section JS {
+<script src="~/Scripts/zingchart.min.js"></script>
+    <script type="text/javascript" src="@Href("~/Scripts/chosen.ajaxaddition.jquery.js")"></script>
+    <script type="text/javascript" src="@Href("~/Scripts/monthpicker.js")"></script>
+
+    <script type="text/javascript">
+
+
+
+        function searchReport() {
+
+
+            // get the entered string
+            var toSearch = $('attendance_table_filter input').val();
+
+            $('#attendance_table').DataTable().search(toSearch);
+            $('#attendance_table').DataTable().draw();
+
+
+        }
+
+        function initReportDataTable(identifier, url, columns) {
+            var oTable = $(identifier).DataTable({
+                "searchDelay": 2000,
+                "scrollY": "300px",
+                "serverSide": true,
+                "ajax": {
+                    "type": "POST",
+                    "url": url,
+                    "contentType": 'application/json; charset=utf-8',
+                    'data': function (data) {
+
+                        data.employee_id = $('#consolidated-employees').val();
+                        data.from_date = $('#date_from').val();
+                        data.to_date = $('#date_to').val();
+
+
+                        return data = JSON.stringify(data);
+                    }
+                },
+                "scrollX": true,
+                "scrollCollapse": true,
+                "processing": true,
+                "paging": true,
+                "deferRender": true,
+                "columns": columns,
+                "order": [0, "desc"],
+
+                "iDisplayLength": 500,
+                "aLengthMenu": [[10, 25, 50, 100, 500, 1000, 1500], [10, 25, 50, 100, 500, 1000, 1500]]
+
+            });
+
+            oTable.on("draw", function () {
+                var keyword = $(identifier + '_filter > label:eq(0) > input').val();
+                $(identifier).unmark();
+                $(identifier).mark(keyword, {});
+
+
+
+                $(identifier + ' tbody tr').click(function (e) {
+                    $('tr.row_selected').removeClass('row_selected');
+                    $(this).addClass('row_selected');
+                });
+            });
+
+
+            // set the z-index of the 'processing...' overlay
+            // to a great number, so that it may always display
+            // on top of the table. Also set the text color
+            // to black as it is white by default.
+            $(identifier + '_processing').css({
+                "z-index": "1000",
+                "color": "rgb(0, 0, 0)"
+            });
+
+
+            // initiate search one second after the user
+            // stops typing.
+            function setSearchDelayOnDataTable(idSelector) {
+                // remove all events from the search box
+                $(idSelector + '_filter input').off();
+
+
+                function customDataTableSearch() {
+
+                    // get the entered string
+                    var toSearch = $(idSelector + '_filter input').val();
+
+                    // do nothing if the string is null.
+                    // I've not tested this, it is just
+                    // in case.
+                    if (toSearch == null) {
+                        return;
+                    }
+
+                    // initiate search programatically.
+                    $(idSelector).DataTable().search(toSearch).draw();
+                }
+
+                // this variable holds the timer
+                var timeout;
+
+                // register a keypress on the search box
+                $(idSelector + '_filter input').keypress(function () {
+                    if (timeout != null) {
+                        clearTimeout(timeout);
+                        timeout = null;
+                    }
+
+                    // timeout set to 1 second.
+                    timeout = setTimeout(customDataTableSearch, 1000);
+                });
+
+            }
+
+            setSearchDelayOnDataTable(identifier);
+        }
+
+        function submitcheck() {
+
+            fDate = $('#consolidate-form').find('[name*="from_date"]').val().split("-").reverse();
+            tDate = $('#consolidate-form').find('[name*="to_date"]').val().split("-").reverse();
+
+            fDate = new Date(fDate[0] + "-" + fDate[1] + "-" + fDate[2]);
+            tDate = new Date(tDate[0] + "-" + tDate[1] + "-" + tDate[2]);
+
+
+            if (tDate < fDate) {
+                alert("To Date should be greater than From Date.");
+                return false;
+            }
+
+            searchReport();
+            return true;
+
+        }
+
+        $(document).ready(function () {
+            $('#accordion').accordion("option", "active", 5);
+
+            $(".datepicker").datepicker({ dateFormat: 'dd-mm-yy' });
+
+            setActiveLink("View Consolidated Report");
+            var present = 0;
+            var absent = 0;
+            var late = 0;
+            var onTime = 0;
+            var earlyGone = 0;
+        //    serializeAndSend();
+            //function serializeAndSend() {
+            //    var obj = {
+            //        employee_id: $('#consolidated-employees').val(),
+            //        from_date: $('#date_from').val(),
+            //        to_date: $('#date_to').val()
+            //    };
+            //    $.ajax({
+            //        url: "graphForConsolidated",
+            //        type: 'POST',
+            //        contentType: 'application/json',
+            //        data: JSON.stringify(obj),
+            //        success: function (data) {
+            //            present = data.dashboardElement.present;
+            //            absent = data.dashboardElement.absent;
+            //            late = data.dashboardElement.late;
+            //            onTime = data.dashboardElement.onTime;
+            //            earlyGone = data.dashboardElement.earlyGone;
+            //            console.log(present + " " + absent + " " + late + " " + earlyGone + " " + onTime);
+            //            loadGraph(present, absent, late, earlyGone, onTime);
+            //        }
+            //    });
+
+            //};
+            var check = false;
+            //function loadGraph(pre, ab, la, eg, ot) {
+            //    console.log(pre + " " + ab + " " + la + " " + eg + " " + ot);
+            //    var originalConfig = {
+            //        "type": "ring",
+            //        "backgroundColor": "#c8c8c8",
+            //        "title": {
+            //            "text": "My Attendance"
+            //        },
+            //        "plot": {
+            //            "detach": false,
+            //            "cursor": "hande",
+            //            "shadow": 8,
+            //            "value-box": {
+            //                "placement": "out"
+            //            }
+            //        },
+            //        "tooltip": {
+            //            "text": "%t: %v (%npv%)",
+            //            "border-radius": 10,
+            //            "font-size": "20px"
+            //        },
+
+            //        "series": [
+            //            {
+            //                "values": [pre],
+            //                "background-color": "#009688",
+            //                "text": "Present",
+            //                "data-id": "vt",
+            //                "font-size": "20px"
+            //            },
+            //            {
+            //                "values": [ab],
+            //                "background-color": "red",
+            //                "text": "Absent",
+            //                "data-id": "sp"
+            //            }
+
+            //        ],
+            //        "shapes": [
+            //           {
+            //               'x': 25,
+            //               'y': 20,
+            //               'size': 10,
+            //               'angle': -90,
+            //               'type': 'triangle',
+            //               'background-color': '#077B65',
+            //               'padding': 5,
+            //               'cursor': 'hand',
+            //               'id': 'backwards',
+            //               'hover-state': {
+            //                   'border-width': 1,
+            //                   'border-color': '#000'
+            //               }
+            //           }
+            //        ]
+            //    }
+
+            //    zingchart.render({
+            //        id: 'myChart',
+            //        data: originalConfig,
+            //        height: 350,
+            //        width: 400
+            //    });
+
+
+
+            //    /**
+            //     * Create associative array to manage drilldown config
+            //     */
+            //    var drilldownDataStructure = [];
+            //    drilldownDataStructure["vt"] = {
+            //        "series": [
+            //          {
+            //              "values": [ot],
+            //              "text": "On Time",
+            //              "background-color": "blue"
+            //          },
+            //          {
+            //              "values": [la],
+            //              "text": "Late",
+            //              "background-color": "#F79E53"
+            //          }
+            //        ]
+            //    };
+            //    drilldownDataStructure["ss"] = {
+            //        "series": [
+            //          {
+            //              "values": [15],
+            //              "background-color": "#26A69A"
+            //          },
+            //          {
+            //              "values": [5],
+            //              "background-color": "#80CBC4"
+            //          },
+            //          {
+            //              "values": [35],
+            //              "background-color": "#00695C"
+            //          },
+            //          {
+            //              "values": [20],
+            //              "background-color": "#00897B"
+            //          }
+            //        ]
+            //    };
+
+
+
+            //    /*
+            //    * Built in zingchart API event used to capture node click events.
+            //    * Starting from this scope you will handle drilldown functionality.
+            //    */
+            //    zingchart.bind("myChart", "node_click", function (p) {
+            //        var plotIndex = p.plotindex;
+            //        var scaleText = p.scaletext;
+
+            //        // You could use this data to help construct drilldown graphs check it out...
+            //        console.log(p);
+            //        if (drilldownDataStructure[p['data-id']]) {
+            //            zingchart.exec('myChart', 'setseriesdata', {
+            //                data: drilldownDataStructure[p['data-id']]['series']
+            //            });
+            //        }
+            //    });
+
+            //    /*
+            //    * Handle history buttons. You can assign
+            //    * shapes id's and based on id you can go
+            //    * 'forward' or 'backwards'. You could
+            //    * also handle this with HTML and register
+            //    * click events to those DOM elements.
+            //    */
+            //    zingchart.bind("myChart", "shape_click", function (p) {
+            //        var shapeId = p.shapeid;
+            //        console.log(p);
+
+            //        switch (shapeId) {
+            //            case 'forwards':
+            //            case 'backwards':
+            //            case 'default':
+            //                zingchart.exec('myChart', 'destroy');
+            //                loadGraph(pre, ab, la, eg, ot);
+            //                /* zingchart.render({
+            //                     id : 'myChart',
+            //                     data : originalConfig,
+            //                     height: '100%',
+            //                     width: '100%'
+            //                 });*/
+            //                break;
+            //        }
+            //    });
+            //    // Shows label and sets it to the plotindex and nodeindex
+            //    // of the clicked node
+            //    zingchart.bind("myChart", "node_click", function (p) {
+            //        check = !check;
+            //        if (p.plotindex == 0 && check == true) {
+            //            $('#attendance_table').DataTable().search("PO");
+            //            $('#attendance_table').DataTable().draw();
+            //        }
+            //        else if (p.plotindex == 1 && check == true) {
+            //            $('#attendance_table').DataTable().search("PL");
+            //            $('#attendance_table').DataTable().draw();
+            //        }
+            //        else if (p.plotindex == 2 && check == true) {
+            //            $('#attendance_table').DataTable().search("AB");
+            //            $('#attendance_table').DataTable().draw();
+            //        }
+            //        else if (p.plotindex == 3 && check == true) {
+            //            $('#attendance_table').DataTable().search("E");
+            //            $('#attendance_table').DataTable().draw();
+            //        }
+            //        else {
+            //            $('#attendance_table').DataTable().search("");
+            //            $('#attendance_table').DataTable().draw();
+            //        }
+
+            //    });
+            //};
+
+
+            setupTableExportButton('#attendance_table', '#btnExport', 'ConsolidatedAttendance');
+
+            //
+            $('#search-consolidated-report').button();
+            $("#search-consolidated-report").click(function (e) {
+                submitcheck();
+                serializeAndSend();
+                e.preventDefault();
+                
+                
+                
+            });
+
+
+
+
+
+            var url = '@Url.Action("ConsolidatedReportDataHandler", "Reports", null, Request.Url.Scheme)';
+
+            var columns = [
+                  { "data": "date" },
+                   { "data": "employee_code" },
+                   { "data": "employee_first_name" },
+                   { "data": "employee_last_name" },
+                   { "data": "time_in" },
+                   { "data": "status_in" },
+                   { "data": "time_out" },
+                   { "data": "status_out" },
+                   { "data": "final_remarks" },
+                   { "data": "terminal_in" },
+                   { "data": "terminal_out" }
+            ];
+
+            @*
+                   I did this so that like initDataTables the JS
+            for serverside processing can be used for other tables.
+                NOTE: The names of the columns correspond to the View Model.
+            For example in this example the column names, first_name, last_name
+            etc are taken from ViewModels.Employee
+        *@
+            initReportDataTable('#attendance_table', url, columns);
+            $('#consolidated-employees').ajaxChosen({
+                dataType: 'json',
+                type: 'POST',
+                url: '@Url.Action("ChangeEmployeePasswordDataHandler", "EmployeeManagement", null, Request.Url.Scheme)'
+            }, {
+                loadingImg: '@Href("~/Content/ChosenAutoComplete/loading.gif")'
+            });
+        });
+    </script>
+}

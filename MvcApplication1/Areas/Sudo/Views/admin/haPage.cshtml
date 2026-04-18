@@ -1,0 +1,84 @@
+﻿@{
+    ViewBag.Title = "TRMS - Ha Page";
+    Layout = "~/Areas/Sudo/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">Welcome <span class="text-danger">'SUDO'</span>! [Login ID: <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & Name: <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span>]</h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/Sudo">SUDO</a></li>
+                    <li class="breadcrumb-item active">Ha</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="mdi mdi-account-box"></i> Ha - Reprocess Attendance </h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    @using (Html.BeginForm("haPage", "admin", FormMethod.Post, new { id = "attendance-form" }))
+                    {
+                        <div class="form-group row">
+                            <label class="control-label">Employee Code</label>
+                            <input type="text" class="form-control" name="employee_code" />
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="control-label">Form Date</label>
+                            <input type="text" class="form-control datepicker" name="requested_date" required>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-10 text-danger">
+                                @Html.AntiForgeryToken()
+                                @Html.ValidationSummary()
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary waves-effect waves-light">Submit</button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End content -->
+
+
+@section JS {
+
+    <script>
+        $(document).ready(function () {
+            //$('#accordion').accordion("option", "active", 0);
+            //$("input[type=submit], button").button();
+
+            $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+        });
+    </script>
+}

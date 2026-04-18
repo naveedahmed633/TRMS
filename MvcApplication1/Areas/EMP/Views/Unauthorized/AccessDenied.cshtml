@@ -1,0 +1,93 @@
+﻿@using MvcApplication1.ViewModel;
+
+@{
+    ViewBag.Title = "TRMS - Unauthorized: Access Denied";
+    Layout = "~/Areas/EMP/Views/Shared/_Layout.cshtml";
+
+    string EMP_STD_LEC_LoginUserType = "";
+    if (MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeFunctionSLSID.ToString().Contains("student"))
+    {
+        EMP_STD_LEC_LoginUserType = "STD";
+    }
+    else if (MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeFunctionSLSID.ToString().Contains("lecturer"))
+    {
+        EMP_STD_LEC_LoginUserType = "LEC";
+    }
+    else
+    {
+        EMP_STD_LEC_LoginUserType = "EMP";
+    }
+
+}
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">Welcome <span class="text-danger">'@EMP_STD_LEC_LoginUserType'</span>! [Login ID: <span class="text-warning" title="@GlobalVariables.CheckNULLValidation(GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & Name: <span class="text-success">@GlobalVariables.CheckNULLValidation(GlobalVariables.GV_EmployeeName)</span>]</h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/EMP/EMP">@EMP_STD_LEC_LoginUserType</a></li>
+                    <li class="breadcrumb-item active">Unauthorized</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="mdi mdi-account-box"></i>Access Denied</h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-md-12" style="text-align: center;">
+                            <img src="~/Images/access.png" width="440" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12" style="text-align: center;">
+                            <br />
+                            <span class="h4"><a href="javascript: history.back(-1)">Back to Previous Page</a></span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+@section JS {
+    <script>
+        $(document).ready(function () {
+            $('#accordion').accordion("option", "active", 2);
+
+            $(".chzn-select").chosen();
+            $("input[type=submit], button").button();
+
+        });
+
+
+
+    </script>
+}

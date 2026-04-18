@@ -1,0 +1,100 @@
+﻿@{
+    ViewBag.Title = "TRMS - Calendar";
+    Layout = "~/Areas/SuperAdmin/Views/Shared/_LayoutCalendar.cshtml";
+}
+
+
+<div class="row">
+    <div class="form-group col-md-12">
+        @*<h5 style="font-weight: bold;">Calendar</h5>*@
+
+        <div class="row">
+            <div class="col-12 text-right">
+                <a id="btnBack1" class="btn btn-default" href="javascript: history.go(-1)">Back</a>
+            </div>
+        </div>
+
+        <div class="row" style="background-color:#eee;padding:55px;margin:15px;border-radius:25px;padding-bottom:10px">
+            <h4 style="font-weight: bold; text-align:center;">Your Group's Calendar </h4>
+            <input type="text" id="group" name="group" value="@Model" hidden />
+            <div id="calendar"></div>
+        </div>
+        <form id="calendar_edit_form" style="margin:15px">
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="control-label">General Shift</label>
+
+                    <select class="form-control" id="general-shift">
+                        <option value="-2" selected="selected" disabled="disabled">Select Shift</option>
+                    </select>
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="control-label">Shifts Specific to Week Days</label>
+                    <select class="form-control" id="day">
+                        <option value="-2" selected="selected" disabled="disabled">Select Day</option>
+                        <option value='0'>Sunday</option>
+                        <option value='1'>Monday</option>
+                        <option value='2'>Tuesday</option>
+                        <option value='3'>Wednesday</option>
+                        <option value='4'>Thursday</option>
+                        <option value='5'>Friday</option>
+                        <option value='6'>Saturday</option>
+                    </select>
+                    <select class="form-control" id="day-shift">
+                        <option value="-2" selected="selected" disabled="disabled">Select Shift</option>
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-md-3">
+                    <button type="submit" value="Submit" class="btn btn-primary waves-effect waves-light m-t-10" id="submit_calendar_button">Save Calander</button>
+                </div>
+                <div class="col-6">
+                    &nbsp;
+                </div>
+                <div class="col-3 text-right">
+                    <a id="btnBack2" class="btn btn-default" href="javascript: history.go(-1)">Back</a>
+                </div>
+
+            </div>
+
+
+            <!--<button type="submit" value="Submit" id="submit_calendar_button">Save Calander</button>-->
+        </form>
+
+
+    </div>
+
+</div>
+
+
+@section JS {
+    <script src="@Url.Content("/CSCAL/SUgroupCalendar.js")"></script>
+    <script>
+
+
+
+        $(document).ready(function () {
+            $('#accordion').accordion("option", "active", 1);
+            $("input[type=submit], button").button();
+            $(".datepicker").datepicker({
+                dateFormat: "dd-mm-yy"
+            });
+            setActiveLink("Manage Group Calendar");
+
+
+
+
+
+
+        });
+
+
+    </script>
+
+}

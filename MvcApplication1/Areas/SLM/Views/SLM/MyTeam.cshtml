@@ -1,0 +1,160 @@
+﻿@{
+    ViewBag.Title = "TRMS - My Team";
+    Layout = "~/Areas/SLM/Views/Shared/_Layout.cshtml";
+
+    var isDataFound = false;
+}
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">Welcome <span class="text-danger">'SLM'</span>! [Login ID: <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & Name: <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span>]</h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/SLM/SLM/Dashboard">SLM</a></li>
+                    <li class="breadcrumb-item active">My Team</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="mdi mdi-account-box"></i> My Team </h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <h4>Attendance Supervisor(s)</h4>
+
+                            <div class="list-group">
+
+                                @foreach (var item in Model)
+                                {
+                                    isDataFound = true;
+
+                                    <span class="list-group-item">
+                                        <i class="mdi mdi-account"></i> @item
+                                    </span>
+
+                                }
+
+                                @if (!isDataFound)
+                                {
+                                    <span class="list-group-item text-danger">
+                                        <i class="mdi mdi-information"></i> No Data Found
+                                    </span>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row m-t-10">
+                        <div class="col-12">
+                            <form action="/LM/LM/SupervisorTeamPDF" method="post">
+                                <button type="submit" id="btnPDFDownload" style="display: @if (!isDataFound) { <text>none;</text> } else { <text>block;</text> }" class="btn btn-primary waves-effect waves-light">Export PDF</button>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-box">
+
+        <div class="row">
+            <div class="col-12">
+                <h3>Tagged Employees</h3>
+
+                <hr />
+
+                <table id="emp_table" class="table table-striped table-bordered dataTable dt-responsive nowrap no-footer small" style="width: 100%">
+                    <thead>
+                        <tr>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Employee Code</th>
+                            <th>Function</th>
+                            <th>Department</th>
+                            <th>Location</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row m-t-10">
+            <div class="col-12">
+                <button type="submit" id="btnExport" class="btn btn-primary waves-effect waves-light">Export Grid Data</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- End content -->
+
+@section JS {
+
+    <script type="text/javascript" src="@Href("~/Scripts/chosen.ajaxaddition.jquery.js")"></script>
+    <script>
+
+        $(document).ready(function () {
+            //$('#accordion').accordion("option", "active", 0);
+            //setActiveLink("My Team");
+            //            $(".chzn-select").chosen();
+            $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+            //$("input[type=submit], button").button();
+            //$('#btnExport').button();
+            $("#btnExport").click(function (e) {
+                setupTableExportButton('#emp_table', 'Tagged_Employee');
+                e.preventDefault();
+            });
+
+            var url = '@Url.Action("DataHandler", "SLM", null, Request.Url.Scheme)';
+
+            var columns = [
+               { "data": "first_name" },
+               { "data": "last_name" },
+               { "data": "employee_code" },
+               { "data": "function_name" },
+               { "data": "department_name" },
+               { "data": "location_name" }
+            ];
+
+            @*
+               I did this so that like initDataTables the JS
+            for serverside processing can be used for other tables.
+                NOTE: The names of the columns correspond to the View Model.
+            For example in this example the column names, first_name, last_name
+            etc are taken from ViewModels.Employee
+        *@
+
+            initServerSideTable('#emp_table', url, columns);
+
+
+
+        });
+
+    </script>
+}

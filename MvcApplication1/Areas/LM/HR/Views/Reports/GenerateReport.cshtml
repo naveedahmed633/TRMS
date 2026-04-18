@@ -1,0 +1,177 @@
+﻿
+<h4 style="font-weight: bold;">Generate Report</h4>
+
+<div class="row">
+    <div class="form-group col-md-3">
+
+        <form style="display:none">
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="control-label">Report Type</label>
+
+                    <select id="type-of-report" class="form-control" required>
+                        <option value="none" disabled="disabled" selected="selected">Select an option</option>
+                        <option value="monthly-time-sheet">Time Sheet By Month</option>
+                        <option value="summary-report">Employee Summary</option>
+                        <option value="monthly-attendance-register">Monthly Attendance Register</option>
+                    </select>
+
+                </div>
+            </div>
+        </form>
+
+
+        @* MONTHLY TIME SHEET *@
+        <div id="monthly-time-sheet">
+            @using (Html.BeginForm("MonthlyTimeSheet", "Reports", FormMethod.Post, new { id = "monthly-time-sheet-form" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary()
+                <div class="row">
+                    <div class="col-md-12">
+                        <label class="control-label">Employee Number</label>
+
+                        <select id="monthly-time-sheet-employees" class="form-control" name="employee_id" required></select>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <label class="control-label">Month</label>
+
+                        <input id="monthly-time-sheet-month" type="text" name="month" class="form-control monthPicker" required/>
+
+                    </div>
+                </div>
+
+
+                <button type="submit" id="generate-monthly-time-sheet" style="margin-top:5px">Generate PDF</button>
+            }
+        </div>
+
+
+            @* SUMMARY REPORT *@
+            <div id="summary-report" style="display:none">
+                <form>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="control-label">Date From</label>
+                            <input id="summary-report-from" type="text" class="form-control datepicker">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="control-label">Date To</label>
+                            <input id="summary-report-to" type="text" class="form-control datepicker">
+                        </div>
+                    </div>
+
+                    <button type="submit" id="generate-summary-report" style="margin-top:5px">Generate PDF</button>
+                </form>
+            </div>
+
+
+            @* ATTENDANCE REGISTER *@
+            <div id="monthly-attendance-register" style="display:none">
+                <form>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="control-label">Month</label>
+
+                            <input id="attendance-register-month" type="text" name="month" class="form-control monthPicker" />
+
+                        </div>
+                    </div>
+
+                    <button type="submit" id="generate-attendance-register" style="margin-top:5px">Generate PDF</button>
+                </form>
+
+            </div>
+            
+
+
+
+
+    </div>
+</div>
+
+@section JS {
+
+    <script type="text/javascript" src="@Href("~/Scripts/chosen.ajaxaddition.jquery.js")"></script>
+    <script type="text/javascript" src="@Href("~/Scripts/GenerateReports.js")"></script>
+    <script type="text/javascript" src="@Href("~/Scripts/monthpicker.js")"></script>
+    
+    
+    <script>
+
+
+
+        function setTypeOfReportDropDown() {
+            $('#type-of-report').chosen();
+            $('#type-of-report').on("change", function () {
+                switch ($('#type-of-report').val()) {
+                    case "monthly-time-sheet":
+
+                        $('#monthly-time-sheet').show();
+                        $('#summary-report').hide();
+                        $('#monthly-attendance-register').hide();
+
+                        break;
+                    case "summary-report":
+
+                        $('#monthly-time-sheet').hide();
+                        $('#summary-report').show();
+                        $('#monthly-attendance-register').hide();
+
+                        break;
+                    case "monthly-attendance-register":
+
+                        $('#monthly-time-sheet').hide();
+                        $('#summary-report').hide();
+                        $('#monthly-attendance-register').show();
+
+                        break;
+                }
+            });
+        }
+
+
+        function setEmployeeDropDowns() {
+            $('#monthly-time-sheet-employees').ajaxChosen({
+                dataType: 'json',
+                type: 'POST',
+                url: '@Url.Action("ChangeEmployeePasswordDataHandler", "EmployeeManagement", null, Request.Url.Scheme)'
+            }, {
+                loadingImg: '@Href("~/Content/ChosenAutoComplete/loading.gif")'
+            });
+        }
+
+
+        $(document).ready(function () {
+            $('#accordion').accordion("option", "active", 5);
+            $("input[type=submit], button").button();
+            $(".chzn-select").chosen();
+            $(".datepicker").datepicker();
+            setActiveLink("Monthly Time Sheet");
+
+
+            setEmployeeDropDowns();
+
+            setTypeOfReportDropDown();
+
+            
+
+
+
+
+
+        });
+
+
+
+
+
+    </script>
+}

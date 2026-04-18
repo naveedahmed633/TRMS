@@ -1,0 +1,1099 @@
+﻿@{
+    ViewBag.Title = "TRMS - User Control";
+    Layout = "~/Areas/SuperAdmin/Views/Shared/_Layout.cshtml";
+}
+
+@model ViewModels.CreateEmployee
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">Welcome <span class="text-danger">'SuperAdmin'</span>! [Login ID: <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & Name: <span class="text-success">@User.Identity.Name</span>]</h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/SuperAdmin">SuperAdmin</a></li>
+                    <li class="breadcrumb-item active">User Control</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-12 m-b-10">
+                            <h3>User Permission Set</h3>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            @if (Request.QueryString["message"] != null && Request.QueryString["message"].ToString() == "success")
+                            {
+                                <div class="form-group row">
+                                    <div class="text-danger h4 msg">
+                                        Successfully Apply
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+                    @using (Html.BeginForm("AddPermissionUser", "SU"))
+                    {
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="row m-t-10">
+                                    <div class="col-4">
+                                        <label class="control-label">Employee Code</label>
+                                        <select id="monthly-time-sheet-employees" class="form-control" name="EmployeeCode" required>
+                                            <!--<option value="28317">002369</option>-->
+                                        </select>
+                                    </div>
+
+                                </div>
+
+                                <div class="row m-t-10" id="access_Group">
+                                    <div class="col-4">
+                                        <label class="control-label">Access Group</label>
+                                        <select class="form-control" id="access_group_drop_down" name="access_group_id" required>
+                                            <option value="1">HR</option>
+                                            <option value="2">Line Manager</option>
+                                            <option value="3">Employee</option>
+
+                                        </select>
+
+                                    </div>
+
+                                </div>
+                                <div class="row m-t-10">
+                                    <button class="btn btn-default" onclick="javascript: window.location.href = '/SuperAdmin/SU/UserControl'">Refresh Page</button>
+                                </div>
+
+
+
+                                <div id="tblEMP">
+                                    <p class="bold" style="text-align: center; font-size: larger; font-weight: 600;">Permissions</p>
+
+
+                                    <table class="table table-bordered">
+                                        <thead>
+
+
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <th class="bold">Button Access</th>
+                                                <th class="text-center bold">View</th>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Export Grid Data
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="ExportGridData" id="ExportGridData">
+                                                        <label for="ExportGridData"></label>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Download Excel
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="DownloadExcel" id="DownloadExcel">
+                                                        <label for="DownloadExcel"></label>
+                                                    </div>
+                                                </td>
+
+
+                                            <tr>
+                                                <td>
+                                                    Export PDF
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="ExportPDF" id="ExportPDF">
+                                                        <label for="ExportPDF"></label>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+
+                                            <tr>
+                                                <th class="bold">Menus Access</th>
+                                                <th class="text-center bold">View</th>
+                                            </tr>
+
+                                            <tr>
+                                                <td>
+                                                    Portal
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="ManualMenu" id="ManualMenu">
+                                                        <label for="ManualMenu"></label>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+
+
+                                            <tr>
+                                                <td>
+                                                    Leaves
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="LeavesMenu" id="LeavesMenu">
+                                                        <label for="LeavesMenu"></label>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Overtime
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="OvertimeMenu" id="OvertimeMenu">
+                                                        <label for="OvertimeMenu"></label>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Attendance
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="AttendanceMenu" id="AttendanceMenu">
+                                                        <label for="AttendanceMenu"></label>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Manual <!-- Loan -->
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="LoanMenu" id="LoanMenu">
+                                                        <label for="LoanMenu"></label>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Manual<!--Payroll-->
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="PayrollMenu" id="PayrollMenu">
+                                                        <label for="PayrollMenu"></label>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Reports
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="ReportsMenu" id="ReportsMenu">
+                                                        <label for="ReportsMenu"></label>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                    <button type="submit" class="btn btn-info pull-right">Apply</button>
+                                </div>
+
+
+
+
+                                <div id="tblHR">
+                                    <p class="bold" style="text-align: center; font-size: larger; font-weight: 600;">Permissions</p>
+
+
+                                    <table class="table table-bordered">
+                                        <thead>
+
+
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <th class="bold">Button Access</th>
+                                                <th class="text-center bold">View</th>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Export Grid Data
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="HRExportGridData" id="HRExportGridData">
+                                                        <label for="HRExportGridData"></label>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Download Excel
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="HRDownloadExcel" id="HRDownloadExcel">
+                                                        <label for="HRDownloadExcel"></label>
+                                                    </div>
+                                                </td>
+
+
+                                            <tr>
+                                                <td>
+                                                    Export PDF
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="HRExportPDF" id="HRExportPDF">
+                                                        <label for="HRExportPDF"></label>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+
+                                            <tr>
+                                                <th class="bold">Menus Access</th>
+                                                <th class="text-center bold">View</th>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Users Management
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="HREmployeeManagement" id="HREmployeeManagement">
+                                                        <label for="HREmployeeManagement"></label>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    HR
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="HRHR" id="HRHR">
+                                                        <label for="HRHR"></label>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+
+                                            <tr>
+                                                <td>
+                                                    Organization Management
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="HRManual" id="HRManual">
+                                                        <label for="HRManual"></label>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+
+
+                                            <tr>
+                                                <td>
+                                                    Leaves
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="HRLeaves" id="HRLeaves">
+                                                        <label for="HRLeaves"></label>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Student Portal <!-- Payroll & Loan -->
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="HRPayrollLoan" id="HRPayrollLoan">
+                                                        <label for="HRPayrollLoan"></label>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Overtime
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="HROvertime" id="HROvertime">
+                                                        <label for="HROvertime"></label>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Shift Management
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="HRShiftManagement" id="HRShiftManagement">
+                                                        <label for="HRShiftManagement"></label>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Roaster Management
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="HRRoasterManagement" id="HRRoasterManagement">
+                                                        <label for="HRRoasterManagement"></label>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Attendance Management
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="HRAttendanceManagement" id="HRAttendanceManagement">
+                                                        <label for="HRAttendanceManagement"></label>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+
+                                            <tr>
+                                                <td>
+                                                    Reports
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="HRReport" id="HRReport">
+                                                        <label for="HRReport"></label>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+
+
+                                        </tbody>
+                                    </table>
+                                    <button type="submit" class="btn btn-info pull-right">Apply</button>
+                                </div>
+
+
+
+
+                                <div id="tblLM">
+                                    <p class="bold" style="text-align: center; font-size: larger; font-weight: 600; ">Permissions</p>
+
+
+                                    <table class="table table-bordered">
+                                        <thead>
+
+
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <th class="bold">Button Access</th>
+                                                <th class="text-center bold">View</th>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Export Grid Data
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="LMExportGridData" id="LMExportGridData">
+                                                        <label for="LMExportGridData"></label>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Download Excel
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="LMDownloadExcel" id="LMDownloadExcel">
+                                                        <label for="LMDownloadExcel"></label>
+                                                    </div>
+                                                </td>
+
+
+                                            <tr>
+                                                <td>
+                                                    Export PDF
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="LMExportPDF" id="LMExportPDF">
+                                                        <label for="LMExportPDF"></label>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+
+                                            <tr>
+                                                <th class="bold">Menus Access</th>
+                                                <th class="text-center bold">View</th>
+                                            </tr>
+
+                                            <tr class="d-none">
+                                                <td>
+                                                    Manual
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="LMManual" id="LMManual">
+                                                        <label for="LMManual"></label>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>
+                                                    Leaves
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="LMLeaves" id="LMLeaves">
+                                                        <label for="LMLeaves"></label>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+
+
+                                            <tr>
+                                                <td>
+                                                    Overtime
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="LMOvertime" id="LMOvertime">
+                                                        <label for="LMOvertime"></label>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+
+                                            <tr>
+                                                <td>
+                                                    Roaster
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="LMRoaster" id="LMRoaster">
+                                                        <label for="LMRoaster"></label>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Attendance
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="LMAttendance" id="LMAttendance">
+                                                        <label for="LMAttendance"></label>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+
+                                            <tr>
+                                                <td>
+                                                    Reports
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="checkbox">
+                                                        <input type="checkbox" value="true" name="LMReport" id="LMReport">
+                                                        <label for="LMReport"></label>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+
+
+                                        </tbody>
+                                    </table>
+                                    <button type="submit" class="btn btn-info pull-right">Apply</button>
+                                </div>
+
+
+
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<!-- End content -->
+
+
+<div id="MidTermModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="MidTermModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="CenterModalLabel">View</h4>
+            </div>
+            <div class="modal-body text-center">
+                <img id="image_source" src="~/Images/no-image.png" width="300" />
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Close</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<!-- Custom Modal -->
+<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="mySmallModalLabel">Message Alert</h4>
+            </div>
+            <div class="modal-body">
+                <span id="alert_message"></span>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<div id="toast" class="toast-message" style='display:none'>Message!</div>
+
+@section JS {
+
+    <script type="text/javascript">
+
+        //$('#btnDownload').button();
+
+        //$('#btnUpload').button();
+
+    </script>
+
+    <script type="text/javascript" src="@Href("~/Scripts/chosen.ajaxaddition.jquery.js")"></script>
+
+    @*<script src="@Url.Content("/Scripts/employeeCRUD.js")" type="text/javascript"></script>*@
+    <script src="~/Scripts/employeeCRUDSuperAdmin.js"></script>
+
+    <script type="text/javascript">
+
+        function setChosenSelectList(selector, URL) {
+
+
+            $(selector).ajaxChosen({
+                dataType: 'json',
+                type: 'POST',
+                url: URL
+            }, {
+                loadingImg: '@Href("~/Content/ChosenAutoComplete/loading.gif")'
+            });
+
+
+
+        }
+
+        function HideSpanMessage() {
+            setTimeout(function () { $('.msg').hide(); }, 4000);
+        }
+
+        function redirectToPage() {
+            window.location = '/SuperAdmin/SU/UserControl';
+            //alert('abc');
+            //window.location.reload();
+        }
+
+        function alertFilename() {
+            var thefile = document.getElementById('my-file-selector');
+            document.getElementById('file-name').innerHTML = thefile.value;
+        }
+        function checkSubmit2(id) {
+
+            jDate = $(id).find('[name*="date_of_joining"]').val().split("-").reverse();
+            lDate = $(id).find('[name*="date_of_leaving"]').val().split("-").reverse();
+            var numbers = /^[0-9]+$/;
+            empcode = $(id).find('[name*="employee_code"]').val();
+
+            jDate = new Date(parseInt(jDate[0]), parseInt(jDate[1]) - 1, parseInt(jDate[2]));
+            lDate = new Date(parseInt(lDate[0]), parseInt(lDate[1]) - 1, parseInt(lDate[2]));
+
+            if (jDate >= lDate && lDate != "Mon Jan 01 1900 00:00:00 GMT+0500 (Pakistan Standard Time)") {
+                alert("Joining Date must be before of Leaving Date");
+                return false;
+            } else {
+
+
+                var number = parseInt(empcode);
+
+                if (isNaN(number)) {
+                    alert('Please input numeric characters only');
+                    return false;
+                }
+                else {
+                    return true;
+
+                }
+
+            }
+
+
+
+
+
+            return true;
+        }
+
+
+        function checkSubmit(id) {
+
+            //bDate = $(id).find('[name*="date_of_birth"]').val().split("-").reverse();
+            jDate = $(id).find('[name*="date_of_joining"]').val().split("-").reverse();
+            lDate = $(id).find('[name*="date_of_leaving"]').val().split("-").reverse();
+            var numbers = /^[0-9]+$/;
+            empcode = $(id).find('[name*="employee_code"]').val();
+
+            //bDate = new Date(parseInt(bDate[0]), parseInt(bDate[1]) - 1, parseInt(bDate[2]));
+            jDate = new Date(parseInt(jDate[0]), parseInt(jDate[1]) - 1, parseInt(jDate[2]));
+            lDate = new Date(parseInt(lDate[0]), parseInt(lDate[1]) - 1, parseInt(lDate[2]));
+
+
+
+            if (jDate >= lDate && lDate != "Mon Jan 01 1900 00:00:00 GMT+0500 (Pakistan Standard Time)") {
+
+                //$('#alert_message').text("Joining Date must be before of Leaving Date");
+                //$('.bs-example-modal-lg').modal('show');
+
+                alert("Joining Date must be before of Leaving Date");
+                return false;
+            } else {
+
+
+                var number = parseInt(empcode);
+
+                if (isNaN(number)) {
+
+                    //$('#alert_message').text("Please input numeric characters only");
+                    //$('.bs-example-modal-lg').modal('show');
+
+                    alert('Please input numeric characters only');
+                    return false;
+                }
+                else {
+                    return true;
+
+                }
+
+            }
+
+            return true;
+        }
+
+        popup = function viewImage(image_name) {
+            $('#image_source').attr("src", "/Content/UserDocs/" + image_name);
+            $('#MidTermModal').modal('show');
+        }
+
+        $("#FormShow").click(function () {
+            $("#Hide_Show").toggle("slow");
+        });
+
+
+        function setEmployeeDropDowns() {
+            $('#monthly-time-sheet-employees').ajaxChosen({
+                dataType: 'json',
+                type: 'POST',
+                url: '@Url.Action("EmployeeGetDataHandler", "ManageEmployees", null, Request.Url.Scheme)'
+            }, {
+                loadingImg: '@Href("~/Content/ChosenAutoComplete/loading.gif")'
+            });
+        }
+
+        $(document).ready(function () {
+            getDetailsOfRights();
+            setEmployeeDropDowns();
+            $("#Hide_Show").hide();
+            $("#tblEMP").hide();
+            $("#tblHR").hide();
+            $("#tblLM").hide();
+            $("#access_Group").hide();
+
+            $("#monthly-time-sheet-employees").change(function () {
+                $.ajax({
+                    url: '/SU/DataHandler',
+                    type: "POST",
+                    data: { empId: $('#monthly-time-sheet-employees').val() },
+                    dataType: "json",
+
+                    success: function (data) {
+
+
+                        $("#access_Group").show();
+
+                        if (data.accessGroupId == 3) {
+                            $("#access_group_drop_down").val(3);
+
+                            $("#tblEMP").show();
+                            $("#tblHR").hide();
+                            $("#tblLM").hide();
+
+                            if (data.ExportGridData == true) {
+                                $("#ExportGridData").prop('checked', true);
+                            }
+                            if (data.DownloadExcel == true) {
+                                $("#DownloadExcel").prop('checked', true);
+                            }
+                            if (data.ExportPDF == true) {
+                                $("#ExportPDF").prop('checked', true);
+                            }
+                            if (data.LeavesMenu == true) {
+                                $("#LeavesMenu").prop('checked', true);
+                            }
+                            if (data.LoanMenu == true) {
+                                $("#LoanMenu").prop('checked', true);
+                            }
+                            if (data.ManualMenu == true) {
+                                $("#ManualMenu").prop('checked', true);
+                            }
+                            if (data.OvertimeMenu == true) {
+                                $("#OvertimeMenu").prop('checked', true);
+                            }
+                            if (data.PayrollMenu == true) {
+                                $("#PayrollMenu").prop('checked', true);
+                            }
+                            if (data.ReportsMenu == true) {
+                                $("#ReportsMenu").prop('checked', true);
+                            }
+                            if (data.AttendanceMenu == true) {
+                                $("#AttendanceMenu").prop('checked', true);
+                            }
+
+                        }
+                        else if (data.accessGroupId == 1) {
+                            $("#access_group_drop_down").val(1);
+                            $("#tblHR").show();
+                            $("#tblEMP").hide();
+                            $("#tblLM").hide();
+
+
+                            if (data.HRExportGridData == true) {
+                                $("#HRExportGridData").prop('checked', true);
+                            }
+                            if (data.HRDownloadExcel == true) {
+                                $("#HRDownloadExcel").prop('checked', true);
+                            }
+                            if (data.HRExportPDF == true) {
+                                $("#HRExportPDF").prop('checked', true);
+                            }
+                            if (data.HRLeaves == true) {
+                                $("#HRLeaves").prop('checked', true);
+                            }
+                            if (data.HROvertime == true) {
+                                $("#HROvertime").prop('checked', true);
+                            }
+                            if (data.HRAttendanceManagement == true) {
+                                $("#HRAttendanceManagement").prop('checked', true);
+                            }
+                            if (data.HRPayrollLoan == true) {
+                                $("#HRPayrollLoan").prop('checked', true);
+                            }
+                            if (data.HRRoasterManagement == true) {
+                                $("#HRRoasterManagement").prop('checked', true);
+                            }
+                            if (data.HRReport == true) {
+                                $("#HRReport").prop('checked', true);
+                            }
+                            if (data.HRHR == true) {
+                                $("#HRHR").prop('checked', true);
+                            }
+                            if (data.HRManual == true) {
+                                $("#HRManual").prop('checked', true);
+                            }
+                            if (data.HREmployeeManagement == true) {
+                                $("#HREmployeeManagement").prop('checked', true);
+                            }
+                            if (data.HRShiftManagement == true) {
+                                $("#HRShiftManagement").prop('checked', true);
+                            }
+
+
+                        }
+                        else if (data.accessGroupId == 2) {
+
+                            $("#access_group_drop_down").val(2);
+
+                            $("#tblHR").hide();
+                            $("#tblEMP").hide();
+                            $("#tblLM").show();
+
+                            if (data.LMExportGridData == true) {
+                                $("#LMExportGridData").prop('checked', true);
+                            }
+                            if (data.LMDownloadExcel == true) {
+                                $("#LMDownloadExcel").prop('checked', true);
+                            }
+                            if (data.LMExportPDF == true) {
+                                $("#LMExportPDF").prop('checked', true);
+                            }
+                            if (data.LMLeaves == true) {
+                                $("#LMLeaves").prop('checked', true);
+                            }
+                            if (data.LMOvertime == true) {
+                                $("#LMOvertime").prop('checked', true);
+                            }
+                            if (data.LMAttendance == true) {
+                                $("#LMAttendance").prop('checked', true);
+                            }
+
+                            if (data.LMRoaster == true) {
+                                $("#LMRoaster").prop('checked', true);
+                            }
+                            if (data.LMReport == true) {
+                                $("#LMReport").prop('checked', true);
+                            }
+
+                            if (data.LMManual == true) {
+                                $("#LMManual").prop('checked', true);
+                            }
+
+                        }
+                        console.log(data);
+                    },
+                    error: function () {
+                        //alert("error");
+                    }
+                });
+            });
+            //$('#accordion').accordion("option", "active", 1);
+            // $('#monthly-time-sheet-employees').chosen();
+            $(".datepicker").datepicker({ dateFormat: 'dd-mm-yy' });
+
+            //$('#btnExport').button();
+            $("#btnExport").click(function (e) {
+
+                setupTableExportButton('#emp_table', 'Employees');
+                e.preventDefault();
+            });
+
+            HideSpanMessage();
+
+            $('#btnUpload').click(function () {
+
+                //alert('No file found ' + $('#my-file-selector').val());
+
+                if ($('#my-file-selector').val() == "") {
+                    alert('Please select a file first');
+                    return false;
+                }
+            });
+
+
+
+            setChosenSelectList('#skills_set');
+            setChosenSelectList('#employee-function-select', '@Url.Action("functions", "EmployeeManagement", null, Request.Url.Scheme)');
+            setChosenSelectList('#employee-designation-select', '@Url.Action("designations", "EmployeeManagement", null, Request.Url.Scheme)');
+            setChosenSelectList('#employee-department-select', '@Url.Action("departments", "EmployeeManagement", null, Request.Url.Scheme)');
+            setChosenSelectList('#employee-toe-select', '@Url.Action("typeOfEmployments", "EmployeeManagement", null, Request.Url.Scheme)');
+            setChosenSelectList('#employee-grade-select', '@Url.Action("grades", "EmployeeManagement", null, Request.Url.Scheme)');
+            setChosenSelectList('#employee-region-select', '@Url.Action("regions", "EmployeeManagement", null, Request.Url.Scheme)');
+            setChosenSelectList('#employee-location-select', '@Url.Action("locations", "EmployeeManagement", null, Request.Url.Scheme)');
+
+            setChosenSelectList('.employee-function-select', '@Url.Action("functions", "EmployeeManagement", null, Request.Url.Scheme)');
+            setChosenSelectList('.employee-designation-select', '@Url.Action("designations", "EmployeeManagement", null, Request.Url.Scheme)');
+            setChosenSelectList('.employee-department-select', '@Url.Action("departments", "EmployeeManagement", null, Request.Url.Scheme)');
+            setChosenSelectList('.employee-toe-select', '@Url.Action("typeOfEmployments", "EmployeeManagement", null, Request.Url.Scheme)');
+            setChosenSelectList('.employee-grade-select', '@Url.Action("grades", "EmployeeManagement", null, Request.Url.Scheme)');
+            setChosenSelectList('.employee-region-select', '@Url.Action("regions", "EmployeeManagement", null, Request.Url.Scheme)');
+            setChosenSelectList('.employee-location-select', '@Url.Action("locations", "EmployeeManagement", null, Request.Url.Scheme)');
+
+            //$('#access_group_drop_down').chosen();
+            $('#time_tune_status_drop_down').chosen();
+            //$("input[type=submit], button").button();
+            //setActiveLink("Manage Employees");
+
+
+
+
+            var url = '@Url.Action("UserControlDataHandler", "SU", null, Request.Url.Scheme)';
+
+            var columns = [
+           { "data": "first_name" },
+           { "data": "last_name" },
+           { "data": "employee_code" },
+           { "data": "department_name" },
+           { "data": "designation_name" },
+           { "data": "grade_name" },
+           { "data": "actions" }
+
+            ];
+
+            @*
+                    I did this so that like initDataTables the JS
+                    for serverside processing can be used for other tables.
+                    NOTE: The names of the columns correspond to the View Model.
+                    For example in this example the column names, first_name, last_name
+                    etc are taken from ViewModels.Employee
+*@
+
+
+            initServerSideTable('#emp_table', url, columns, 100);
+
+            deleteEmployee = initDeleteEmployeeModal('#employee_modals', '@Url.Action("DeleteEmployee", "SU", null, Request.Url.Scheme)');
+
+            editEmployee = initEditEmployeeModal('@Url.Action("EditEmployee", "SU", null, Request.Url.Scheme)');
+
+            $('#standards-select').chosen();
+
+            setChosenSelectList('#skillSets');
+
+            $('#wizardemployee--validation-form').on("submit", function (e) {
+
+                if (!checkSubmit('#wizard-employee-validation-form')) {
+
+                    e.preventDefault();
+                }
+            });
+
+        });
+
+        function displayToastrSuccessfull() {
+            $('#toast').html('File Uploded Successfuly');
+            $('#toast').stop().fadeIn(400).delay(3000).fadeOut(400);
+        }
+
+
+
+        function getDetailsOfRights() {
+            $.ajax({
+                url: '/SU/SuperAdminModuleRight',
+                type: 'Get',
+                data: {},
+                //dataType: "json",
+
+                success: function (data) {
+
+
+                    if (data.EmployeeManagement != true) {
+                        $("#HREmployeeManagement").attr("disabled", true);
+                    }
+                    if (data.HR != true) {
+                        $("#HRHR").attr("disabled", true);
+
+                    }
+                    if (data.Leaves != true) {
+                        $("#LeavesMenu").attr("disabled", true);
+                        $("#HRLeaves").attr("disabled", true);
+                        $("#LMLeaves").attr("disabled", true);
+
+                    }
+                    if (data.PayrollLoan != true) {
+                        $("#LoanMenu").attr("disabled", true);
+                        $("#PayrollMenu").attr("disabled", true);
+                        $("#HRPayrollLoan").attr("disabled", true);
+
+
+                    }
+                    if (data.Overtime != true) {
+                        $("#LMOvertime").attr("disabled", true);
+                        $("#HROvertime").attr("disabled", true);
+                        $("#OvertimeMenu").attr("disabled", true);
+
+                    }
+                    if (data.ShiftManagement != true) {
+                        $("#HRShiftManagement").attr("disabled", true);
+
+                    }
+                    if (data.RoasterManagement != true) {
+                        $("#HRRoasterManagement").attr("disabled", true);
+                        $("#LMRoaster").attr("disabled", true);
+
+
+                    }
+                    if (data.AttendanceManagement != true) {
+
+                        $("#AttendanceMenu").attr("disabled", true);
+                        $("#LMAttendance").attr("disabled", true);
+
+                    }
+                    if (data.Report != true) {
+
+                        $("#ReportsMenu").attr("disabled", true);
+                        $("#HRReport").attr("disabled", true);
+                        $("#LMReport").attr("disabled", true);
+
+                    }
+                    if (data.Manual != true) {
+                        $("#LMManual").attr("disabled", true);
+                        $("#HRManual").attr("disabled", true);
+                        $("#ManualMenu").attr("disabled", true);
+
+
+
+                    }
+
+
+                    console.log(data);
+                },
+                error: function () {
+                    //alert("error");
+                }
+            });
+        }
+
+
+    </script>
+}

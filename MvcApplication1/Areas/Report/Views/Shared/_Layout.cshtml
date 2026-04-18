@@ -1,0 +1,336 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="A fully featured biometric attendance managment system having various modules to manage like users, departments, designations, functions, regions, locations, grups and grades. View reports include Monthly timesheet, Consolidated Attendance and Department wise reports.">
+    <meta name="author" content="Coderthemes">
+
+    <link rel="shortcut icon" href="/images/favicon.ico">
+
+    <title>
+        @{
+            if (ViewBag.Title == null)
+            {
+                <text>TRMS - Time Resource Management System</text>;
+            }
+            else
+            {
+                @ViewBag.Title;
+            }
+        }
+    </title>
+
+    <link href="@Href("~/Content/ui-darkness/jquery-ui-1.9.2.custom.css")" rel="stylesheet"> <!-- JQuery UI theme -->
+
+    <link href="@Href("~/plugins/datatables/dataTables.bootstrap4.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Href("~/plugins/datatables/buttons.bootstrap4.min.css")" rel="stylesheet" type="text/css" />
+    <!-- Responsive datatable examples -->
+    <link href="@Href("~/plugins/datatables/responsive.bootstrap4.min.css")" rel="stylesheet" type="text/css" />
+    <!-- Multi Item Selection examples -->
+    <link href="@Href("~/plugins/datatables/select.bootstrap4.min.css")" rel="stylesheet" type="text/css" />
+
+    <link href="@Href("/plugins/custombox/dist/custombox.min.css")" rel="stylesheet">
+    <link href="@Href("~/plugins/switchery/switchery.min.css")" rel="stylesheet" />
+    <link rel="stylesheet" href="@Href("~/plugins/morris/morris.css")">
+
+    <link href="@Href("~/css/bootstrap.min.css")" rel="stylesheet" type="text/css">
+    <link href="@Href("~/Content/bootstrap-year-calendar.min.css")" rel="stylesheet"> <!-- bootstrap for calendar -->
+    <link href="@Href("~/css/icons.css")" rel="stylesheet" type="text/css">
+    <link href="@Href("~/css/style_dark.css")" rel="stylesheet" type="text/css">
+
+    @*<link href="@Href("~/Content/timepicki.css")" rel="stylesheet" />  CSS for TimePicker*@
+    <link href="@Href("~/Content/chosen.css")" rel="stylesheet" /> <!-- CSS for Chosen -->
+
+    <script src="@Url.Content("/js/modernizr.min.js")"></script>
+
+</head>
+
+
+<body class="fixed-left">
+
+    @{
+        var userRole = (User.IsInRole(BLL.TimeTuneRoles.ROLE_HR)) ? "HR: " + User.Identity.Name :
+            (User.IsInRole(BLL.TimeTuneRoles.ROLE_EMP)) ? "EMPLOYEE: " + User.Identity.Name :
+            (User.IsInRole(BLL.TimeTuneRoles.ROLE_REPORT)) ? "REPORT: " + User.Identity.Name :
+            (User.IsInRole(BLL.TimeTuneRoles.ROLE_LM)) ? "LINE MANAGER: " + User.Identity.Name :
+            "unauthorized";
+    }
+
+    <!-- Begin page -->
+    <div id="wrapper">
+
+        <!-- Top Bar Start -->
+        <div class="topbar">
+
+            <!-- LOGO -->
+            <div class="topbar-left">
+                <div class="text-center">
+                    <a href="/Account/Login" class="logo"><img src="/images/TRMS-LM.png" style="height: 40%; width: 30%;"></a>
+                </div>
+            </div>
+
+            <!-- Button mobile view to collapse sidebar menu -->
+            <nav class="navbar-custom">
+
+                <ul class="list-inline float-right mb-0">
+
+                    <li class="list-inline-item notification-list hide-phone">
+                        <a class="nav-link waves-light waves-effect" href="#" id="btn-fullscreen">
+                            <i class="mdi mdi-crop-free noti-icon"></i>
+                        </a>
+                    </li>
+
+                    <li class="list-inline-item notification-list">
+                        <a class="nav-link right-bar-toggle waves-light waves-effect" href="#">
+                            <i class="mdi mdi-dots-horizontal noti-icon"></i>
+                        </a>
+                    </li>
+
+                    <li class="d-none list-inline-item dropdown notification-list">
+                        <a class="nav-link dropdown-toggle arrow-none waves-light waves-effect" data-toggle="dropdown" href="#" role="button"
+                           aria-haspopup="false" aria-expanded="false">
+                            <i class="mdi mdi-bell noti-icon"></i>
+                            <span class="badge badge-pink noti-icon-badge">4</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right dropdown-arrow dropdown-menu-lg" aria-labelledby="Preview">
+                            <!-- item-->
+                            <div class="dropdown-item noti-title">
+                                <h5 class="font-16"><span class="badge badge-danger float-right">5</span>Notification</h5>
+                            </div>
+
+                            <!-- item-->
+                            <a href="javascript:void(0);" class="dropdown-item notify-item">
+                                <div class="notify-icon bg-success"><i class="mdi mdi-comment-account"></i></div>
+                                <p class="notify-details">Robert S. Taylor commented on Admin<small class="text-muted">1 min ago</small></p>
+                            </a>
+
+                            <!-- item-->
+                            <a href="javascript:void(0);" class="dropdown-item notify-item">
+                                <div class="notify-icon bg-info"><i class="mdi mdi-account"></i></div>
+                                <p class="notify-details">New user registered.<small class="text-muted">1 min ago</small></p>
+                            </a>
+
+                            <!-- item-->
+                            <a href="javascript:void(0);" class="dropdown-item notify-item">
+                                <div class="notify-icon bg-danger"><i class="mdi mdi-airplane"></i></div>
+                                <p class="notify-details">Carlos Crouch liked <b>Admin</b><small class="text-muted">1 min ago</small></p>
+                            </a>
+
+                            <!-- All-->
+                            <a href="javascript:void(0);" class="dropdown-item notify-item notify-all">
+                                View All
+                            </a>
+
+                        </div>
+                    </li>
+
+                    <li class="list-inline-item dropdown notification-list">
+                        <a class="nav-link dropdown-toggle waves-effect waves-light nav-user" data-toggle="dropdown" href="#" role="button"
+                           aria-haspopup="false" aria-expanded="false">
+                            <img src="/images/users/user.png" alt="user" class="rounded-circle">
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right profile-dropdown " aria-labelledby="Preview">
+
+                            <!-- item-->
+                            @Html.ActionLink("Change Password", "Manage", "Account", null, new { @class = "dropdown-item notify-item" })
+
+
+                            <!-- item-->
+                            @if (Request.IsAuthenticated)
+                            {
+                                using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <a href="javascript:document.getElementById('logoutForm').submit()" class="dropdown-item notify-item">Log off</a>
+                                }
+                            }
+
+                        </div>
+                    </li>
+
+                </ul>
+
+                <ul class="list-inline menu-left mb-0">
+                    <li class="float-left">
+                        <button class="button-menu-mobile open-left waves-light waves-effect">
+                            <i class="mdi mdi-menu"></i>
+                        </button>
+                    </li>
+                    <li class="hide-phone app-search">
+                        <form role="search" class="d-none">
+                            <input type="text" placeholder="Search..." class="form-control">
+                            <a href=""><i class="fa fa-search"></i></a>
+                        </form>
+                    </li>
+                </ul>
+
+            </nav>
+
+        </div>
+        <!-- Top Bar End -->
+        <!-- ========== Left Sidebar Start ========== -->
+        <div class="left side-menu">
+            <div class="sidebar-inner slimscrollleft">
+                <!--- Divider -->
+                <div id="sidebar-menu">
+                    <ul>
+                        <!--<li class="menu-title">Main</li> -->
+
+                        <li class="has_sub">
+                            <a href="javascript:void(0);" class="waves-effect waves-primary">
+                                <i class="mdi mdi-account-box"></i> <span> REPORT: @User.Identity.Name </span><span class="menu-arrow"></span>
+                                <span class="menu-arrow"></span>
+                            </a>
+                            <ul class="list-unstyled">
+                                <li>@Html.ActionLink("Dashboard", "Dashboard", "Report")</li>
+                                <li>@Html.ActionLink("Change Password", "Manage", "Account")</li>
+                            </ul>
+                        </li>
+
+                        @*<li class="has_sub">
+                                <a href="javascript:void(0);" class="waves-effect waves-primary">
+                                    <i class="mdi mdi-file-document"></i><span> Attendance </span> <span class="menu-arrow"></span>
+                                </a>
+                                <ul class="list-unstyled">
+                                    <li>@Html.ActionLink("View Attendance", "ViewAttendance", "Attendance")</li>
+                                </ul>
+                            </li>*@
+
+                        <li class="has_sub">
+                            <a href="javascript:void(0);" class="waves-effect waves-primary">
+                                <i class="ti-files"></i><span> Reports </span> <span class="menu-arrow"></span>
+                            </a>
+                            <ul class="list-unstyled">
+                                <li>@Html.ActionLink("Devices Status Report", "DevicesStatusCountReport", "Reports")</li>
+                                @*<li>@Html.ActionLink("Devices Status Report", "DevicesStatusRegionReport", "Reports")</li>
+                                    <li>@Html.ActionLink("Monthly Time Sheet", "MonthlyTimeSheet", "Reports")</li>
+        <li>@Html.ActionLink("Attendance Summary", "AttendanceSummary", "Reports")</li>
+             <li>@Html.ActionLink("Consolidated Attendance", "ConsolidatedAttendance", "Reports")</li>
+             <li>@Html.ActionLink("Department Wise Report", "DepartmentReport", "Reports")</li>*@
+
+                            </ul>
+                        </li>
+
+                        <li>
+                            <a onclick="javascript:document.getElementById('logoutForm').submit()" class="waves-effect waves-primary">
+                                <i class="mdi mdi-logout"></i><span> Log Off </span>
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="clearfix"></div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+        <!-- Left Sidebar End -->
+        <!-- ============================================================== -->
+        <!-- Start right Content here -->
+        <!-- ============================================================== -->
+        <div class="content-page">
+            <div class="content">
+                @RenderBody()
+
+            </div>
+
+            <!--<footer class="footer">
+        @DateTime.Now.Year © TRMS by IOT Systems All rights reserved <span class="hide-phone">- <a href="http://www.iotsystems.com">http://www.iotsystems.com</a></span>
+    </footer>-->
+
+            <footer class="footer">
+                @DateTime.Now.Year © TRMS. All rights reserved
+            </footer>
+
+            <div style="display:none;height:0px;width:0px;">
+                <form id="csvDownloadForm" method="POST" action="/CSV/getFile" enctype="multipart/form-data">
+                    <input id="csvDownloadData" type="hidden" name="base64stream" value="" />
+                    <input id="csvDownloadName" type="hidden" name="fileName" value="" />
+                </form>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Right content here -->
+        <!-- ============================================================== -->
+
+    </div>
+    <!-- END wrapper -->
+
+
+    <script>
+        var resizefunc = [];
+    </script>
+
+
+    <!-- Plugins  -->
+    <script src="@Url.Content("/js/jquery.min.js")"></script>
+    <script src="@Url.Content("/js/popper.min.js")"></script><!-- Popper for Bootstrap -->
+    <script src="@Url.Content("/js/bootstrap.min.js")"></script>
+    <script src="@Url.Content("/js/detect.js")"></script>
+    <script src="@Url.Content("/js/fastclick.js")"></script>
+    <script src="@Url.Content("/js/jquery.slimscroll.js")"></script>
+    <script src="@Url.Content("/js/jquery.blockUI.js")"></script>
+    <script src="@Url.Content("/js/waves.js")"></script>
+    <script src="@Url.Content("/js/wow.min.js")"></script>
+    <script src="@Url.Content("/js/jquery.nicescroll.js")"></script>
+    <script src="@Url.Content("/js/jquery.scrollTo.min.js")"></script>
+    <script src="@Url.Content("/plugins/switchery/switchery.min.js")"></script>
+
+    <!-- Required datatable js -->
+    <script src="@Url.Content("/plugins/datatables/jquery.dataTables.min.js")"></script>
+    <script src="@Url.Content("/plugins/datatables/dataTables.bootstrap4.min.js")"></script>
+    <!-- Buttons examples -->
+    <script src="@Url.Content("/plugins/datatables/dataTables.buttons.min.js")"></script>
+    <script src="@Url.Content("/plugins/datatables/buttons.bootstrap4.min.js")"></script>
+    <script src="@Url.Content("/plugins/datatables/jszip.min.js")"></script>
+    <script src="@Url.Content("/plugins/datatables/pdfmake.min.js")"></script>
+    <script src="@Url.Content("/plugins/datatables/vfs_fonts.js")"></script>
+    <script src="@Url.Content("/plugins/datatables/buttons.html5.min.js")"></script>
+    <script src="@Url.Content("/plugins/datatables/buttons.print.min.js")"></script>
+    <!-- Key Tables -->
+    <script src="@Url.Content("/plugins/datatables/dataTables.keyTable.min.js")"></script>
+    <!-- Responsive examples -->
+    <script src="@Url.Content("/plugins/datatables/dataTables.responsive.min.js")"></script>
+    <script src="@Url.Content("/plugins/datatables/responsive.bootstrap4.min.js")"></script>
+    <!-- Selection table -->
+    <script src="@Url.Content("/plugins/datatables/dataTables.select.min.js")"></script>
+
+    <!-- Modal-Effect -->
+    <script src="@Url.Content("/plugins/custombox/dist/custombox.min.js")"></script>
+    <script src="@Url.Content("/plugins/custombox/dist/legacy.min.js")"></script>
+
+    <!-- Custom main Js -->
+    <script src="@Url.Content("/js/jquery.core.js")"></script>
+    <script src="@Url.Content("/js/jquery.app.js")"></script>
+
+    <script src="@Url.Content("/Scripts/bootstrap-year-calendar.min.js")" type="text/javascript"></script> <!-- Jquery for bootstrap calendar -->
+    <script src="@Url.Content("/Scripts/jquery-ui-1.9.2.custom.js")" type="text/javascript"></script> <!-- Jquery UI Theme -->
+    <script src="@Url.Content("/Scripts/mark.min.js")" type="text/javascript"></script> <!-- JS for marking text -->
+    <script src="@Url.Content("/Scripts/modal.js")" type="text/javascript"></script> <!-- JS for modal making -->
+    <script src="@Url.Content("/Scripts/timepicki.js")" type="text/javascript"></script> <!-- TimePicker JavaScript -->
+    <script src="@Url.Content("/Scripts/chosen.jquery.js")" type="text/javascript"></script> <!-- Chosen JavaScript -->
+    <script type="text/javascript" src="@Url.Content("/Scripts/tableexport.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/Scripts/jquery.base64.js")"></script>
+    <script src="@Url.Content("/Scripts/custom.js")" type="text/javascript"></script> <!-- custom JavaScript -->
+    <script src="@Url.Content("/Scripts/idle_timer.js")" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        jQuery(document).ready(function (e) {
+            var tt_exp = "20"; //set the exp time in min
+            tt_exp = (parseInt(tt_exp) * 60000);
+            jQuery(document).bind("idle.idleTimer", function () {
+                //alert("Session Timeout"); //here you can attach any function for timeout action even ajax call too.
+                location.reload();
+            });
+
+            jQuery.idleTimer(tt_exp);
+
+
+        });
+    </script>
+
+    @RenderSection("JS", required: false)
+
+</body>
+</html>

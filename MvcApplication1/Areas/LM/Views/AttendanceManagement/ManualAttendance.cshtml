@@ -1,0 +1,262 @@
+﻿@{
+    ViewBag.Title = "TRMS - Past Attendance";
+    Layout = "~/Areas/LM/Views/Shared/_Layout.cshtml";
+
+    string LM_LEC_STF_LoginUserType = "";
+    if (MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeFunctionSLSID.ToString().Contains("lecturer"))
+    {
+        LM_LEC_STF_LoginUserType = "LEC";
+    }
+    else if (MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeFunctionSLSID.ToString().Contains("staff"))
+    {
+        LM_LEC_STF_LoginUserType = "STF";
+    }
+    else
+    {
+        LM_LEC_STF_LoginUserType = "LM";
+    }
+}
+
+@model ViewModels.CreateManualAttendance
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">Welcome <span class="text-danger">'@LM_LEC_STF_LoginUserType'</span>! [Login ID: <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & Name: <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span>]</h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/LM/LM/Dashboard">@LM_LEC_STF_LoginUserType</a></li>
+                    <li class="breadcrumb-item active">Attendance Adjustment</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="ti-files"></i> Post Adjustment (for Past) </h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-12">
+                            @using (Html.BeginForm("AddManualAttendance", "AttendanceManagement", FormMethod.Post, new { id = "attendance-form" }))
+                            {
+                                <div class="row">
+                                    <div class="col-4">
+                                        <label class="control-label">Employee Code <span class="text-danger font-14">*</span></label>
+                                        <!-- <select id="consolidated-employees" class="form-control" name="employee_id" required></select>-->
+                                        <select class="chzn-select" id="employees" name="employee_code" required>
+                                            <option selected="selected" disabled="disabled" value="0">Select Employee Code</option>
+                                            @foreach (ViewModels.Employee item in Model.employee)
+                                            {
+                                                <option value="@item.employee_code">@item.employee_code - @item.first_name @item.last_name</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-4">
+                                        <label class="control-label">Date From <span class="text-danger font-14">*</span></label>
+                                        <input id="from_date" type="text" class="form-control datepicker" autocomplete="off" name="time_in_from" required />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-4">
+                                        <label class="control-label">Date To <span class="text-danger font-14">*</span></label>
+                                        <input id="to_date" type="text" class="form-control datepicker" autocomplete="off" name="time_in_to" required />
+                                    </div>
+                                </div>
+
+                                <div class="row m-t-10">
+                                    <div class="col-4">
+                                        <label class="control-label">Reason <span class="text-danger font-14">*</span></label>
+                                        <select id="remarks" class="chzn-select" name="remarks" style="width:100%;">
+                                            <option disabled="disabled" selected="selected">Select an option</option>
+                                            <option value="AB">Absent - AB</option>
+                                            <option value="PLO">Present Late - PLO</option>
+                                            <option value="PO">Present On Time - PO</option>
+                                            <option value="PLE">Present Late Early Out - PLE</option>
+                                            <option value="POE">Present On Time Early Out - POE</option>
+                                            <option value="OFF">Off Day - OFF</option>
+                                            <option value="OV">Official Visit - OV</option>
+                                            <option value="OM">Official Meeting - OM</option>
+                                            <option value="OT">Official Training - OT</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12 text-danger">
+                                        @Html.AntiForgeryToken()
+                                        @Html.ValidationSummary()
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4">
+                                        <button id="update" type="submit" value="Submit" onclick="return validateFormData();" class="btn btn-primary waves-effect waves-light m-t-10">Update Attendance</button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<br /><br /><br /><br /><br /><br /><br />
+
+<!-- End content -->
+@section JS {
+    <script>
+        $(document).ready(function () {
+            //$('#accordion').accordion("option", "active", 2);
+            //setActiveLink("Manual Attendance");
+            $(".chzn-select").chosen();
+
+            //$("input[type=submit], button").button();
+            $(".datepicker").datepicker({ dateFormat: 'dd-mm-yy' });
+
+            //initDataTable("#leavebalance_table");
+
+            //setupTableExportButton('#attendance_table', '#btnExport', 'ManualAttendance');
+
+
+
+           
+
+
+
+            var url = '@Url.Action("DataHandler", "Reports", null, Request.Url.Scheme)';
+
+            var columns = [
+                  { "data": "date" },
+                   { "data": "employee_code" },
+                   { "data": "employee_first_name" },
+                   { "data": "employee_last_name" },
+                   { "data": "time_in" },
+                   { "data": "status_in" },
+                   { "data": "time_out" },
+                   { "data": "status_out" },
+                   { "data": "final_remarks" },
+                   { "data": "terminal_in" },
+                   { "data": "terminal_out" }
+
+
+            ];
+
+            @*
+               I did this so that like initDataTables the JS
+            for serverside processing can be used for other tables.
+                NOTE: The names of the columns correspond to the View Model.
+            For example in this example the column names, first_name, last_name
+            etc are taken from ViewModels.Employee
+        *@
+
+            //initServerSideTable('#attendance_table', url, columns);
+        });
+
+
+
+        function validateFormData() {
+
+            //alert($('#employee_code').val());
+
+            var eCode = $('#employees').val();
+            if (eCode == null || eCode == "") {
+                alert("'Employee Code' is required");
+                //$('[name*="employee_code"]').focus();
+                return false;
+            }
+
+
+            var fDate = $('#attendance-form').find('[name*="time_in_from"]').val().split("-");
+            var tDate = $('#attendance-form').find('[name*="time_in_to"]').val().split("-");
+
+
+            if (fDate == '') {
+                alert("'From Date' is required to select");
+                $('[name*="time_in_from"]').focus();
+                return false;
+            }
+
+            if (tDate == '') {
+                alert("'To Date' is required to select");
+                $('[name*="time_in_to"]').focus();
+                return false;
+            }
+
+
+      
+
+            //alert(fDate);
+            //alert(tDate);
+
+            var dtFDate = new Date(fDate[2], fDate[1] - 1, fDate[0]);
+            var dtTDate = new Date(tDate[2], tDate[1] - 1, tDate[0]);
+
+            //alert(dtfDate);
+            //alert(dttDate);
+
+            //var timeDiff = Math.abs(tDate.getTime() - fDate.getTime());
+            //var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
+
+            var today = new Date();
+            if (dtFDate >= today) {
+                alert("ONLY Past date is allowed in 'From Date'");
+                return false;
+            }
+
+            if (dtTDate >= today) {
+                alert("ONLY Past date is allowed in 'To Date'");
+                return false;
+            }
+
+
+            if (dtTDate < dtFDate) {
+                alert("'To Date' should be greater than 'From Date'");
+                return false;
+            }
+
+            var eRem = $('#remarks').val();
+            if (eRem == null || eRem == "") {
+                alert("'Remarks' is required");
+                //$('[name*="employee_code"]').focus();
+                return false;
+            }
+
+            var r = confirm("Are you sure you want to Update?");
+            if (r == false) {
+                return false;
+            }
+
+            return true;
+
+        }
+
+    </script>
+}

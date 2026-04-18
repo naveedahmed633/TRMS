@@ -1,0 +1,464 @@
+﻿@{
+    ViewBag.Title = "TRMS - Jobs Logs";
+    Layout = "~/Areas/SuperAdmin/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">Welcome <span class="text-danger">'SuperAdmin'</span>! [Login ID: <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & Name: <span class="text-success">@User.Identity.Name</span>]</h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/SuperAdmin">SuperAdmin</a></li>
+                    <li class="breadcrumb-item active">Jobs Logs</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="ti-files"></i> Processes Jobs Logs </h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row m-t-10">
+                        <div class="col-12">
+                            <div id="monthly-time-sheet" class="form-group col-md-4">
+                                <form id="serviceslogs-form">
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label class="control-label">Date From</label>
+                                            <input id="date_from" type="text" class="form-control datepicker" name="from_date" autocomplete="off" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label class="control-label">Date To</label>
+                                            <input id="date_to" type="text" class="form-control datepicker" name="to_date" autocomplete="off" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label class="control-label">Select Log Title</label>
+                                            <select id="log_title" name="log_title" class="form-control" required>
+                                                <option value="ma job">Mark Attendance Job</option>
+                                                <option value="ca job">Course Attendance Job</option>
+												<option value="U-T:">UNIS to TimeTune Transfer</option>
+												<option value="UT-UT:">UNISTimeTune - Time Entry Sync</option>
+												<option value="U-U:">UNIS - Users Data Sync</option>
+												<option value="Leaves Sessions">Leaves Sessions</option>
+												<option value="Auto General Calendar">Auto General Calendar</option>
+                                                <option value="TRMS-Export">TRMS-Export to CMS</option>
+                                                <option value="TRMS-Import">TRMS-Import from CMS</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            &nbsp;
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <button type="submit" id="services-logs-report" onclick="clearr();" style="margin-top:5px">Search</button>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="button" id="refresh-ssis-log" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" onmouseover="this.className = 'ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only ui-state-hover';" onmouseout="this.className = 'ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only';" role="button" aria-disabled="false" style="margin-top:5px; padding-top: 8px; padding-bottom: 8px" onclick="redirectToPage();" value="Refresh" />
+                                        </div>
+                                    </div>
+
+
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    @*<div class="row m-t-10">
+                        <div class="col-12">
+                            <button type="submit" id="btnExport" class="btn btn-primary waves-effect waves-light">Export Grid Data</button>
+                        </div>
+                    </div>*@
+
+
+                    <table id="services_logs_table" class="display cell-border" style="width: 100%;">
+                        <thead>
+
+                            <tr>
+                                <th style="width: 15%;">Date Time</th>
+                                <th style="width: 18%;">Log Title</th>
+                                <th>Log Text</th>
+                                <th>Log Id</th>
+                            </tr>
+
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+
+                    <button type="submit" id="btnExport" onclick="ExortExcleBar();" class="btn btn-primary waves-effect waves-light" style="margin-top:5px;">Export Excel</button>
+                    <span id="export_wait2" style="display: none; color: red;"><img src='/images/loader.gif' style='width: 110px;margin-bottom: -4%;margin-left: -10%;' alt='processing' /></span>
+                    <p id="demo" style="margin-left: 11%; margin-top: -21px; font-size: 119%; color: red;"></p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End content -->
+
+@section JS {
+    @*<script src="~/Scripts/zingchart.min.js"></script>*@
+    <script type="text/javascript" src="@Href("~/Scripts/chosen.ajaxaddition.jquery.js")"></script>
+    @*<script type="text/javascript" src="@Href("~/Scripts/monthpicker.js")"></script>*@
+
+    <script type="text/javascript">
+        function ExcleHide() {
+            HideMessage();
+        }
+        function ExortExcleBar() {
+            $('#export_wait2').show();
+            document.getElementById("btnExport").disabled = true;
+            HideBarExcle();
+            var ss = $("#services_logs_table tr").children("td:first").text();
+            if (ss == "No data available in table" || ss == "" || ss == " ") { document.getElementById("demo").innerHTML = "No Data Found."; }
+            else { DownloadExcleCsv(); }
+        }
+        function DownloadExcleCsv() { setupTableExportButton('#services_logs_table', 'SSIS-Service-Log'); }
+
+        function HideBarExcle() {
+            setTimeout(function () { $('#export_wait2').hide(); document.getElementById("btnExport").disabled = false; document.getElementById("demo").innerHTML = ""; }, 1500);
+        }
+
+        function redirectToPage() {
+            window.location = '/SuperAdmin/Reports/ServicesLogs';
+            //window.location.reload();
+        }
+
+
+        function ValidateDate(dtValue) {
+            var dtRegex = new RegExp(/\b\d{1,2}[\/-]\d{1,2}[\/-]\d{4}\b/);
+            return dtRegex.test(dtValue);
+        }
+        function searchReport() {
+            // get the entered string
+            var toSearch = $('services_logs_table_filter input').val();
+
+            $('#services_logs_table').DataTable().search(toSearch);
+            // $('#services_logs_table').DataTable().draw();
+        }
+
+        function initReportDataTable(identifier, url, columns) {
+            var oTable = $(identifier).DataTable({
+                "searchDelay": 2000,
+                "scrollY": "300px",
+                "serverSide": true,
+                "ajax": {
+                    "type": "POST",
+                    "url": url,
+                    "contentType": 'application/json; charset=utf-8',
+                    'data': function (data) {
+                        if ($('#date_from').val() != "" && $('#date_to').val() != "") {
+                            var dtVal = $('#date_from').val();
+                            var dtVal2 = $('#date_to').val();
+                            if (ValidateDate(dtVal) && ValidateDate(dtVal2)) {
+                                //data.employee_id = $('#consolidated-employees').val();
+                                data.from_date = $('#date_from').val();
+                                data.to_date = $('#date_to').val();
+                                data.log_title = $('#log_title').val();
+                            }
+                        }
+                        return data = JSON.stringify(data);
+
+                    }
+                    , error: function (request, error) {
+                        //alert("Session Timeout");
+                        location.reload();
+
+                    }
+                },
+                "scrollX": true,
+                "scrollCollapse": true,
+                "processing": true,
+                "paging": true,
+                "deferRender": true,
+                "columns": columns,
+                "order": [0, "desc"],
+                "iDisplayLength": 1000,
+                "aLengthMenu": [[10, 25, 50, 100, 500, 1000, 1500, 3000, 5000], [10, 25, 50, 100, 500, 1000, 1500, 3000, 5000]]
+
+            });
+
+            oTable.on("draw", function () {
+                var keyword = $(identifier + '_filter > label:eq(0) > input').val();
+                $(identifier).unmark();
+                $(identifier).mark(keyword, {});
+
+
+
+                $(identifier + ' tbody tr').click(function (e) {
+                    $('tr.row_selected').removeClass('row_selected');
+                    $(this).addClass('row_selected');
+                });
+            });
+
+
+            // set the z-index of the 'processing...' overlay
+            // to a great number, so that it may always display
+            // on top of the table. Also set the text color
+            // to black as it is white by default.
+            $(identifier + '_processing').css({
+                "z-index": "1000",
+                "color": "rgb(0, 0, 0)"
+            });
+
+
+            // initiate search one second after the user
+            // stops typing.
+            function setSearchDelayOnDataTable(idSelector) {
+                // remove all events from the search box
+                $(idSelector + '_filter input').off();
+
+
+                function customDataTableSearch() {
+
+                    // get the entered string
+                    var toSearch = $(idSelector + '_filter input').val();
+
+                    // do nothing if the string is null.
+                    // I've not tested this, it is just
+                    // in case.
+                    if (toSearch == null) {
+                        return;
+                    }
+
+                    // initiate search programatically.
+                    $(idSelector).DataTable().search(toSearch).draw();
+                }
+
+                // this variable holds the timer
+                var timeout;
+
+                // register a keypress on the search box
+                $(idSelector + '_filter input').keypress(function () {
+                    if (timeout != null) {
+                        clearTimeout(timeout);
+                        timeout = null;
+                    }
+
+                    // timeout set to 1 second.
+                    timeout = setTimeout(customDataTableSearch, 1000);
+                });
+
+            }
+
+            setSearchDelayOnDataTable(identifier);
+        }
+
+
+        function clearr() {
+
+            $('input[type="search"]').focus();
+            $('input[type="search"]').val("");
+            $('#services_logs_table').DataTable().search("");
+            $('#services_logs_table').DataTable().draw();
+            $('input[type="search"]').blur();
+            //document.getElementById("btn-excel-download").disabled = false;
+            $('#export_wait').hide();
+        }
+
+
+        function HideMessage() { setTimeout(function () { $('#export_wait').hide(); document.getElementById("btn-excel-download").disabled = false; }, 5000); }
+
+
+
+        function submitcheck() {
+
+
+
+            fDate = $('#serviceslogs-form').find('[name*="from_date"]').val().split("-").reverse();
+            tDate = $('#serviceslogs-form').find('[name*="to_date"]').val().split("-").reverse();
+
+            fDate = new Date(fDate[2], fDate[1], fDate[0]);
+            tDate = new Date(tDate[2], tDate[1], tDate[0]);
+
+            if (tDate < fDate) {
+                alert("To Date should be greater than From Date.");
+                return false;
+            }
+
+            searchReport();
+            return true;
+
+        }
+
+        $(document).ready(function () {
+            $('#accordion').accordion("option", "active", 3);
+
+            $(".datepicker").datepicker({ dateFormat: 'dd-mm-yy' });
+
+            $('.hasDatepicker').keydown(function (e) {
+                var unicode = e.keyCode ? e.keyCode : e.charCode;
+                if (unicode != 13 && unicode != 8 && unicode != 9) { e.preventDefault(); }
+            });
+
+            $('.hasDatepicker').keydown(function (e) {
+                var unicode = e.keyCode ? e.keyCode : e.charCode;
+                if (unicode == 8) { e.preventDefault(); e.stopPropagation(); }
+            });
+            setActiveLink("Services Logs");
+            var present = 0;
+            var absent = 0;
+            var late = 0;
+            var onTime = 0;
+            var earlyGone = 0;
+
+
+            var check = false;
+
+            $('#btnExport').button();
+
+
+            $('#services-logs-report').button();
+            $("#services-logs-report").click(function (e) {
+
+                if ($('#consolidated-employees').val() == "") {
+                    alert("Please select 'Employee Number'");
+                    //$('#consolidated-employees').focus();
+                    return false;
+                }
+
+
+                //console.log('111:' + $('#consolidated-employees').val() + ':222');
+
+                if ($('#date_from').val() == "") {
+                    alert("Please select 'From Date'");
+                    $('#date_from').focus();
+                    return false;
+                }
+
+                if ($('#date_to').val() == "") {
+                    alert("Please select 'To Date'");
+                    $('#date_to').focus();
+                    return false;
+                }
+
+                submitcheck();
+                //  serializeAndSend();
+                e.preventDefault();
+            });
+
+
+            //download excel
+            $("#btn-excel-download").click(function (e) {
+
+                if ($('#date_from').val() == "") {
+                    alert("Please select 'From Date'");
+                    $('#date_from').focus();
+                    return false;
+                }
+
+                if ($('#date_to').val() == "") {
+                    alert("Please select 'To Date'");
+                    $('#date_to').focus();
+                    return false;
+                }
+
+                //alert($('#export_wait').html());
+
+                if ($('#export_wait').html() == "No Data Found.") {
+                    $('#export_wait').html("<img src='/images/loader.gif' style='width: 110px ; margin-left: 34%;' alt='processing'>");
+                }
+
+                $('#export_wait').show();
+
+                var post_data = {
+                    //"employee_id": $('#consolidated-employees').val(),
+                    "from_date": $('#date_from').val(),
+                    "to_date": $('#date_to').val(),
+                    "log_title": $('#log_title').val()
+                };
+
+                $("#btn-excel-download").attr("disabled", "disabled");
+
+                $.ajax({
+                    cache: false,
+                    type: 'post',
+                    url: '/SuperAdmin/Reports/ConsolidatedReportExcelDownload',
+                    data: post_data,
+                    //contentType: 'application/json;charset=utf-8',
+                    dataType: 'json',
+                    success: function (data) {
+
+                        if (data.FileGuid != "" & data.FileName != "") {
+
+                            $('#export_wait').hide();
+                            $("#btn-excel-download").removeAttr("disabled");
+
+                            //console.log('export done successfully InShaAllah!!!');
+                            //var response = JSON.stringify(data);
+                            //alert(data.FileGuid + ' >> ' + data.FileName);
+
+                            window.location = '/SuperAdmin/Reports/Download?fileGuid=' + data.FileGuid + '&fileName=' + data.FileName;
+                        }
+                        else {
+                            $('#export_wait').html("No Data Found.");
+                        }
+                    },
+                    error: function (jq) {
+                        console.log('Error: ' + jq.responseText);
+                    }
+
+                });
+                //  serializeAndSend();
+                e.preventDefault();
+            });
+
+            var url = '@Url.Action("ServicesLogsDataHandler", "Reports", null, Request.Url.Scheme)';
+
+            var columns = [
+                   { "data": "str_log_date" },
+                   { "data": "log_title" },
+                   { "data": "log_message" },
+                   { "data": "str_id" }
+            ];
+
+            @*
+                   I did this so that like initDataTables the JS
+            for serverside processing can be used for other tables.
+                NOTE: The names of the columns correspond to the View Model.
+            For example in this example the column names, first_name, last_name
+            etc are taken from ViewModels.Employee
+        *@
+            initReportDataTable('#services_logs_table', url, columns);
+            $('#consolidated-employees').ajaxChosen({
+                dataType: 'json',
+                type: 'POST',
+                url: '@Url.Action("ChangeEmployeePasswordDataHandler", "SU", null, Request.Url.Scheme)'
+            }, {
+                loadingImg: '@Href("~/Content/ChosenAutoComplete/loading.gif")'
+            });
+        });
+    </script>
+}

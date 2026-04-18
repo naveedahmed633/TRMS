@@ -1,0 +1,13 @@
+program_code,course_code,course_title,book_name,book_author,default_program_type_id,default_program_type_number,credit_hours,passing_marks,total_marks,is_active_course
+MBBS,MB901,Physical Pharmacy-MB901,0,0,Year,1,3,33,100,yes
+MBBS,MB902,Physical Pharmacy-MB902,0,0,Year,1,3,33,100,yes
+MBBS,MB903,Physical Pharmacy-MB903,0,0,Year,1,3,33,100,no
+MBBS,MB904,Physical Pharmacy-MB904,0,0,Year,1,1,33,100,yes
+MBBS,MB905,Physical Pharmacy-MB905,0,0,Year,1,3,33,100,no
+MBBS,MB906,Physical Pharmacy-MB906,0,0,Year,1,3,33,100,yes
+BDS,DB901,Chemical Pharmacy-DB901,0,0,Semester,2,3,33,100,yes
+BDS,DB902,Chemical Pharmacy-DB902,0,0,Semester,2,3,33,100,yes
+BDS,DB903,Chemical Pharmacy-DB903,0,0,Semester,2,3,33,100,yes
+BDS,DB904,Chemical Pharmacy-DB904,0,0,Semester,2,1,33,100,yes
+BDS,DB905,Chemical Pharmacy-DBB905,0,0,Semester,2,3,33,100,no
+BDS,DB906,Chemical Pharmacy-DB906,0,0,Semester,2,3,33,100,yes

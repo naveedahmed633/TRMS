@@ -1,0 +1,83 @@
+-- Create a sequence for auto-increment
+CREATE SEQUENCE PUNCHING_EMP_DATA_SEQ
+START WITH 1
+INCREMENT BY 1;
+
+-- Optional: If you want to use a trigger to automatically assign the sequence
+CREATE OR REPLACE TRIGGER PUNCHING_EMP_DATA_TRG
+BEFORE INSERT ON PUNCHING_EMP_DATA
+FOR EACH ROW
+BEGIN
+    SELECT PUNCHING_EMP_DATA_SEQ.NEXTVAL
+    INTO :NEW.PEMP_SEQ
+    FROM DUAL;
+END;
+
+ALTER PROCEDURE PopulateAttendanceToLinkedServer
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Declare a variable to hold the next PEMP_SEQ value from SQL Server sequence
+    DECLARE @PEMP_SEQ INT;
+
+    -- Fetch the next value from SQL Server's sequence
+    SELECT @PEMP_SEQ = NEXT VALUE FOR PEMP_SEQ;
+
+    -- Insert new records into the Oracle linked server table
+    INSERT INTO OPENQUERY(ORACLE2, 
+    'SELECT EMP_ID, EDATE, TIME_IN, TIME_OUT FROM PUNCHING_EMP_DATA')
+    ( EMP_ID, EDATE, TIME_IN, TIME_OUT)
+
+    SELECT 
+        
+        in_data.C_Unique AS EMP_ID,
+        in_data.C_Date AS EDATE,
+        MIN(in_data.C_Time) AS TIME_IN,
+        MAX(out_data.C_Time) AS TIME_OUT
+    FROM dbo.HaTransits_Dump in_data
+    LEFT JOIN dbo.HaTransits_Dump out_data
+        ON in_data.C_Unique = out_data.C_Unique
+       AND in_data.C_Date = out_data.C_Date
+       AND in_data.Device_Name = 'Entry'
+       AND out_data.Device_Name = 'Exit'
+    WHERE in_data.Device_Name = 'Entry'
+    AND NOT EXISTS (
+        SELECT 1 
+        FROM OPENQUERY(ORACLE2, 'SELECT EMP_ID, EDATE FROM PUNCHING_EMP_DATA')
+        WHERE EMP_ID = in_data.C_Unique AND EDATE = in_data.C_Date
+    )
+    GROUP BY 
+        in_data.C_Unique, 
+        in_data.C_Date;
+
+    -- Update existing records in the Oracle linked server table
+    UPDATE T
+    SET 
+        T.TIME_IN = S.TIME_IN,
+        T.TIME_OUT = S.TIME_OUT
+    FROM OPENQUERY(ORACLE2, 'SELECT * FROM PUNCHING_EMP_DATA') T
+    INNER JOIN (
+        SELECT 
+            in_data.C_Unique AS EMP_ID,
+            in_data.C_Date AS EDATE,
+            MIN(in_data.C_Time) AS TIME_IN,
+            MAX(out_data.C_Time) AS TIME_OUT
+        FROM dbo.HaTransits_Dump in_data
+        LEFT JOIN dbo.HaTransits_Dump out_data
+            ON in_data.C_Unique = out_data.C_Unique
+           AND in_data.C_Date = out_data.C_Date
+           AND in_data.Device_Name = 'Entry'
+           AND out_data.Device_Name = 'Exit'
+        WHERE in_data.Device_Name = 'Entry'
+        GROUP BY 
+            in_data.C_Unique, 
+            in_data.C_Date
+    ) S
+    ON T.EMP_ID = S.EMP_ID AND T.EDATE = S.EDATE;
+
+    PRINT 'Attendance data processed successfully into Oracle table PUNCHING_EMP_DATA';
+END;
+
+
+EXEC PopulateAttendanceToLinkedServer;

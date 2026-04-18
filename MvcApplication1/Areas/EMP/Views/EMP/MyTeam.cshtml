@@ -1,0 +1,108 @@
+﻿@{
+    ViewBag.Title = "TRMS - My Team";
+    Layout = "~/Areas/EMP/Views/Shared/_Layout.cshtml";
+
+    var isDataFound = false;
+
+    string EMP_STD_LEC_LoginUserType = "";
+    if (MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeFunctionSLSID.ToString().Contains("student"))
+    {
+        EMP_STD_LEC_LoginUserType = "STD";
+    }
+    else if (MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeFunctionSLSID.ToString().Contains("lecturer"))
+    {
+        EMP_STD_LEC_LoginUserType = "LEC";
+    }
+    else
+    {
+        EMP_STD_LEC_LoginUserType = "EMP";
+    }
+}
+
+<!-- Start content -->
+<div class="container-fluid">
+    <!-- Page-Title -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-title-box">
+                <h4 class="page-title">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("dashboard.welcome")  <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span></h4>
+                <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="/EMP/EMP/Dashboard">@EMP_STD_LEC_LoginUserType</a></li>
+                    <li class="breadcrumb-item active">My Team</li>
+                </ol>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-box">
+                <!-- <div class="panel-heading">
+                    <h4>Invoice</h4>
+                </div> -->
+                <div class="panel-body">
+                    <div class="clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-right"><i class="mdi mdi-account-box"></i> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("MyTeam.title") </h3>
+                        </div>
+                        <div class="pull-right small text-muted">
+                            @DateTime.Now.ToString("f")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <h4>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("MyTeam.attendance.supervisor")</h4>
+
+                            <div class="list-group">
+
+                                @foreach (var item in Model)
+                                {
+                                    isDataFound = true;
+
+                                    <span class="list-group-item">
+                                        <i class="mdi mdi-account"></i> @item
+                                    </span>
+
+                                }
+
+                                @if (!isDataFound)
+                                {
+                                    <span class="list-group-item text-danger">
+                                        <i class="mdi mdi-information"></i> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("MyTeam.nodata")
+                                    </span>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row m-t-10">
+                        <div class="col-12">
+                            <form action="/EMP/EMP/SupervisorTeamPDF" method="post">
+                                <button type="submit" id="btnPDFDownload" style="display: @if (!isDataFound) { <text>none;</text> } else { <text>block;</text> }" class="btn btn-primary waves-effect waves-light">Export PDF</button>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</div>
+<!-- End content -->
+
+@section JS {
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+        });
+    </script>
+}
