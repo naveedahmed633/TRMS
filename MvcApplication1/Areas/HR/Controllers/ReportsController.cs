@@ -443,7 +443,7 @@ namespace MvcApplication1.Areas.HR.Controllers
         }
 
         #endregion
-
+        
         #region Bulk - MonthlyDepartmentalTimeSheetReport
 
         //[HttpPost]
@@ -13793,6 +13793,24 @@ namespace MvcApplication1.Areas.HR.Controllers
 
                     bool pdfRtl = PdfLayoutHelper.RunDirection == PdfWriter.RUN_DIRECTION_RTL;
                     tableEmployee.RunDirection = PdfLayoutHelper.RunDirection;
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    //PdfPCell cellETitle = new PdfPCell(new Phrase(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblmonthtitlehours"), font));
+                    //cellETitle.Border = 0;
+                    //cellETitle.RunDirection = PdfLayoutHelper.RunDirection;
+                    //cellETitle.HorizontalAlignment = 2;
+
                     PdfPCell cellETitle = new PdfPCell(new Phrase(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("title.workhourstimesheetreport"), font));
                     cellETitle.Border = 0;
                     cellETitle.RunDirection = PdfLayoutHelper.RunDirection;
