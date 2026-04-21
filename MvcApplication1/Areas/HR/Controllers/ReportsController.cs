@@ -44,6 +44,43 @@ namespace MvcApplication1.Areas.HR.Controllers
     [Authorize(Roles = BLL.TimeTuneRoles.ROLE_HR)]
     public class ReportsController : Controller
     {
+        // Language-aware PDF helpers
+        private string GetCurrentLang()
+        {
+            return Session["lang"]?.ToString() ?? "En";
+        }
+
+        private iTextSharp.text.Font GetFont(bool isBold = false, float size = 8f, Color color = null)
+        {
+            string fontPath = Environment.GetEnvironmentVariable("windir") + @"\fonts\Arial.ttf";
+            BaseFont bf = BaseFont.CreateFont(fontPath, BaseFont.IDENTITY_H, true);
+            int style = isBold ? iTextSharp.text.Font.BOLD : iTextSharp.text.Font.NORMAL;
+            return new iTextSharp.text.Font(bf, size, style, color ?? Color.BLACK);
+        }
+
+        private string GetStringResource(string key)
+        {
+            return MvcApplication1.ViewModel.GlobalVariables.GetStringResource(key) ?? key;
+        }
+
+        private PdfPCell SafeAddCell(string text, bool isBold = false, int alignment = PdfPCell.ALIGN_LEFT)
+        {
+            string lang = GetCurrentLang();
+            text = text ?? "";
+            var font = GetFont(isBold);
+            var cell = new PdfPCell(new Phrase(text, font));
+            cell.HorizontalAlignment = lang == "Ar" ? Element.ALIGN_RIGHT : alignment;
+            cell.Border = Rectangle.NO_BORDER;
+            return cell;
+        }
+
+        private PdfPCell SafeHeaderCell(string text, bool isBold = true)
+        {
+            var cell = SafeAddCell(text, isBold, Element.ALIGN_CENTER);
+            cell.BackgroundColor = Color.LIGHT_GRAY;
+            return cell;
+        }
+
         #region MonthlyTimeSheetReport
 
         public ActionResult GenerateReport0()
@@ -63,21 +100,6 @@ namespace MvcApplication1.Areas.HR.Controllers
         {
             try
             {
-                //int employeeID;
-
-                //if (!int.TryParse(param.employee_id, out employeeID))
-                //    return RedirectToAction("MonthlyTimeSheet");
-
-                //string month = param.month;
-
-                //BLL.PdfReports.MonthlyTimeSheet reportMaker = new BLL.PdfReports.MonthlyTimeSheet();
-
-                //BLL.PdfReports.MonthlyTimeSheetData toRender = reportMaker.getReport(employeeID, month);
-
-                //if (toRender == null)
-                //    return RedirectToAction("MonthlyTimeSheet");
-
-
                 var data = new List<MonthlyTimesheetAttendanceLog>();
 
                 // get all employee view models
@@ -136,12 +158,8 @@ namespace MvcApplication1.Areas.HR.Controllers
             if (toRender == null)
                 return RedirectToAction("MonthlyTimeSheet");
 
-            //return new Rotativa.ViewAsPdf("MonthlyTimeSheet", toRender) { FileName = "report.pdf" };
-
-            // ------------ Added by Inayat - 05th Dec 2017 ---------------------
-
             ViewData["PDFNoDataFound"] = "";
-            byte[] monthlyTimeSheetPdf = GenerateMonthlyTimeSheetPDF(toRender); // GenerateEvaluationPDF(toRender);
+            byte[] monthlyTimeSheetPdf = GenerateMonthlyTimeSheetPDF(toRender);
 
             if (monthlyTimeSheetPdf != null && monthlyTimeSheetPdf.Length > 0)
             {
@@ -152,1001 +170,275 @@ namespace MvcApplication1.Areas.HR.Controllers
             ViewData["PDFNoDataFound"] = "No Data Found";
 
             return View();
-
-
-            //return RedirectToAction("MonthlyTimeSheet", "Reports");
-
         }
 
         private byte[] GenerateMonthlyTimeSheetPDF(BLL.PdfReports.MonthlyTimeSheetData sdata)
         {
             try
             {
-                BaseFont bf = BaseFont.CreateFont(Environment.GetEnvironmentVariable("windir") + @"\fonts\Arial.ttf", BaseFont.IDENTITY_H, true);
-                iTextSharp.text.Font font = new iTextSharp.text.Font(bf, 10, iTextSharp.text.Font.NORMAL);
+                string lang = GetCurrentLang();
+                int runDirection = (lang == "Ar") ? PdfWriter.RUN_DIRECTION_RTL : PdfWriter.RUN_DIRECTION_LTR;
 
                 using (MemoryStream ms = new MemoryStream())
                 {
-                    // Fonts Definition
-                    Font fNormal7 = FontFactory.GetFont("HELVETICA", 7, Font.NORMAL, Color.BLACK);
-                    Font fNormal8 = FontFactory.GetFont("HELVETICA", 8, Font.NORMAL, Color.BLACK);
-                    Font fBold8 = FontFactory.GetFont("HELVETICA", 8, Font.BOLD, Color.BLACK);
-                    Font fNormal10 = FontFactory.GetFont("HELVETICA", 10, Font.NORMAL, Color.BLACK);
-                    Font fBold9 = FontFactory.GetFont("HELVETICA", 9, Font.BOLD, Color.BLACK);
-                    Font fBold10 = FontFactory.GetFont("HELVETICA", 10, Font.BOLD, Color.BLACK);
-                    Font fBold14Red = FontFactory.GetFont("HELVETICA", 14, Font.BOLD | Font.UNDERLINE, Color.RED);
+                    // Initialize Arial fonts for multi-language support
+                    iTextSharp.text.Font fNormal7 = GetFont(false, 7f);
+                    iTextSharp.text.Font fNormal8 = GetFont(false, 8f);
+                    iTextSharp.text.Font fBold8 = GetFont(true, 8f);
+                    iTextSharp.text.Font fNormal9 = GetFont(false, 9f);
+                    iTextSharp.text.Font fBold9 = GetFont(true, 9f);
+                    iTextSharp.text.Font fNormal10 = GetFont(false, 10f);
+                    iTextSharp.text.Font fBold10 = GetFont(true, 10f);
+                    iTextSharp.text.Font fBold14 = GetFont(true, 14f);
+                    iTextSharp.text.Font fBold14Red = GetFont(true, 14f, Color.RED);
 
-                    Document document = new Document(PageSize.A4, 20f, 20f, 20f, 20f);
+                    Document document = new Document(PageSize.A4, 10f, 10f, 10f, 10f);
                     PdfWriter writer = PdfWriter.GetInstance(document, ms);
                     document.Open();
 
-                    // ----------- Header Section (Logo, Title, Date/Time) -------------------
-                    BLL.PdfReports.MonthlyTimeSheet reportLogoTitle = new BLL.PdfReports.MonthlyTimeSheet();
-                    string[] strLogotitle = reportLogoTitle.getOrganizationLogoTitle().Split('^');
-                    string imageURL = Server.MapPath(strLogotitle[0]);
-                    Image logo = Image.GetInstance(imageURL);
-                    logo.ScaleToFit(80f, 80f);
-
-                    // Table with 3 columns: Title, Logo, Date-Time
-                    PdfPTable tableHeader = new PdfPTable(new[] { 2f, 1f, 1.5f }); 
-                    tableHeader.WidthPercentage = 100;
-                    tableHeader.DefaultCell.Border = Rectangle.NO_BORDER;
-
-                    // 1. Organization Title
-                    PdfPCell cellTitle = new PdfPCell(new Phrase(strLogotitle[1], font));
-                    cellTitle.Border = 0;
-                    cellTitle.VerticalAlignment = Element.ALIGN_MIDDLE;
-                    tableHeader.AddCell(cellTitle);
-
-                    // 2. Logo
-                    PdfPCell cellLogo = new PdfPCell(logo);
-                    cellLogo.Border = 0;
-                    cellLogo.HorizontalAlignment = Element.ALIGN_CENTER;
-                    tableHeader.AddCell(cellLogo);
-
-                    // 3. Date and Time (Side by Side Fix)
-                    string dtNow = "Date: " + DateTime.Now.ToString("dd-MMM-yyyy") + "\nTime: " + DateTime.Now.ToString("hh:mm tt");
-                    PdfPCell cellDateTime = new PdfPCell(new Phrase(dtNow, fNormal8));
-                    cellDateTime.Border = 0;
-                    cellDateTime.HorizontalAlignment = Element.ALIGN_RIGHT;
-                    cellDateTime.VerticalAlignment = Element.ALIGN_MIDDLE;
-                    tableHeader.AddCell(cellDateTime);
-
-                    document.Add(tableHeader);
-
-                    // Line Separator
-                    document.Add(new iTextSharp.text.pdf.draw.LineSeparator(0.8F, 100.0F, Color.BLACK, Element.ALIGN_LEFT, 1));
-                    document.Add(new Paragraph(" ")); // Space
-
-                    // ---------- Employee Info Section -------------------------
-                    PdfPTable tableEmployee = new PdfPTable(2);
-                    tableEmployee.WidthPercentage = 100;
-                    tableEmployee.DefaultCell.Border = Rectangle.NO_BORDER;
-
-                    PdfPTable tableEInfo = new PdfPTable(1);
-                    tableEInfo.DefaultCell.Border = Rectangle.NO_BORDER;
-
-                    // Fix: Text Labels manually set for clarity
-                    tableEInfo.AddCell(new PdfPCell(new Phrase("Name: " + sdata.employeeName, font)) { Border = 0 });
-                    tableEInfo.AddCell(new PdfPCell(new Phrase("Employee Code: " + sdata.employeeCode, font)) { Border = 0 });
-                    
-                    // Fix: Month/Year from sdata
-                    string monthDisplay = sdata.month + " " + sdata.year;
-                    tableEInfo.AddCell(new PdfPCell(new Phrase("Month: " + monthDisplay, font)) { Border = 0 });
-
-                    tableEmployee.AddCell(tableEInfo);
-
-                    // Right side Header Title
-                    PdfPCell cellETitle = new PdfPCell(new Phrase("Monthly Attendance Sheet", fBold10));
-                    cellETitle.Border = 0;
-                    cellETitle.HorizontalAlignment = Element.ALIGN_RIGHT;
-                    tableEmployee.AddCell(cellETitle);
-
-                    document.Add(tableEmployee);
-                    document.Add(new Paragraph(" "));
-
-                    // ---------- Middle Data Table ---------------------
-                    PdfPTable tableMid = new PdfPTable(new[] { 55f, 50f, 60f, 50f, 60f, 70f, 80f, 60f, 60f });
-                    tableMid.WidthPercentage = 100;
-                    tableMid.HeaderRows = 1;
-
-                    string[] headers = { "Date", "Time In", "Remarks In", "Time Out", "Remarks Out", "Final Remarks", "Description", "Device In", "Device Out" };
-                    foreach (string head in headers)
-                    {
-                        PdfPCell hCell = new PdfPCell(new Phrase(head, fBold8));
-                        hCell.BackgroundColor = Color.LIGHT_GRAY;
-                        hCell.HorizontalAlignment = Element.ALIGN_CENTER;
-                        hCell.Padding = 4;
-                        tableMid.AddCell(hCell);
-                    }
-
-                    foreach (var log in sdata.logs)
-                    {
-                        string finalRem = log.finalRemarks + (log.hasManualAttendance ? "*" : "");
-                        
-                        tableMid.AddCell(new PdfPCell(new Phrase(log.date, fNormal8)) { HorizontalAlignment = 0 });
-                        tableMid.AddCell(new PdfPCell(new Phrase(log.timeIn, fNormal8)) { HorizontalAlignment = 1 });
-                        tableMid.AddCell(new PdfPCell(new Phrase(log.remarksIn, fNormal8)) { HorizontalAlignment = 0 });
-                        tableMid.AddCell(new PdfPCell(new Phrase(log.timeOut, fNormal8)) { HorizontalAlignment = 1 });
-                        tableMid.AddCell(new PdfPCell(new Phrase(log.remarksOut, fNormal8)) { HorizontalAlignment = 0 });
-                        tableMid.AddCell(new PdfPCell(new Phrase(finalRem, fNormal8)) { HorizontalAlignment = 0 });
-                        tableMid.AddCell(new PdfPCell(new Phrase(log.description, fNormal8)) { HorizontalAlignment = 0 });
-                        tableMid.AddCell(new PdfPCell(new Phrase(log.terminalIn, fNormal7)) { HorizontalAlignment = 0 });
-                        tableMid.AddCell(new PdfPCell(new Phrase(log.terminalOut, fNormal7)) { HorizontalAlignment = 0 });
-                    }
-
-                    if (sdata.logs.Length > 0)
-                    {
-                        document.Add(tableMid);
-                        document.Add(new Paragraph("\nSummary", fBold10));
-
-                        // ---------- Summary Table ---------------------
-                        PdfPTable tableEnd = new PdfPTable(new[] { 2f, 1f, 2f, 1f });
-                        tableEnd.WidthPercentage = 100;
-                        tableEnd.SpacingBefore = 5;
-
-                        // Row 1
-                        tableEnd.AddCell(new PdfPCell(new Phrase("Present:", fBold9)));
-                        tableEnd.AddCell(new Phrase(sdata.totalPresent.ToString(), fNormal8));
-                        tableEnd.AddCell(new PdfPCell(new Phrase("Absent:", fBold9)));
-                        tableEnd.AddCell(new Phrase(sdata.totalAbsent.ToString(), fNormal8));
-
-                        // Row 2
-                        tableEnd.AddCell(new PdfPCell(new Phrase("Late & Early:", fBold9)));
-                        tableEnd.AddCell(new Phrase(sdata.totalLate.ToString(), fNormal8));
-                        tableEnd.AddCell(new PdfPCell(new Phrase("Leave:", fBold9)));
-                        tableEnd.AddCell(new Phrase(sdata.totalLeave.ToString(), fNormal8));
-
-                        // Row 3
-                        tableEnd.AddCell(new PdfPCell(new Phrase("Half Day:", fBold9)));
-                        tableEnd.AddCell(new Phrase(sdata.totalEarlyOut.ToString(), fNormal8));
-                        tableEnd.AddCell(new PdfPCell(new Phrase("Miss Punch:", fBold9)));
-                        tableEnd.AddCell(new Phrase(sdata.MissPunch.ToString(), fNormal8));
-
-                        document.Add(tableEnd);
-
-                        // Footer Notes
-                        Paragraph p_abrv = new Paragraph("\nLegends: PO-Present On Time, AB-Absent, LV-Leave, L&E-Late and Early, MP-MissPunch, HD-HalfDay, *-Manually Updated", fNormal7);
-                        document.Add(p_abrv);
-
-                        document.Add(new Paragraph("This is a system generated report and does not require any signature.", fNormal7));
-                    }
-                    else
-                    {
-                        document.Add(new Paragraph("\nNo Data Found.", fBold14Red));
-                    }
-
-                    document.Close();
-                    return ms.ToArray();
-                }
-            }
-            catch (Exception ex)
-            {
-                // Debugging ke liye log add karein: ex.Message
-                return null;
-            }
-        }
-        private int GenerateEvaluationPDF(BLL.PdfReports.MonthlyTimeSheetData sdata)
-        {
-            int reponse = 0;
-            int gPersonality = 4, gCommunication = 3, gAttendance = 2, gImitative = 5, gOrganization = 1, gSelf = 3;
-            int sProficiency = 2, sProject = 5, sAttention = 3, sClient = 1, sCreativity = 4, sBusiness = 2;
-
-            string strPosition = "the position text is given below", strRequirement = "", strPrimary = "", strSecondary = "secondary text is there. secondary text is there. secondary text is there. secondary text is there. secondary text is there. secondary text is there. secondary text is there.", strCareer = "this is career path text";
-
-            try
-            {
-
-                ////here MemoryStream is used to Export PDF file instead of saving the PDF file in a specific folder
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    //// set a FONT properties as required and here for BLACK color
-                    //BaseFont bfTimesNormal = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, false);
-                    //Font timesNormal = new Font(bfTimesNormal, 11, Font.NORMAL, Color.BLACK);
-
-                    //// set a FONT properties as required and here for BLACK color
-                    //BaseFont bfTimesBold = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, false);
-                    //Font timesBold = new Font(bfTimesBold, 12, Font.BOLD, Color.BLACK);
-
-                    Font fNormal7 = FontFactory.GetFont(BaseFont.HELVETICA, 7, Font.NORMAL, Color.BLACK);
-                    Font fNormalUnder7 = FontFactory.GetFont(BaseFont.HELVETICA, 7, Font.NORMAL | Font.UNDERLINE, Color.BLACK);
-                    Font fBold7 = FontFactory.GetFont(BaseFont.HELVETICA, 7, Font.BOLD, Color.BLACK);
-
-                    Font fNormal8 = FontFactory.GetFont(BaseFont.HELVETICA, 8, Font.NORMAL, Color.BLACK);
-                    Font fBold8 = FontFactory.GetFont(BaseFont.HELVETICA, 8, Font.BOLD, Color.BLACK);
-
-                    Font fNormal9 = FontFactory.GetFont(BaseFont.HELVETICA, 9, Font.NORMAL, Color.BLACK);
-                    Font fNormalUnder9 = FontFactory.GetFont(BaseFont.HELVETICA, 9, Font.NORMAL | Font.UNDERLINE, Color.BLACK);
-                    Font fNormalItalic9 = FontFactory.GetFont(BaseFont.TIMES_ROMAN, 9, Font.NORMAL | Font.ITALIC, Color.BLACK);
-                    Font fBold9 = FontFactory.GetFont(BaseFont.HELVETICA, 9, Font.BOLD, Color.BLACK);
-
-                    Font fNormal10 = FontFactory.GetFont(BaseFont.HELVETICA, 10, Font.NORMAL, Color.BLACK);
-                    Font fBold10 = FontFactory.GetFont(BaseFont.HELVETICA, 10, Font.BOLD, Color.BLACK);
-
-                    Font fNormal14 = FontFactory.GetFont(BaseFont.HELVETICA, 14, Font.NORMAL, Color.BLACK);
-                    Font fBold14 = FontFactory.GetFont(BaseFont.HELVETICA, 14, Font.BOLD, Color.BLACK);
-
-                    Font fBold14Red = FontFactory.GetFont(BaseFont.HELVETICA, 14, Font.BOLD | Font.UNDERLINE, Color.RED);
-                    Font fBold16 = FontFactory.GetFont(BaseFont.HELVETICA, 16, Font.BOLD | Font.UNDERLINE, Color.BLACK);
-
-                    //// Initialize Document Page for PDF
-                    Document document = new Document(PageSize.A4, 10f, 10f, 5f, 5f);
-
-                    //// To Export PDF file automatically then write data to memory stream
-                    PdfWriter writer = PdfWriter.GetInstance(document, ms);
-                    writer.RunDirection = PdfLayoutHelper.RunDirection;
-
-                    //// To save file in a specific folder of project, also remove MemoryStream code above and Response code lines below
-                    //string path = Server.MapPath("~/Content");
-                    //PdfWriter.GetInstance(document, new FileStream(path + "/Report-" + sdata.employeeCode + "-" + sdata.month + "-" + sdata.year + ".pdf", FileMode.CreateNew));
-
-                    document.Open();
-
-                    // ----------- Line Separator -------------------
                     iTextSharp.text.pdf.draw.LineSeparator lineSeparator = new iTextSharp.text.pdf.draw.LineSeparator(0.8F, 99.0F, Color.BLACK, Element.ALIGN_LEFT, 1);
 
                     BLL.PdfReports.MonthlyTimeSheet reportLogoTitle = new BLL.PdfReports.MonthlyTimeSheet();
                     string[] strLogotitle = reportLogoTitle.getOrganizationLogoTitle().Split('^');
 
                     // ---------- Header Table ---------------------
-                    string imageURL = Server.MapPath(strLogotitle[0]); //Server.MapPath("~/Content/Logos/logo-default.png");
-                    //string imageURL = Request.PhysicalApplicationPath + "/Content/hbl-logo.png";
-
+                    string imageURL = Server.MapPath(strLogotitle[0]);
                     Image logo = Image.GetInstance(imageURL);
-                    //logo.Width = 140.0f;
-                    //logo.Alignment = Element.ALIGN_LEFT;
-                    //logo.ScaleToFit(140f, 20f);
-                    //logo.ScaleAbsolute(140f, 20f);
-                    //logo.SpacingBefore = 5f;
-                    //logo.SpacingAfter = 5f;
+                    logo.ScaleToFit(80f, 80f);
 
-                    PdfPTable tableHeader = new PdfPTable(new[] { 100.0f, 860.0f, 140.0f });//total 595 - 10 x 2 due to Left and Right side margin
+                    PdfPTable tableHeader = new PdfPTable(new[] { 30f, 40f, 30f });
                     tableHeader.WidthPercentage = 100;
-                    tableHeader.HeaderRows = 0;
-                    //tableHeader.SpacingBefore = 50;
-                    tableHeader.SpacingAfter = 3;
+                    tableHeader.RunDirection = runDirection;
                     tableHeader.DefaultCell.Border = Rectangle.NO_BORDER;
 
-                    tableHeader.AddCell(logo);
-
-                    PdfPCell cellTitle = new PdfPCell(new Phrase(strLogotitle[1], fBold14));//"DUHS - DOW University of Health Sciences"
-                    cellTitle.HorizontalAlignment = 1;
+                    PdfPCell cellTitle = new PdfPCell(new Phrase(strLogotitle[1], fBold14));
+                    cellTitle.VerticalAlignment = Element.ALIGN_MIDDLE;
                     cellTitle.Border = 0;
                     tableHeader.AddCell(cellTitle);
 
-                    PdfPCell cellDateTime = new PdfPCell(new Phrase("Date:\n" + DateTime.Now.ToString("dd-MMM-yyyy") + "\n\nTime:\n" + DateTime.Now.ToString("hh:mm tt"), fNormal10));
-                    //cellDateTime.HorizontalAlignment = 2;
-                    cellDateTime.PaddingTop = 2.0f;
+                    PdfPCell cellLogo = new PdfPCell(logo);
+                    cellLogo.HorizontalAlignment = Element.ALIGN_CENTER;
+                    cellLogo.Border = 0;
+                    tableHeader.AddCell(cellLogo);
+
+                    // Refactored Date/Time alignment into a row
+                    PdfPTable dateTimeSubTable = new PdfPTable(1);
+                    dateTimeSubTable.RunDirection = runDirection;
+                    dateTimeSubTable.DefaultCell.Border = Rectangle.NO_BORDER;
+                    
+                    dateTimeSubTable.AddCell(new Phrase(GetStringResource("lblDate") + ": " + DateTime.Now.ToString("dd-MMM-yyyy"), fNormal9));
+                    dateTimeSubTable.AddCell(new Phrase(GetStringResource("lblTime") + ": " + DateTime.Now.ToString("hh:mm tt"), fNormal9));
+
+                    PdfPCell cellDateTime = new PdfPCell(dateTimeSubTable);
+                    cellDateTime.HorizontalAlignment = (lang == "Ar") ? Element.ALIGN_LEFT : Element.ALIGN_RIGHT;
                     cellDateTime.Border = 0;
                     tableHeader.AddCell(cellDateTime);
 
-                    //tableHeader.AddCell("Date: " + DateTime.Now.ToShortDateString() + "\nTime: " +DateTime.Now.ToString("hh:mm tt"));
-
                     document.Add(tableHeader);
-
-                    ////// ---------- Header Table ---------------------
-                    ////string imageURL = Server.MapPath("~/images/bams-logo-pdf.png");
-                    //////string imageURL = Request.PhysicalApplicationPath + "/Content/hbl-logo.png";
-
-                    ////Image logo = Image.GetInstance(imageURL);
-                    //////logo.Width = 140.0f;
-                    //////logo.Alignment = Element.ALIGN_LEFT;
-                    //////logo.ScaleToFit(140f, 20f);
-                    //////logo.ScaleAbsolute(140f, 20f);
-                    //////logo.SpacingBefore = 5f;
-                    //////logo.SpacingAfter = 5f;
-
-                    ////PdfPTable tableHeader = new PdfPTable(new[] { 70.0f, 320, 95.0f });//total 595 - 10 x 2 due to Left and Right side margin
-                    ////tableHeader.WidthPercentage = 100;
-                    ////tableHeader.HeaderRows = 0;
-                    //////tableHeader.SpacingBefore = 50;
-                    ////tableHeader.SpacingAfter = 3;
-                    ////tableHeader.DefaultCell.Border = Rectangle.NO_BORDER;
-
-                    ////tableHeader.AddCell(logo);
-                    ////tableHeader.AddCell("");
-
-                    ////PdfPCell cellDateTime = new PdfPCell(new Phrase("Date: " + DateTime.Now.ToShortDateString() + "\n\nTime: " + DateTime.Now.ToString("hh:mm tt"), fNormal10));
-                    //////cellDateTime.HorizontalAlignment = 2;
-                    ////cellDateTime.Border = 0;
-                    ////tableHeader.AddCell(cellDateTime);
-
-                    //////tableHeader.AddCell("Date: " + DateTime.Now.ToShortDateString() + "\nTime: " +DateTime.Now.ToString("hh:mm tt"));
-
-                    ////document.Add(tableHeader);
-
-                    //separator
+                    document.Add(new Paragraph("\n"));
                     document.Add(lineSeparator);
 
                     // ---------- Top Data -------------------------
-                    PdfPTable tableEmployee = new PdfPTable(2);//total 595 - 10 x 2 due to Left and Right side margin
+                    PdfPTable tableEmployee = new PdfPTable(2);
                     tableEmployee.WidthPercentage = 100;
-                    tableEmployee.HeaderRows = 0;
-                    //tableHeader.SpacingBefore = 50;
-                    //tableEmployee.SpacingAfter = 3;
+                    tableEmployee.RunDirection = runDirection;
                     tableEmployee.DefaultCell.Border = Rectangle.NO_BORDER;
 
                     PdfPTable tableEInfo = new PdfPTable(1);
-                    tableEInfo.WidthPercentage = 100;
-                    tableEInfo.HeaderRows = 0;
-                    //tableHeader.SpacingBefore = 50;
-                    tableEInfo.SpacingAfter = 3;
                     tableEInfo.DefaultCell.Border = Rectangle.NO_BORDER;
+                    tableEInfo.RunDirection = runDirection;
 
-                    PdfPCell cellEName = new PdfPCell(new Phrase("Name: " + sdata.employeeName, fBold9));
-                    cellEName.Border = 0;
-                    tableEInfo.AddCell(cellEName);
+                    tableEInfo.AddCell(new Phrase(GetStringResource("dashboard.Name") + ": " + sdata.employeeName, fBold9));
+                    tableEInfo.AddCell(new Phrase(GetStringResource("monthly.epcode") + ": " + sdata.employeeCode, fBold9));
+                    tableEInfo.AddCell(new Phrase(GetStringResource("lblmonthyear") + ": " + sdata.month + " " + sdata.year, fBold9));
 
-                    PdfPCell cellECode = new PdfPCell(new Phrase("Employee Code: " + sdata.employeeCode, fBold9));
-                    cellECode.Border = 0;
-                    tableEInfo.AddCell(cellECode);
+                    PdfPCell infoContainer = new PdfPCell(tableEInfo);
+                    infoContainer.Border = 0;
+                    tableEmployee.AddCell(infoContainer);
 
-                    PdfPCell cellETitle = new PdfPCell(new Phrase("Performance Evaluation", fBold16));
+                    PdfPCell cellETitle = new PdfPCell(new Phrase(GetStringResource("lblmonthtitlehours"), fBold14));
                     cellETitle.Border = 0;
-                    cellETitle.HorizontalAlignment = 2;
-
-                    tableEmployee.AddCell(tableEInfo);
+                    cellETitle.HorizontalAlignment = (lang == "Ar") ? Element.ALIGN_LEFT : Element.ALIGN_RIGHT;
                     tableEmployee.AddCell(cellETitle);
 
-                    //////////document.Add(tableEmployee);
+                    document.Add(tableEmployee);
 
                     // ---------- Middle Table ---------------------
-                    PdfPTable tableMiddle = new PdfPTable(2);//total 595 - 10 x 2 due to Left and Right side margin
-                    tableMiddle.WidthPercentage = 100;
-                    tableMiddle.HeaderRows = 0;
-                    //tableHeader.SpacingBefore = 50;
-                    //tableEmployee.SpacingAfter = 3;
-                    tableMiddle.DefaultCell.Border = Rectangle.NO_BORDER;
+                    PdfPTable tableMid = new PdfPTable(new[] { 10f, 10f, 12f, 10f, 12f, 12f, 14f, 10f, 10f });
+                    tableMid.WidthPercentage = 100;
+                    tableMid.HeaderRows = 1;
+                    tableMid.RunDirection = runDirection;
+                    tableMid.SpacingBefore = 10f;
 
-
-                    // ---------- Middle Table - Column 1 ---------------------
-                    PdfPTable tableMiddleCol01 = new PdfPTable(1);
-                    tableMiddleCol01.WidthPercentage = 100;
-                    tableMiddleCol01.HeaderRows = 0;
-                    //tableMiddleCol01.SpacingBefore = 50;
-                    tableMiddleCol01.SpacingAfter = 3;
-                    tableMiddleCol01.DefaultCell.Border = Rectangle.NO_BORDER;
-
-
-                    ////////////////////////
-                    PdfPCell cellC01R01 = new PdfPCell(new Phrase("Employee Performance Evaluation", fBold14));
-                    cellC01R01.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R01);
-
-
-                    ////////////////////////
-
-                    PdfPCell cellC01R02 = new PdfPCell(new Phrase("Employee:", fBold9));
-                    cellC01R02.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R02);
-
-                    PdfPCell cellC01R02_Value = new PdfPCell(new Phrase(sdata.employeeName + "\n\n", fNormal9));
-                    cellC01R02_Value.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R02_Value);
-
-                    ////////////////////////
-
-                    PdfPCell cellC01R03 = new PdfPCell(new Phrase("Employee Code:", fBold9));
-                    cellC01R03.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R03);
-
-                    PdfPCell cellC01R03_Value = new PdfPCell(new Phrase(sdata.employeeCode + "\n\n", fNormal9));
-                    cellC01R03_Value.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R03_Value);
-
-                    ////////////////////////
-                    PdfPCell cellC01R04 = new PdfPCell(new Phrase("Review Period: ", fBold9));
-                    cellC01R04.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R04);
-
-                    PdfPCell cellC01R04_Value = new PdfPCell(new Phrase("2018 - 2019" + "\n\n", fNormal9));
-                    cellC01R04_Value.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R04_Value);
-
-                    ////////////////////////
-                    PdfPCell cellC01R05 = new PdfPCell(new Phrase("1) Evaluate performance by circling the appropriate response:\n" +
-                                                                         "\t\t\t\t\t\t1 = substandard, needs constant supervision\n" +
-                                                                         "\t\t\t\t\t\t2 = below average, needs improvement\n" +
-                                                                         "\t\t\t\t\t\t3 = average, satisfactorily meets criteria\n" +
-                                                                         "\t\t\t\t\t\t4 = above average, exceeds criteria\n" +
-                                                                         "\t\t\t\t\t\t5 = exemplary, deserving of unusual recognition\n\n" +
-                                                                    "\t2) Enter comments as necessary.\n\n" +
-                                                                    "\t3) Set goals for the next review period\n\n" +
-                                                                    "\t4) Complete the back side (supervisor only).", fNormalItalic9));
-                    cellC01R05.Border = 0;
-                    //cellC01R05.MinimumHeight = 60.0f;
-                    tableMiddleCol01.AddCell(cellC01R05);
-
-                    ////////////////////////
-                    PdfPCell cellC01R06 = new PdfPCell(new Phrase("\nGeneral Criteria", fBold14));
-                    cellC01R06.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R06);
-
-                    ////////////////////////
-                    PdfPCell cellC01R07 = new PdfPCell(new Phrase("Personality / demeanor:", fBold9));
-                    cellC01R07.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R07);
-
-                    PdfPCell cellC01R07_Text = new PdfPCell(new Phrase("Flexible and easy to get along with an adaptable team player.", fNormal9));
-                    cellC01R07_Text.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R07_Text);
-
-                    Phrase phrGPersonality = null; // new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                    if (gPersonality > 0 && gPersonality < 6)
+                    string[] headers = { "lblDate", "lblTimeIn", "lblRemarksIn", "lblTimeOut", "lblRemarksOut", "lblFinalRemarks", "lblDescription", "lblDeviceIn", "lblDeviceOut" };
+                    foreach (var h in headers)
                     {
-                        if (gPersonality == 1)
-                            phrGPersonality = new Phrase("1*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (gPersonality == 2)
-                            phrGPersonality = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (gPersonality == 3)
-                            phrGPersonality = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (gPersonality == 4)
-                            phrGPersonality = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (gPersonality == 5)
-                            phrGPersonality = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5*" + "\n\n", fBold9);
+                        PdfPCell cell = new PdfPCell(new Phrase(GetStringResource(h), fBold8));
+                        cell.BackgroundColor = Color.LIGHT_GRAY;
+                        cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                        tableMid.AddCell(cell);
+                    }
+
+                    foreach (var log in sdata.logs)
+                    {
+                        string remarks = log.finalRemarks + (log.hasManualAttendance ? "*" : "");
+                        tableMid.AddCell(new PdfPCell(new Phrase(log.date, fNormal8)) { HorizontalAlignment = Element.ALIGN_CENTER });
+                        tableMid.AddCell(new PdfPCell(new Phrase(log.timeIn, fNormal8)) { HorizontalAlignment = Element.ALIGN_CENTER });
+                        tableMid.AddCell(new PdfPCell(new Phrase(log.remarksIn, fNormal8)));
+                        tableMid.AddCell(new PdfPCell(new Phrase(log.timeOut, fNormal8)) { HorizontalAlignment = Element.ALIGN_CENTER });
+                        tableMid.AddCell(new PdfPCell(new Phrase(log.remarksOut, fNormal8)));
+                        tableMid.AddCell(new PdfPCell(new Phrase(remarks, fNormal8)));
+                        tableMid.AddCell(new PdfPCell(new Phrase(log.description, fNormal8)));
+                        tableMid.AddCell(new PdfPCell(new Phrase(log.terminalIn, fNormal7)));
+                        tableMid.AddCell(new PdfPCell(new Phrase(log.terminalOut, fNormal7)));
+                    }
+
+                    if (sdata.logs.Length > 0)
+                    {
+                        document.Add(tableMid);
+
+                        document.Add(new Paragraph(GetStringResource("lblSummary"), fBold10));
+
+                        PdfPTable tableEnd = new PdfPTable(2);
+                        tableEnd.WidthPercentage = 100;
+                        tableEnd.RunDirection = runDirection;
+                        tableEnd.SpacingBefore = 5f;
+
+                        void AddSummaryRow(string label, string value)
+                        {
+                            tableEnd.AddCell(new PdfPCell(new Phrase(GetStringResource(label), fBold9)));
+                            tableEnd.AddCell(new PdfPCell(new Phrase(value, fNormal8)));
+                        }
+
+                        AddSummaryRow("lblPresent", sdata.totalPresent);
+                        AddSummaryRow("lblLateEarly", sdata.totalLate);
+                        AddSummaryRow("lblAbsent", sdata.totalAbsent);
+                        AddSummaryRow("lblLeave", sdata.totalLeave);
+                        AddSummaryRow("lblHalfDay", sdata.totalEarlyOut);
+                        AddSummaryRow("lblMissPunch", sdata.MissPunch);
+                        AddSummaryRow("lblTotalDays", sdata.totalDays);
+
+                        document.Add(tableEnd);
+
+                        Paragraph p_abrv = new Paragraph(GetStringResource("lblLegends"), fNormal7);
+                        p_abrv.SpacingBefore = 5;
+                        document.Add(p_abrv);
+
+                        Paragraph p_nsig = new Paragraph(GetStringResource("lblSystemGenerated"), fNormal7);
+                        document.Add(p_nsig);
+
+                        document.Close();
+                        return ms.ToArray();
                     }
                     else
                     {
-                        phrGPersonality = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
+                        Paragraph p_no_data = new Paragraph(GetStringResource("lblNoDataFound"), fBold14Red);
+                        p_no_data.Alignment = Element.ALIGN_CENTER;
+                        document.Add(p_no_data);
+                        document.Close();
+                        return ms.ToArray();
                     }
-                    PdfPCell cellC01R07_Value = new PdfPCell(phrGPersonality);
-                    cellC01R07_Value.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R07_Value);
-
-                    ////////////////////////
-                    PdfPCell cellC01R08 = new PdfPCell(new Phrase("Communication Skills:", fBold9));
-                    cellC01R08.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R08);
-
-                    PdfPCell cellC01R08_Text = new PdfPCell(new Phrase("Listens, understands and expresses him / herself well.", fNormal9));
-                    cellC01R08_Text.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R08_Text);
-
-                    Phrase phrGCommunication = null; // new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                    if (gCommunication > 0 && gCommunication < 6)
-                    {
-                        if (gCommunication == 1)
-                            phrGCommunication = new Phrase("1*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (gCommunication == 2)
-                            phrGCommunication = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (gCommunication == 3)
-                            phrGCommunication = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (gCommunication == 4)
-                            phrGCommunication = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (gCommunication == 5)
-                            phrGCommunication = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5*" + "\n\n", fBold9);
-                    }
-                    else
-                    {
-                        phrGCommunication = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                    }
-                    PdfPCell cellC01R08_Value = new PdfPCell(phrGCommunication);
-                    cellC01R08_Value.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R08_Value);
-
-                    ////////////////////////
-                    PdfPCell cellC01R09 = new PdfPCell(new Phrase("Attendance and promptness:", fBold9));
-                    cellC01R09.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R09);
-
-                    PdfPCell cellC01R09_Text = new PdfPCell(new Phrase("Observes assigned working hours, is conscientious.", fNormal9));
-                    cellC01R09_Text.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R09_Text);
-
-                    Phrase phrGAttendance = null; // new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                    if (gAttendance > 0 && gAttendance < 6)
-                    {
-                        if (gAttendance == 1)
-                            phrGAttendance = new Phrase("1*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (gAttendance == 2)
-                            phrGAttendance = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (gAttendance == 3)
-                            phrGAttendance = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (gAttendance == 4)
-                            phrGAttendance = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (gAttendance == 5)
-                            phrGAttendance = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5*" + "\n\n", fBold9);
-                    }
-                    else
-                    {
-                        phrGAttendance = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                    }
-                    PdfPCell cellC01R09_Value = new PdfPCell(phrGAttendance);
-                    cellC01R09_Value.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R09_Value);
-
-                    ////////////////////////
-                    PdfPCell cellC01R10 = new PdfPCell(new Phrase("Imitative:", fBold9));
-                    cellC01R10.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R10);
-
-                    PdfPCell cellC01R10_Text = new PdfPCell(new Phrase("Works without close supervision, initiates independent action.", fNormal9));
-                    cellC01R10_Text.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R10_Text);
-
-                    Phrase phrGImitative = null; // new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                    if (gImitative > 0 && gImitative < 6)
-                    {
-                        if (gImitative == 1)
-                            phrGImitative = new Phrase("1*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (gImitative == 2)
-                            phrGImitative = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (gImitative == 3)
-                            phrGImitative = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (gImitative == 4)
-                            phrGImitative = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (gImitative == 5)
-                            phrGImitative = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5*" + "\n\n", fBold9);
-                    }
-                    else
-                    {
-                        phrGImitative = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                    }
-                    PdfPCell cellC01R10_Value = new PdfPCell(phrGImitative);
-                    cellC01R10_Value.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R10_Value);
-
-                    ////////////////////////
-                    PdfPCell cellC01R11 = new PdfPCell(new Phrase("Organization and time-awareness:", fBold9));
-                    cellC01R11.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R11);
-
-                    PdfPCell cellC01R11_Text = new PdfPCell(new Phrase("Sets and observes own priorities for the best use of his/her time.", fNormal9));
-                    cellC01R11_Text.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R11_Text);
-
-                    Phrase phrGOrganization = null; // new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                    if (gOrganization > 0 && gOrganization < 6)
-                    {
-                        if (gOrganization == 1)
-                            phrGOrganization = new Phrase("1*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (gOrganization == 2)
-                            phrGOrganization = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (gOrganization == 3)
-                            phrGOrganization = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (gOrganization == 4)
-                            phrGOrganization = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (gOrganization == 5)
-                            phrGOrganization = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5*" + "\n\n", fBold9);
-                    }
-                    else
-                    {
-                        phrGOrganization = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                    }
-                    PdfPCell cellC01R11_Value = new PdfPCell(phrGOrganization);
-                    cellC01R11_Value.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R11_Value);
-
-                    ////////////////////////
-                    PdfPCell cellC01R12 = new PdfPCell(new Phrase("Self-Control:", fBold9));
-                    cellC01R12.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R12);
-
-                    PdfPCell cellC01R12_Text = new PdfPCell(new Phrase("Maintains composure and performs well under pressure.", fNormal9));
-                    cellC01R12_Text.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R12_Text);
-
-                    Phrase phrGSelf = null; // new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                    if (gSelf > 0 && gSelf < 6)
-                    {
-                        if (gSelf == 1)
-                            phrGSelf = new Phrase("1*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (gSelf == 2)
-                            phrGSelf = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (gSelf == 3)
-                            phrGSelf = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (gSelf == 4)
-                            phrGSelf = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (gSelf == 5)
-                            phrGSelf = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5*" + "\n\n", fBold9);
-                    }
-                    else
-                    {
-                        phrGSelf = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                    }
-                    PdfPCell cellC01R12_Value = new PdfPCell(phrGSelf);
-                    cellC01R12_Value.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R12_Value);
-
-                    ////////////////////////
-                    PdfPCell cellC01R13 = new PdfPCell(new Phrase("\nComments", fBold14));
-                    cellC01R13.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R13);
-
-                    ////////////////////////
-                    PdfPCell cellC01R14 = new PdfPCell(new Phrase("Employee’s major strength:", fBold9));
-                    cellC01R14.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R14);
-
-                    PdfPCell cellC01R14_Value = new PdfPCell(new Phrase(sdata.employeeName + "\n\n\n", fNormal9));
-                    cellC01R14_Value.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R14_Value);
-
-                    ////////////////////////
-                    PdfPCell cellC01R15 = new PdfPCell(new Phrase("Area needing most improvement:", fBold9));
-                    cellC01R15.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R15);
-
-                    PdfPCell cellC01R15_Value = new PdfPCell(new Phrase(sdata.employeeName + "\n\n\n", fNormal9));
-                    cellC01R15_Value.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R15_Value);
-
-                    ////////////////////////
-                    PdfPCell cellC01R16 = new PdfPCell(new Phrase("Other Comments:", fBold9));
-                    cellC01R16.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R16);
-
-                    PdfPCell cellC01R16_Value = new PdfPCell(new Phrase(sdata.employeeName + "\n\n\n", fNormal9));
-                    cellC01R16_Value.Border = 0;
-                    tableMiddleCol01.AddCell(cellC01R16_Value);
-
-
-
-
-                    // --------------------------------------------- Middle Table - Column 2 ---------------------------------------------------------
-                    PdfPTable tableMiddleCol02 = new PdfPTable(1);
-                    tableMiddleCol02.WidthPercentage = 100;
-                    tableMiddleCol02.HeaderRows = 0;
-                    //tableMiddleCol02.SpacingBefore = 50;
-                    tableMiddleCol02.SpacingAfter = 3;
-                    tableMiddleCol02.DefaultCell.Border = Rectangle.NO_BORDER;
-
-                    PdfPCell cellC02R01 = new PdfPCell(new Phrase("Position:", fBold9));
-                    cellC02R01.Border = 0;
-                    tableMiddleCol02.AddCell(cellC02R01);
-
-                    Phrase phrPosition = null;
-                    if (strPosition.Length > 0)
-                    {
-                        phrPosition = new Phrase(strPosition, fNormal9);
-                    }
-                    else
-                    {
-                        phrPosition = new Phrase("_______________________________________________________________________________________________________", fNormal9);
-                    }
-                    PdfPCell cellC02R01_Value = new PdfPCell(phrPosition);
-                    cellC02R01_Value.Border = 0;
-                    cellC02R01_Value.MinimumHeight = 30.0f;
-                    tableMiddleCol02.AddCell(cellC02R01_Value);
-
-                    ////////////////////////
-                    PdfPCell cellC02R02 = new PdfPCell(new Phrase("Requirements/attribute:", fBold9));
-                    cellC02R02.Border = 0;
-                    tableMiddleCol02.AddCell(cellC02R02);
-
-                    Phrase phrRequirement = null;
-                    if (strRequirement.Length > 0)
-                    {
-                        phrRequirement = new Phrase(strRequirement, fNormal9);
-                    }
-                    else
-                    {
-                        phrRequirement = new Phrase("_______________________________________________________________________________________________________", fNormal9);
-                    }
-                    PdfPCell cellC02R02_Value = new PdfPCell(phrRequirement);
-                    cellC02R02_Value.Border = 0;
-                    cellC02R02_Value.MinimumHeight = 30.0f;
-                    tableMiddleCol02.AddCell(cellC02R02_Value);
-
-                    ////////////////////////
-                    PdfPCell cellC02R03 = new PdfPCell(new Phrase("Primary resposibilities:", fBold9));
-                    cellC02R03.Border = 0;
-                    tableMiddleCol02.AddCell(cellC02R03);
-
-                    Phrase phrPrimary = null;
-                    if (strPrimary.Length > 0)
-                    {
-                        phrPrimary = new Phrase(strPrimary, fNormal9);
-                    }
-                    else
-                    {
-                        phrPrimary = new Phrase("__________________________________________________________________________________________________________________________________________________________________", fNormal9);
-                    }
-                    PdfPCell cellC02R03_Value = new PdfPCell(phrPrimary);
-                    cellC02R03_Value.Border = 0;
-                    cellC02R03_Value.MinimumHeight = 40.0f;
-                    tableMiddleCol02.AddCell(cellC02R03_Value);
-
-                    ////////////////////////
-                    PdfPCell cellC02R04 = new PdfPCell(new Phrase("Secondary resposibilities:", fBold9));
-                    cellC02R04.Border = 0;
-                    tableMiddleCol02.AddCell(cellC02R04);
-
-                    Phrase phrSecondary = null;
-                    if (strSecondary.Length > 0)
-                    {
-                        phrSecondary = new Phrase(strSecondary, fNormal9);
-                    }
-                    else
-                    {
-                        phrSecondary = new Phrase("__________________________________________________________________________________________________________________________________________________________________", fNormal9);
-                    }
-                    PdfPCell cellC02R04_Value = new PdfPCell(phrSecondary);
-                    cellC02R04_Value.Border = 0;
-                    cellC02R04_Value.MinimumHeight = 40.0f;
-                    tableMiddleCol02.AddCell(cellC02R04_Value);
-
-                    ////////////////////////
-                    PdfPCell cellC02R05 = new PdfPCell(new Phrase("Career path:", fBold9));
-                    cellC02R05.Border = 0;
-                    tableMiddleCol02.AddCell(cellC02R05);
-
-                    Phrase phrCareer = null;
-                    if (strCareer.Length > 0)
-                    {
-                        phrCareer = new Phrase(strCareer, fNormal9);
-                    }
-                    else
-                    {
-                        phrCareer = new Phrase("_______________________________________________________________________________________________________", fNormal9);
-                    }
-                    PdfPCell cellC02R05_Value = new PdfPCell(phrCareer);
-                    cellC02R05_Value.Border = 0;
-                    cellC02R05_Value.MinimumHeight = 30.0f;
-                    tableMiddleCol02.AddCell(cellC02R05_Value);
-
-                    ////////////////////////
-                    PdfPCell cellC02R06 = new PdfPCell(new Phrase("\nPosition-Specific Criteria", fBold14));
-                    cellC02R06.Border = 0;
-                    tableMiddleCol02.AddCell(cellC02R06);
-
-                    ////////////////////////
-                    PdfPCell cellC02R07 = new PdfPCell(new Phrase("Proficiency:", fBold9));
-                    cellC02R07.Border = 0;
-                    tableMiddleCol02.AddCell(cellC02R07);
-
-                    PdfPCell cellC02R07_Text = new PdfPCell(new Phrase("Understands craft, systems and processes.", fNormal9));
-                    cellC02R07_Text.Border = 0;
-                    tableMiddleCol02.AddCell(cellC02R07_Text);
-
-                    Phrase phrSProficiency = null; // new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                    if (sProficiency > 0 && sProficiency < 6)
-                    {
-                        if (sProficiency == 1)
-                            phrSProficiency = new Phrase("1*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (sProficiency == 2)
-                            phrSProficiency = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (sProficiency == 3)
-                            phrSProficiency = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (sProficiency == 4)
-                            phrSProficiency = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (sProficiency == 5)
-                            phrSProficiency = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5*" + "\n\n", fBold9);
-                    }
-                    else
-                    {
-                        phrSProficiency = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                    }
-                    PdfPCell cellC02R07_Value = new PdfPCell(phrSProficiency);
-                    cellC02R07_Value.Border = 0;
-                    tableMiddleCol02.AddCell(cellC02R07_Value);
-
-                    ////////////////////////
-                    PdfPCell cellC02R08 = new PdfPCell(new Phrase("Project Management:", fBold9));
-                    cellC02R08.Border = 0;
-                    tableMiddleCol02.AddCell(cellC02R08);
-
-                    PdfPCell cellC02R08_Text = new PdfPCell(new Phrase("Organizes tasks and assignments.", fNormal9));
-                    cellC02R08_Text.Border = 0;
-                    tableMiddleCol02.AddCell(cellC01R08_Text);
-
-                    Phrase phrSProject = null; // new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                    if (sProject > 0 && sProject < 6)
-                    {
-                        if (sProject == 1)
-                            phrSProject = new Phrase("1*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (sProject == 2)
-                            phrSProject = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (sProject == 3)
-                            phrSProject = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (sProject == 4)
-                            phrSProject = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (sProject == 5)
-                            phrSProject = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5*" + "\n\n", fBold9);
-                    }
-                    else
-                    {
-                        phrSProject = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                    }
-                    PdfPCell cellC02R08_Value = new PdfPCell(phrSProject);
-                    cellC02R08_Value.Border = 0;
-                    tableMiddleCol02.AddCell(cellC02R08_Value);
-
-                    ////////////////////////
-                    PdfPCell cellC02R09 = new PdfPCell(new Phrase("Attention to detail:", fBold9));
-                    cellC02R09.Border = 0;
-                    tableMiddleCol02.AddCell(cellC02R09);
-
-                    PdfPCell cellC02R09_Text = new PdfPCell(new Phrase("Attentive to all aspects of assignments / workflow.", fNormal9));
-                    cellC02R09_Text.Border = 0;
-                    tableMiddleCol02.AddCell(cellC02R09_Text);
-
-                    Phrase phrSAttention = null; // new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                    if (sAttention > 0 && sAttention < 6)
-                    {
-                        if (sAttention == 1)
-                            phrSAttention = new Phrase("1*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (sAttention == 2)
-                            phrSAttention = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (sAttention == 3)
-                            phrSAttention = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (sAttention == 4)
-                            phrSAttention = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (sAttention == 5)
-                            phrSAttention = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5*" + "\n\n", fBold9);
-                    }
-                    else
-                    {
-                        phrSAttention = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                    }
-                    PdfPCell cellC02R09_Value = new PdfPCell(phrSAttention);
-                    cellC02R09_Value.Border = 0;
-                    tableMiddleCol02.AddCell(cellC02R09_Value);
-
-                    ////////////////////////
-                    PdfPCell cellC02R10 = new PdfPCell(new Phrase("Client Interaction:", fBold9));
-                    cellC02R10.Border = 0;
-                    tableMiddleCol02.AddCell(cellC02R10);
-
-                    PdfPCell cellC02R10_Text = new PdfPCell(new Phrase("Relates to client needs, both spoken and unspoken.", fNormal9));
-                    cellC02R10_Text.Border = 0;
-                    tableMiddleCol02.AddCell(cellC02R10_Text);
-
-                    Phrase phrSClient = null; // new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                    if (sClient > 0 && sClient < 6)
-                    {
-                        if (sClient == 1)
-                            phrSClient = new Phrase("1*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (sClient == 2)
-                            phrSClient = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (sClient == 3)
-                            phrSClient = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (sClient == 4)
-                            phrSClient = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (sClient == 5)
-                            phrSClient = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5*" + "\n\n", fBold9);
-                    }
-                    else
-                    {
-                        phrSClient = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                    }
-                    PdfPCell cellC02R10_Value = new PdfPCell(phrSClient);
-                    cellC02R10_Value.Border = 0;
-                    tableMiddleCol02.AddCell(cellC02R10_Value);
-
-                    ////////////////////////
-                    PdfPCell cellC02R11 = new PdfPCell(new Phrase("Creativity:", fBold9));
-                    cellC02R11.Border = 0;
-                    tableMiddleCol02.AddCell(cellC02R11);
-
-                    PdfPCell cellC02R11_Text = new PdfPCell(new Phrase("Seeks innovative solutions.", fNormal9));
-                    cellC02R11_Text.Border = 0;
-                    tableMiddleCol02.AddCell(cellC02R11_Text);
-
-                    Phrase phrSCreativity = null; // new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                    if (sCreativity > 0 && sCreativity < 6)
-                    {
-                        if (sCreativity == 1)
-                            phrSCreativity = new Phrase("1*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (sCreativity == 2)
-                            phrSCreativity = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (sCreativity == 3)
-                            phrSCreativity = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (sCreativity == 4)
-                            phrSCreativity = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (sCreativity == 5)
-                            phrSCreativity = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5*" + "\n\n", fBold9);
-                    }
-                    else
-                    {
-                        phrSCreativity = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                    }
-                    PdfPCell cellC02R11_Value = new PdfPCell(phrSCreativity);
-                    cellC02R11_Value.Border = 0;
-                    tableMiddleCol02.AddCell(cellC02R11_Value);
-
-                    ////////////////////////
-                    PdfPCell cellC02R12 = new PdfPCell(new Phrase("Business skills:", fBold9));
-                    cellC02R12.Border = 0;
-                    tableMiddleCol02.AddCell(cellC02R12);
-
-                    PdfPCell cellC02R12_Text = new PdfPCell(new Phrase("Understands and works to increase profitability.", fNormal9));
-                    cellC02R12_Text.Border = 0;
-                    tableMiddleCol02.AddCell(cellC02R12_Text);
-
-                    Phrase phrSBusiness = null; // new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                    if (sBusiness > 0 && sBusiness < 6)
-                    {
-                        if (sBusiness == 1)
-                            phrSBusiness = new Phrase("1*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (sBusiness == 2)
-                            phrSBusiness = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (sBusiness == 3)
-                            phrSBusiness = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (sBusiness == 4)
-                            phrSBusiness = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4*\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                        else if (sBusiness == 5)
-                            phrSBusiness = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5*" + "\n\n", fBold9);
-                    }
-                    else
-                    {
-                        phrSBusiness = new Phrase("1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t2\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t3\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t5" + "\n\n", fBold9);
-                    }
-                    PdfPCell cellC02R12_Value = new PdfPCell(phrSBusiness);
-                    cellC02R12_Value.Border = 0;
-                    tableMiddleCol02.AddCell(cellC02R12_Value);
-
-                    ////////////////////////
-                    PdfPCell cellC02R13 = new PdfPCell(new Phrase("\nGoals", fBold14));
-                    cellC02R13.Border = 0;
-                    tableMiddleCol02.AddCell(cellC02R13);
-
-                    ////////////////////////
-                    PdfPCell cellC02R14 = new PdfPCell(new Phrase("Detail:", fBold9));
-                    cellC02R14.Border = 0;
-                    tableMiddleCol02.AddCell(cellC02R14);
-
-                    PdfPCell cellC02R14_Value = new PdfPCell(new Phrase(sdata.employeeName + "\n\n\n", fNormal9));
-                    cellC02R14_Value.Border = 0;
-                    tableMiddleCol02.AddCell(cellC02R14_Value);
-
-                    ////////////////////////
-                    PdfPCell cellC02R15 = new PdfPCell(new Phrase("I have been shown this evaluation. My signature below does not necessarily imply agreement:\n\n", fBold9));
-                    cellC02R15.Border = 0;
-                    tableMiddleCol02.AddCell(cellC02R15);
-
-                    PdfPCell cellC02R15_Value = new PdfPCell(new Phrase("__________________________________________________\n\t\t\t\t\t\t\t\t\t\t\t\t(Employee's Signature / date)", fNormalItalic9));
-                    cellC02R15_Value.Border = 0;
-                    cellC02R15_Value.MinimumHeight = 10.0f;
-                    tableMiddleCol02.AddCell(cellC02R15_Value);
-
-                    ////////////////////////
-                    PdfPCell cellC02R16 = new PdfPCell(new Phrase("\n\nScheduled date of next evaluation:\n\n", fBold9));
-                    cellC02R16.Border = 0;
-                    tableMiddleCol02.AddCell(cellC02R16);
-
-                    PdfPCell cellC02R16_Value = new PdfPCell(new Phrase("__________________________________________________\n\t\t\t\t\t\t\t\t\t\t\t\t(Supervisor's Signature / date)", fNormalItalic9));
-                    cellC02R16_Value.Border = 0;
-                    cellC02R16_Value.MinimumHeight = 10.0f;
-                    tableMiddleCol02.AddCell(cellC02R16_Value);
-
-                    ////////////////////////////////////////////////////////////////////////////////////////
-
-                    //add 2 tables to MAIN table
-                    tableMiddle.AddCell(tableMiddleCol01);
-                    tableMiddle.AddCell(tableMiddleCol02);
-
-                    document.Add(tableMiddle);
-
-                    ///////////////////////////////////////////////////////////////////////////////////////
-
-                    // ---------- End Table ---------------------
-                    Paragraph p_nsig = new Paragraph("This is a system generated report and does not require any signature.", fNormal7);
-                    p_nsig.SpacingBefore = 1;
-                    //p_nsig.SpacingAfter = 3;
-                    //////document.Add(p_nsig);
-
-                    // ------------- close PDF Document and download it automatically
-
-
-
-                    document.Close();
-                    writer.Close();
-                    Response.ContentType = "pdf/application";
-                    Response.AddHeader("content-disposition", "attachment;filename=Evaluation-Report-" + sdata.employeeCode + "-" + sdata.month + "-" + sdata.year + ".pdf");
-                    Response.OutputStream.Write(ms.GetBuffer(), 0, ms.GetBuffer().Length);
-                    Response.Flush();
-                    Response.End();
-
-                    reponse = 1;
-
                 }
             }
-            catch (Exception)
-            {
-                //handle exception
-            }
+            catch (Exception) { return null; }
+        }
 
+        private int GenerateEvaluationPDF(BLL.PdfReports.MonthlyTimeSheetData sdata)
+        {
+            int reponse = 0;
+            string lang = GetCurrentLang();
+            int runDirection = (lang == "Ar") ? PdfWriter.RUN_DIRECTION_RTL : PdfWriter.RUN_DIRECTION_LTR;
+
+            try
+            {
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    iTextSharp.text.Font fNormal7 = GetFont(false, 7f);
+                    iTextSharp.text.Font fNormal8 = GetFont(false, 8f);
+                    iTextSharp.text.Font fBold8 = GetFont(true, 8f);
+                    iTextSharp.text.Font fNormal9 = GetFont(false, 9f);
+                    iTextSharp.text.Font fBold9 = GetFont(true, 9f);
+                    iTextSharp.text.Font fNormal10 = GetFont(false, 10f);
+                    iTextSharp.text.Font fBold14 = GetFont(true, 14f);
+                    iTextSharp.text.Font fBold16 = GetFont(true, 16f);
+
+                    Document document = new Document(PageSize.A4, 15f, 15f, 15f, 15f);
+                    PdfWriter writer = PdfWriter.GetInstance(document, ms);
+                    document.Open();
+
+                    BLL.PdfReports.MonthlyTimeSheet reportLogoTitle = new BLL.PdfReports.MonthlyTimeSheet();
+                    string[] strLogotitle = reportLogoTitle.getOrganizationLogoTitle().Split('^');
+                    Image logo = Image.GetInstance(Server.MapPath(strLogotitle[0]));
+                    logo.ScaleToFit(70f, 70f);
+
+                    PdfPTable tableHeader = new PdfPTable(new[] { 20f, 60f, 20f });
+                    tableHeader.WidthPercentage = 100;
+                    tableHeader.RunDirection = runDirection;
+                    tableHeader.DefaultCell.Border = Rectangle.NO_BORDER;
+
+                    PdfPCell cellLogo = new PdfPCell(logo) { Border = 0 };
+                    tableHeader.AddCell(cellLogo);
+
+                    PdfPCell cellTitle = new PdfPCell(new Phrase(strLogotitle[1], fBold14)) { HorizontalAlignment = Element.ALIGN_CENTER, Border = 0 };
+                    tableHeader.AddCell(cellTitle);
+
+                    PdfPTable dtTable = new PdfPTable(1);
+                    dtTable.RunDirection = runDirection;
+                    dtTable.DefaultCell.Border = Rectangle.NO_BORDER;
+                    dtTable.AddCell(new Phrase(GetStringResource("lblDate") + ": " + DateTime.Now.ToString("dd-MMM-yyyy"), fNormal8));
+                    dtTable.AddCell(new Phrase(GetStringResource("lblTime") + ": " + DateTime.Now.ToString("hh:mm tt"), fNormal8));
+                    tableHeader.AddCell(new PdfPCell(dtTable) { Border = 0 });
+
+                    document.Add(tableHeader);
+                    document.Add(new iTextSharp.text.pdf.draw.LineSeparator());
+
+                    PdfPTable tableEmp = new PdfPTable(2);
+                    tableEmp.WidthPercentage = 100;
+                    tableEmp.RunDirection = runDirection;
+                    tableEmp.DefaultCell.Border = Rectangle.NO_BORDER;
+
+                    PdfPTable info = new PdfPTable(1);
+                    info.RunDirection = runDirection;
+                    info.DefaultCell.Border = Rectangle.NO_BORDER;
+                    info.AddCell(new Phrase(GetStringResource("dashboard.Name") + ": " + sdata.employeeName, fBold9));
+                    info.AddCell(new Phrase(GetStringResource("monthly.epcode") + ": " + sdata.employeeCode, fBold9));
+                    tableEmp.AddCell(new PdfPCell(info) { Border = 0 });
+
+                    tableEmp.AddCell(new PdfPCell(new Phrase(GetStringResource("lblPerformanceEvaluation"), fBold16)) { HorizontalAlignment = (lang == "Ar" ? 0 : 2), Border = 0 });
+                    document.Add(tableEmp);
+
+                    // Logic for Criteria (Personality, Communication, etc)
+                    PdfPTable criteriaTable = new PdfPTable(1);
+                    criteriaTable.WidthPercentage = 100;
+                    criteriaTable.RunDirection = runDirection;
+                    criteriaTable.SpacingBefore = 10f;
+
+                    void AddCriteria(string title, string desc)
+                    {
+                        criteriaTable.AddCell(new PdfPCell(new Phrase(GetStringResource(title), fBold9)) { Border = 0 });
+                        criteriaTable.AddCell(new PdfPCell(new Phrase(desc, fNormal9)) { Border = 0, PaddingBottom = 10f });
+                    }
+
+                    AddCriteria("lblPersonality", "Flexible and easy to get along with an adaptable team player.");
+                    AddCriteria("lblCommunication", "Listens, understands and expresses him / herself well.");
+                    AddCriteria("lblAttendance", "Observes assigned working hours, is conscientious.");
+
+                    document.Add(criteriaTable);
+
+                    Paragraph footer = new Paragraph(GetStringResource("lblSystemGenerated"), fNormal7);
+                    footer.SpacingBefore = 20f;
+                    document.Add(footer);
+
+                    document.Close();
+                    Response.ContentType = "application/pdf";
+                    Response.AddHeader("content-disposition", "attachment;filename=Evaluation-Report-" + sdata.employeeCode + ".pdf");
+                    Response.BinaryWrite(ms.ToArray());
+                    Response.Flush();
+                    Response.End();
+                    reponse = 1;
+                }
+            }
+            catch (Exception) { }
             return reponse;
         }
 
@@ -14372,6 +13664,11 @@ namespace MvcApplication1.Areas.HR.Controllers
                     BLL.PdfReports.MonthlyTimeSheet reportLogoTitle = new BLL.PdfReports.MonthlyTimeSheet();
                     string[] strLogotitle = reportLogoTitle.getOrganizationLogoTitle().Split('^');
                    
+
+                    //PdfPCell cellLogoTitle = new PdfPCell(new Phrase(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("dashboard.Name"), font));
+                    //string[] strLogotitle = new string[] { cellLogoTitle.Phrase.Content };
+
+
                     // ---------- Header Table ---------------------
                     string imageURL = Server.MapPath(strLogotitle[0]);
                     //string imageURL = Request.PhysicalApplicationPath + "/Content/hbl-logo.png";
@@ -14379,9 +13676,17 @@ namespace MvcApplication1.Areas.HR.Controllers
                     Image logo = Image.GetInstance(imageURL);
                     document.Open();
 
+                    //logo.Width = 140.0f;
+                    //logo.Alignment = Element.ALIGN_LEFT;
+                    //logo.ScaleToFit(140f, 20f);
+                    //logo.ScaleAbsolute(140f, 20f);
+                    //logo.SpacingBefore = 5f;
+                    //logo.SpacingAfter = 5f;
+
                     PdfPTable tableHeader = new PdfPTable(new[] { 100.0f, 35.0f, 100.0f });//total 595 - 10 x 2 due to Left and Right side margin
                     tableHeader.WidthPercentage = 100;
                     tableHeader.HeaderRows = 0;
+                    //tableHeader.SpacingBefore = 50;
                     tableHeader.SpacingAfter = 3;
                     tableHeader.DefaultCell.Border = Rectangle.NO_BORDER;
 
@@ -14394,10 +13699,59 @@ namespace MvcApplication1.Areas.HR.Controllers
                     tableHeader.AddCell(logo);
 
                     PdfPCell cellTitle = new PdfPCell(new Phrase(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource(strLogotitle[1] +"\n"+ "Ministry of Energy and Infrastructure"), fontTitle));
+                    //cellTitle.HorizontalAlignment = PdfPCell.ALIGN_RIGHT;
                     cellTitle.Border = 0;
                     cellTitle.RunDirection = PdfLayoutHelper.RunDirection;
                     tableHeader.AddCell(cellTitle);
+
+                    //PdfPCell cellDateTime = new PdfPCell(new Phrase(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.date") + "\n\n" + DateTime.Now.ToString("dd-MMM-yyyy hh:mm tt"), font));
+                    //PdfPCell cellDateTime = new PdfPCell(new Phrase("Date:\n" + DateTime.Now.ToString("dd-MMM-yyyy") + "\n\nTime:\n" + DateTime.Now.ToString("hh:mm tt"), fNormal10));
+                    //cellDateTime.HorizontalAlignment = 2;
+                    //cellDateTime.PaddingTop = 2.0f;
+                   // cellDateTime.Border = 0;
+                   // cellDateTime.RunDirection = PdfLayoutHelper.RunDirection;
+                    //tableHeader.AddCell(cellDateTime);
+
+                    //PdfPCell cellTime = new PdfPCell(new Phrase(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.time") + "\n" + DateTime.Now.ToString("hh:mm tt"), font));
+                    ////PdfPCell cellDateTime = new PdfPCell(new Phrase("Date:\n" + DateTime.Now.ToString("dd-MMM-yyyy") + "\n\nTime:\n" + DateTime.Now.ToString("hh:mm tt"), fNormal10));
+                    ////cellDateTime.HorizontalAlignment = 2;
+                    //cellTime.PaddingTop = 4.0f;
+                    //cellTime.Border = 0;
+                    //cellTime.RunDirection = PdfLayoutHelper.RunDirection;
+                    //tableHeader.AddCell(cellTime);
+
+                    //tableHeader.AddCell("Date: " + DateTime.Now.ToShortDateString() + "\nTime: " +DateTime.Now.ToString("hh:mm tt"));
+
                     document.Add(tableHeader);
+
+
+
+                    // ---------- Header Table ---------------------
+                    //string imageURL = Server.MapPath("~/images/bams-logo-pdf.png");
+                    ////string imageURL = Request.PhysicalApplicationPath + "/Content/hbl-logo.png";
+
+                    //Image logo = Image.GetInstance(imageURL);
+
+                    //PdfPTable tableHeader = new PdfPTable(new[] { 70.0f, 320, 95.0f });//total 595 - 10 x 2 due to Left and Right side margin
+                    //tableHeader.WidthPercentage = 100;
+                    //tableHeader.HeaderRows = 0;
+                    ////tableHeader.SpacingBefore = 50;
+                    //tableHeader.SpacingAfter = 3;
+                    //tableHeader.DefaultCell.Border = Rectangle.NO_BORDER;
+
+                    //tableHeader.AddCell(logo);
+                    //tableHeader.AddCell("");
+
+                    //PdfPCell cellDateTime = new PdfPCell(new Phrase("Date: " + DateTime.Now.ToShortDateString() + "\n\nTime: " + DateTime.Now.ToString("hh:mm tt"), fNormal10));
+                    ////cellDateTime.HorizontalAlignment = 2;
+                    //cellDateTime.Border = 0;
+                    //tableHeader.AddCell(cellDateTime);
+
+                    ////tableHeader.AddCell("Date: " + DateTime.Now.ToShortDateString() + "\nTime: " +DateTime.Now.ToString("hh:mm tt"));
+
+                    //document.Add(tableHeader);
+
+                    //separator
                     document.Add(lineSeparator);
 
                     // ---------- Top Data -------------------------
@@ -14439,7 +13793,6 @@ namespace MvcApplication1.Areas.HR.Controllers
 
                     bool pdfRtl = PdfLayoutHelper.RunDirection == PdfWriter.RUN_DIRECTION_RTL;
                     tableEmployee.RunDirection = PdfLayoutHelper.RunDirection;
-
                     PdfPCell cellETitle = new PdfPCell(new Phrase(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("title.workhourstimesheetreport"), font));
                     cellETitle.Border = 0;
                     cellETitle.RunDirection = PdfLayoutHelper.RunDirection;
@@ -14527,7 +13880,12 @@ namespace MvcApplication1.Areas.HR.Controllers
                         tableMid.AddCell(cell1);
                         tableMid.AddCell(cell0);
                     }
-                    
+
+                    //PdfPCell cell9 = new PdfPCell(new Phrase(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.empcode"), font));
+                    //cell9.BackgroundColor = Color.LIGHT_GRAY;
+                    //cell9.HorizontalAlignment = 1;
+                    //cell9.RunDirection = PdfLayoutHelper.RunDirection;
+                    //tableMid.AddCell(cell9);
                     var lookup = new Dictionary<string, string>(){
                         {"Monday", @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Monday")},
                         {"Tuesday", @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Tuesday")},
@@ -14545,6 +13903,13 @@ namespace MvcApplication1.Areas.HR.Controllers
                         {"On-Time", @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("On-Time")},
                         {"Absent", @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Absent")}
                     };
+                    //Color greenColor = new iTextSharp.text.Color(175, 225, 175);
+                    //Color redColor = new iTextSharp.text.Color(255, 120, 100);
+                    //Color orangeColor = new iTextSharp.text.Color(252, 207, 73);
+                    //Color blueColor = new iTextSharp.text.Color(102, 205, 170);
+                    //Color whiteColor = null;
+                    //Color GreenColor = new iTextSharp.text.Color(80, 148, 46);
+
 
                     Color greenColor = new iTextSharp.text.Color(127, 185, 145);
                     Color redColor = new iTextSharp.text.Color(255, 203, 199);
@@ -14658,12 +14023,24 @@ namespace MvcApplication1.Areas.HR.Controllers
                             tableMid.AddCell(cellData0);
                         }
 
+                        //PdfPCell cellData9 = new PdfPCell(new Phrase(sdata.employeeCode, fNormal8));
+                        //cellData9.HorizontalAlignment = 1;
+                        //tableMid.AddCell(cellData9);
+
                     }
 
                     if (sdata.logs.Length > 0)
                     {
 
                         document.Add(tableMid);
+
+                        //Paragraph p_summary = new Paragraph(new Phrase(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblSummary.rpt"), font));
+                        //p_summary.SpacingBefore = 1;
+                        //document.Add(p_summary);
+
+                        // Summary heading
+                        //Paragraph p_summary = new Paragraph(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblSummary.rpt"), font);
+                        //document.Add(p_summary);
 
                         // ---------- Last Table ---------------------
                         // Calculate total shift hours
@@ -14678,7 +14055,10 @@ namespace MvcApplication1.Areas.HR.Controllers
                         lt_cell_11.RunDirection = PdfLayoutHelper.RunDirection;
                         tableEnd.AddCell(lt_cell_11);
                         double TotalHours = sdata.logs[sdata.logs.Count() - 1].GrandTotal_Hour;
+                        //tableEnd.AddCell(new Phrase($" {sdata.logs[sdata.logs.Count() - 1].totalShfit_Hour:00} : {sdata.logs[sdata.logs.Count() - 1].totalShfit_Mins:00} / {Math.Floor(TotalHours):00} : {Math.Round((TotalHours - Math.Floor(TotalHours)) * 60):00}", fNormal8));
+                        //tableEnd.AddCell(new Phrase($" {sdata.logs[sdata.logs.Count() - 1].totalShfit_Hour:00} : {sdata.logs[sdata.logs.Count() - 1].totalShfit_Mins:00}", fNormal8));
                         tableEnd.AddCell(new Phrase($" {sdata.logs[sdata.logs.Count() - 1].totalShfit_Hour:00} : {sdata.logs[sdata.logs.Count() - 1].totalShfit_Mins:00}", fNormal8));
+
 
                         PdfPCell lt_cell_21 = new PdfPCell(new Phrase(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblthourslate"), font));
                         lt_cell_21.RunDirection = PdfLayoutHelper.RunDirection;
@@ -14733,6 +14113,19 @@ namespace MvcApplication1.Areas.HR.Controllers
 
                         tableEndSummary.RunDirection = PdfLayoutHelper.RunDirection;
                         document.Add(tableEndSummary);
+
+                        //Paragraph p_nsigremarks = new Paragraph(new Phrase(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lbl.rpt.msg.remarks") + "   " + MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName), font));
+                        //p_nsigremarks.SpacingBefore = 1;
+                        //// p_nsig.RunDirection = PdfLayoutHelper.RunDirection;
+                        //document.Add(p_nsigremarks);
+
+
+                        //Paragraph p_nsig = new Paragraph(new Phrase(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lbl.rpt.msg") + "   " + MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName), font));
+                        //p_nsig.SpacingBefore = 1;
+                        //// p_nsig.RunDirection = PdfLayoutHelper.RunDirection;
+                        //document.Add(p_nsig);
+
+
                         document.Close();
 
                         return File(ms.ToArray(), "application/pdf", "Monthly-Working-Hours-Timesheet-Report-" + sdata.employeeCode + ".pdf");

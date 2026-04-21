@@ -115,19 +115,37 @@
 
                 <ul class="list-inline float-right mb-0">
                     <li class="nav-link waves-light waves-effect">
-                        @using (Html.BeginForm("Languagechange", "Account", FormMethod.Post, new { id = "chg_pass" }))
-                        {
-                            <div class="input-group input-group-sm mt-1">
-                                <select id="ddl_language" name="ddl_language" class="form-control custom-select-sm border-0 bg-dark text-white">
-                                    <option value="En">English</option>
-                                    <option value="Ar">Arabic</option>
-                                </select>
-                                <div class="input-group-append">
-                                    <button type="submit" class="btn btn-secondary btn-sm waves-effect">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("hr.changelang")</button>
-                                </div>
+                    @{
+                        var lang = Session["lang"] as string ?? "En";
+                    }
+
+                    @using (Html.BeginForm("Languagechange", "Account", FormMethod.Post, new { id = "chg_pass" }))
+                    {
+                        <div class="input-group input-group-sm mt-1">
+
+                            <select id="ddl_language" name="ddl_language"
+                                    class="form-control custom-select-sm border-0 bg-dark text-white">
+
+                                <option value="En" @(lang == "En" ? "selected=\"selected\"" : "")>
+                                    English
+                                </option>
+
+                                <option value="Ar" @(lang == "Ar" ? "selected=\"selected\"" : "")>
+                                    Arabic
+                                </option>
+
+                            </select>
+
+                            <div class="input-group-append">
+                                <button type="submit"
+                                        class="btn btn-secondary btn-sm waves-effect">
+                                    @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("hr.changelang")
+                                </button>
                             </div>
-                        }
-                    </li>
+
+                        </div>
+                    }
+                </li>
                     <li class="list-inline-item notification-list hide-phone">
                         <span id="toast2" class="toast-message" style='display:none'>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.msg")</span>
                         <a class="nav-link waves-light waves-effect" href="#" id="btn-fullscreen">
