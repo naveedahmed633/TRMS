@@ -167,317 +167,165 @@ namespace MvcApplication1.Areas.HR.Controllers
 
                 using (MemoryStream ms = new MemoryStream())
                 {
+                    // Fonts Definition
                     Font fNormal7 = FontFactory.GetFont("HELVETICA", 7, Font.NORMAL, Color.BLACK);
-
                     Font fNormal8 = FontFactory.GetFont("HELVETICA", 8, Font.NORMAL, Color.BLACK);
                     Font fBold8 = FontFactory.GetFont("HELVETICA", 8, Font.BOLD, Color.BLACK);
-
-                    Font fNormal9 = FontFactory.GetFont("HELVETICA", 9, Font.NORMAL, Color.BLACK);
-                    Font fBold9 = FontFactory.GetFont("HELVETICA", 9, Font.BOLD, Color.BLACK);
-
                     Font fNormal10 = FontFactory.GetFont("HELVETICA", 10, Font.NORMAL, Color.BLACK);
+                    Font fBold9 = FontFactory.GetFont("HELVETICA", 9, Font.BOLD, Color.BLACK);
                     Font fBold10 = FontFactory.GetFont("HELVETICA", 10, Font.BOLD, Color.BLACK);
-
-                    Font fBold14 = FontFactory.GetFont("HELVETICA", 14, Font.BOLD, Color.BLACK);
                     Font fBold14Red = FontFactory.GetFont("HELVETICA", 14, Font.BOLD | Font.UNDERLINE, Color.RED);
-                    Font fBold16 = FontFactory.GetFont("HELVETICA", 16, Font.BOLD | Font.UNDERLINE, Color.BLACK);
 
-                    //// Initialize Document Page for PDF
-                    Document document = new Document(PageSize.A4, 10f, 10f, 5f, 5f);
-
-                    //// To Export PDF file automatically then write data to memory stream
+                    Document document = new Document(PageSize.A4, 20f, 20f, 20f, 20f);
                     PdfWriter writer = PdfWriter.GetInstance(document, ms);
-                    writer.RunDirection = PdfLayoutHelper.RunDirection;
                     document.Open();
 
-                    // ----------- Line Separator -------------------
-                    iTextSharp.text.pdf.draw.LineSeparator lineSeparator = new iTextSharp.text.pdf.draw.LineSeparator(0.8F, 99.0F, Color.BLACK, Element.ALIGN_LEFT, 1);
-
+                    // ----------- Header Section (Logo, Title, Date/Time) -------------------
                     BLL.PdfReports.MonthlyTimeSheet reportLogoTitle = new BLL.PdfReports.MonthlyTimeSheet();
                     string[] strLogotitle = reportLogoTitle.getOrganizationLogoTitle().Split('^');
-
-                    // ---------- Header Table ---------------------
                     string imageURL = Server.MapPath(strLogotitle[0]);
-
                     Image logo = Image.GetInstance(imageURL);
-                    PdfPTable tableHeader = new PdfPTable(new[] { 100.0f, 35.0f, 100.0f });//total 595 - 10 x 2 due to Left and Right side margin
+                    logo.ScaleToFit(80f, 80f);
+
+                    // Table with 3 columns: Title, Logo, Date-Time
+                    PdfPTable tableHeader = new PdfPTable(new[] { 2f, 1f, 1.5f }); 
                     tableHeader.WidthPercentage = 100;
-                    tableHeader.HeaderRows = 0;
-                    tableHeader.SpacingAfter = 3;
                     tableHeader.DefaultCell.Border = Rectangle.NO_BORDER;
 
-
-
+                    // 1. Organization Title
                     PdfPCell cellTitle = new PdfPCell(new Phrase(strLogotitle[1], font));
-                    cellTitle.HorizontalAlignment = 0;
                     cellTitle.Border = 0;
+                    cellTitle.VerticalAlignment = Element.ALIGN_MIDDLE;
                     tableHeader.AddCell(cellTitle);
-                    tableHeader.AddCell(logo);
 
-                    PdfPCell cellDateTime = new PdfPCell(new Phrase("Date:\n" + DateTime.Now.ToString("dd-MMM-yyyy") + "\n\nTime:\n" + DateTime.Now.ToString("hh:mm tt"), fNormal10));
-                    cellDateTime.PaddingTop = 2.0f;
+                    // 2. Logo
+                    PdfPCell cellLogo = new PdfPCell(logo);
+                    cellLogo.Border = 0;
+                    cellLogo.HorizontalAlignment = Element.ALIGN_CENTER;
+                    tableHeader.AddCell(cellLogo);
+
+                    // 3. Date and Time (Side by Side Fix)
+                    string dtNow = "Date: " + DateTime.Now.ToString("dd-MMM-yyyy") + "\nTime: " + DateTime.Now.ToString("hh:mm tt");
+                    PdfPCell cellDateTime = new PdfPCell(new Phrase(dtNow, fNormal8));
                     cellDateTime.Border = 0;
-                    cellDateTime.HorizontalAlignment = PdfPCell.ALIGN_RIGHT;
-                    cellDateTime.RunDirection = PdfLayoutHelper.RunDirection;
+                    cellDateTime.HorizontalAlignment = Element.ALIGN_RIGHT;
+                    cellDateTime.VerticalAlignment = Element.ALIGN_MIDDLE;
                     tableHeader.AddCell(cellDateTime);
 
                     document.Add(tableHeader);
 
+                    // Line Separator
+                    document.Add(new iTextSharp.text.pdf.draw.LineSeparator(0.8F, 100.0F, Color.BLACK, Element.ALIGN_LEFT, 1));
+                    document.Add(new Paragraph(" ")); // Space
 
-
-                    document.Add(lineSeparator);
-
-                    // ---------- Top Data -------------------------
-                    PdfPTable tableEmployee = new PdfPTable(2);//total 595 - 10 x 2 due to Left and Right side margin
+                    // ---------- Employee Info Section -------------------------
+                    PdfPTable tableEmployee = new PdfPTable(2);
                     tableEmployee.WidthPercentage = 100;
-                    tableEmployee.HeaderRows = 0;
-                    //tableHeader.SpacingBefore = 50;
-                    //tableEmployee.SpacingAfter = 3;
                     tableEmployee.DefaultCell.Border = Rectangle.NO_BORDER;
 
                     PdfPTable tableEInfo = new PdfPTable(1);
-                    tableEInfo.WidthPercentage = 100;
-                    tableEInfo.HeaderRows = 0;
-                    //tableHeader.SpacingBefore = 50;
-                    tableEInfo.SpacingAfter = 3;
                     tableEInfo.DefaultCell.Border = Rectangle.NO_BORDER;
 
-
-                    PdfPCell cellEName = new PdfPCell(new Phrase(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("dashboard.Name") + sdata.employeeName, font));
-                    cellEName.Border = 0;
-                    cellEName.RunDirection = PdfLayoutHelper.RunDirection;
-                    tableEInfo.AddCell(cellEName);
-
-
-                    PdfPCell cellECode = new PdfPCell(new Phrase(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("monthly.epcode") + ":" + sdata.logs[0].overtime_status, font));
-                    cellECode.Border = 0;
-                    cellECode.RunDirection = PdfLayoutHelper.RunDirection;
-                    tableEInfo.AddCell(cellECode);
-
-                    PdfPCell cellEMonth = new PdfPCell(new Phrase(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblmonthyear") + sdata.logs[0].remarksIn, font));
-                    cellEMonth.Border = 0;
-                    cellEMonth.RunDirection = PdfLayoutHelper.RunDirection;
-                    tableEInfo.AddCell(cellEMonth);
-
-
-                    PdfPCell cellETitle = new PdfPCell(new Phrase(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblmonthtitlehours"), font));
-                    cellETitle.Border = 0;
-                    cellETitle.RunDirection = PdfLayoutHelper.RunDirection;
-                    cellETitle.HorizontalAlignment = 2;
+                    // Fix: Text Labels manually set for clarity
+                    tableEInfo.AddCell(new PdfPCell(new Phrase("Name: " + sdata.employeeName, font)) { Border = 0 });
+                    tableEInfo.AddCell(new PdfPCell(new Phrase("Employee Code: " + sdata.employeeCode, font)) { Border = 0 });
+                    
+                    // Fix: Month/Year from sdata
+                    string monthDisplay = sdata.month + " " + sdata.year;
+                    tableEInfo.AddCell(new PdfPCell(new Phrase("Month: " + monthDisplay, font)) { Border = 0 });
 
                     tableEmployee.AddCell(tableEInfo);
+
+                    // Right side Header Title
+                    PdfPCell cellETitle = new PdfPCell(new Phrase("Monthly Attendance Sheet", fBold10));
+                    cellETitle.Border = 0;
+                    cellETitle.HorizontalAlignment = Element.ALIGN_RIGHT;
                     tableEmployee.AddCell(cellETitle);
 
                     document.Add(tableEmployee);
+                    document.Add(new Paragraph(" "));
 
-
-                    //Paragraph p1 = new Paragraph("Name: " + sdata.employeeName, fBold9);
-                    ////p1.SpacingBefore = 10;
-                    //document.Add(p1);
-
-                    //Paragraph p2 = new Paragraph("Employee Code: " + sdata.employeeCode, fBold9);
-                    //document.Add(p2);
-
-                    //Paragraph p3 = new Paragraph("Month: " + sdata.month, fBold9);
-                    //document.Add(p3);
-
-                    //Paragraph p4 = new Paragraph("Year: " + sdata.year, fBold9);
-                    //document.Add(p4);
-
-                    // ---------- Middle Table ---------------------
-                    //set table with 595 pixels width - subtract 10x2 from either sides border
-                    PdfPTable tableMid = new PdfPTable(new[] { 55.0f, 60.0f, 60.0f, 60.0f, 60.0f, 70.0f, 70.0f, 70.0f, 70.0f });
-
+                    // ---------- Middle Data Table ---------------------
+                    PdfPTable tableMid = new PdfPTable(new[] { 55f, 50f, 60f, 50f, 60f, 70f, 80f, 60f, 60f });
                     tableMid.WidthPercentage = 100;
                     tableMid.HeaderRows = 1;
-                    tableMid.SpacingBefore = 3;
-                    tableMid.SpacingAfter = 1;
 
-                    PdfPCell cell1 = new PdfPCell(new Phrase("Date", fBold8));
-                    cell1.BackgroundColor = Color.LIGHT_GRAY;
-                    cell1.HorizontalAlignment = 1;
-                    tableMid.AddCell(cell1);
-
-                    PdfPCell cell2 = new PdfPCell(new Phrase("Time In", fBold8));
-                    cell2.BackgroundColor = Color.LIGHT_GRAY;
-                    cell2.HorizontalAlignment = 1;
-                    tableMid.AddCell(cell2);
-
-                    PdfPCell cell3 = new PdfPCell(new Phrase("Remarks In", fBold8));
-                    cell3.BackgroundColor = Color.LIGHT_GRAY;
-                    cell3.HorizontalAlignment = 1;
-                    tableMid.AddCell(cell3);
-
-                    PdfPCell cell4 = new PdfPCell(new Phrase("Time Out", fBold8));
-                    cell4.BackgroundColor = Color.LIGHT_GRAY;
-                    cell4.HorizontalAlignment = 1;
-                    tableMid.AddCell(cell4);
-
-                    PdfPCell cell5 = new PdfPCell(new Phrase("Remarks Out", fBold8));
-                    cell5.BackgroundColor = Color.LIGHT_GRAY;
-                    cell5.HorizontalAlignment = 1;
-                    tableMid.AddCell(cell5);
-
-                    PdfPCell cell6 = new PdfPCell(new Phrase("Final Remarks", fBold8));
-                    cell6.BackgroundColor = Color.LIGHT_GRAY;
-                    cell6.HorizontalAlignment = 1;
-                    tableMid.AddCell(cell6);
-
-                    PdfPCell cell7 = new PdfPCell(new Phrase("Description", fBold8));
-                    cell7.BackgroundColor = Color.LIGHT_GRAY;
-                    cell7.HorizontalAlignment = 1;
-                    tableMid.AddCell(cell7);
-
-                    PdfPCell cell8 = new PdfPCell(new Phrase("Device In", fBold8));
-                    cell8.BackgroundColor = Color.LIGHT_GRAY;
-                    cell8.HorizontalAlignment = 1;
-                    tableMid.AddCell(cell8);
-
-                    PdfPCell cell9 = new PdfPCell(new Phrase("Device Out", fBold8));
-                    cell9.BackgroundColor = Color.LIGHT_GRAY;
-                    cell9.HorizontalAlignment = 1;
-                    tableMid.AddCell(cell9);
-
-                    foreach (BLL.PdfReports.MonthlyTimeSheetLog log in sdata.logs)
+                    string[] headers = { "Date", "Time In", "Remarks In", "Time Out", "Remarks Out", "Final Remarks", "Description", "Device In", "Device Out" };
+                    foreach (string head in headers)
                     {
-                        {
-                            log.finalRemarks = log.finalRemarks + ((log.hasManualAttendance) ? "*" : "");
-                        }
+                        PdfPCell hCell = new PdfPCell(new Phrase(head, fBold8));
+                        hCell.BackgroundColor = Color.LIGHT_GRAY;
+                        hCell.HorizontalAlignment = Element.ALIGN_CENTER;
+                        hCell.Padding = 4;
+                        tableMid.AddCell(hCell);
+                    }
 
-                        //PdfPCell cellData1 = new PdfPCell(new Phrase(log.date, FontFactory.GetFont("Arial", 11, Font.NORMAL, Color.BLACK)));
-                        //cellData1.HorizontalAlignment = 0; // 0 for left, 1 for Center - 2 for Right
-                        //tableMid.AddCell(log.date);
-
-                        //tableMid.AddCell(log.date);
-                        //tableMid.AddCell(log.timeIn);
-                        //tableMid.AddCell(log.remarksIn);
-                        //tableMid.AddCell(log.timeOut);
-                        //tableMid.AddCell(log.remarksOut);
-                        //tableMid.AddCell(log.finalRemarks);
-                        //tableMid.AddCell(log.terminalIn);
-                        //tableMid.AddCell(log.terminalOut);
-
-                        PdfPCell cellData1 = new PdfPCell(new Phrase(log.date, fNormal8));
-                        //cellData1.HorizontalAlignment = 0;
-                        tableMid.AddCell(cellData1);
-
-                        PdfPCell cellData2 = new PdfPCell(new Phrase(log.timeIn, fNormal8));
-                        cellData2.HorizontalAlignment = 1;
-                        tableMid.AddCell(cellData2);
-
-                        PdfPCell cellData3 = new PdfPCell(new Phrase(log.remarksIn, fNormal8));
-                        //cellData3.HorizontalAlignment = 1;
-                        tableMid.AddCell(cellData3);
-
-                        PdfPCell cellData4 = new PdfPCell(new Phrase(log.timeOut, fNormal8));
-                        cellData4.HorizontalAlignment = 1;
-                        tableMid.AddCell(cellData4);
-
-                        PdfPCell cellData5 = new PdfPCell(new Phrase(log.remarksOut, fNormal8));
-                        //cellData5.HorizontalAlignment = 1;
-                        tableMid.AddCell(cellData5);
-
-                        PdfPCell cellData6 = new PdfPCell(new Phrase(log.finalRemarks, fNormal8));
-                        //cellData6.HorizontalAlignment = 1;
-                        tableMid.AddCell(cellData6);
-
-                        PdfPCell cellData7 = new PdfPCell(new Phrase(log.description, fNormal8));
-                        //cellData6.HorizontalAlignment = 1;
-                        tableMid.AddCell(cellData7);
-
-                        PdfPCell cellData8 = new PdfPCell(new Phrase(log.terminalIn, fNormal7));
-                        //cellData7.HorizontalAlignment = 1;
-                        tableMid.AddCell(cellData8);
-
-                        PdfPCell cellData9 = new PdfPCell(new Phrase(log.terminalOut, fNormal7));
-                        //PdfPCell cellData8 = new PdfPCell(new Phrase("Second Floor Terminal 1234 678976 6543", fNormal7));
-                        //cellData8.HorizontalAlignment = 1;
-                        tableMid.AddCell(cellData9);
+                    foreach (var log in sdata.logs)
+                    {
+                        string finalRem = log.finalRemarks + (log.hasManualAttendance ? "*" : "");
+                        
+                        tableMid.AddCell(new PdfPCell(new Phrase(log.date, fNormal8)) { HorizontalAlignment = 0 });
+                        tableMid.AddCell(new PdfPCell(new Phrase(log.timeIn, fNormal8)) { HorizontalAlignment = 1 });
+                        tableMid.AddCell(new PdfPCell(new Phrase(log.remarksIn, fNormal8)) { HorizontalAlignment = 0 });
+                        tableMid.AddCell(new PdfPCell(new Phrase(log.timeOut, fNormal8)) { HorizontalAlignment = 1 });
+                        tableMid.AddCell(new PdfPCell(new Phrase(log.remarksOut, fNormal8)) { HorizontalAlignment = 0 });
+                        tableMid.AddCell(new PdfPCell(new Phrase(finalRem, fNormal8)) { HorizontalAlignment = 0 });
+                        tableMid.AddCell(new PdfPCell(new Phrase(log.description, fNormal8)) { HorizontalAlignment = 0 });
+                        tableMid.AddCell(new PdfPCell(new Phrase(log.terminalIn, fNormal7)) { HorizontalAlignment = 0 });
+                        tableMid.AddCell(new PdfPCell(new Phrase(log.terminalOut, fNormal7)) { HorizontalAlignment = 0 });
                     }
 
                     if (sdata.logs.Length > 0)
                     {
                         document.Add(tableMid);
+                        document.Add(new Paragraph("\nSummary", fBold10));
 
-
-                        // Summary heading
-                        Paragraph p_summary = new Paragraph("Summary", fBold10);
-                        document.Add(p_summary);
-
-                        // ---------- Last Table ---------------------
-                        PdfPTable tableEnd = new PdfPTable(new[] { 75.0f, 25.0f });
+                        // ---------- Summary Table ---------------------
+                        PdfPTable tableEnd = new PdfPTable(new[] { 2f, 1f, 2f, 1f });
                         tableEnd.WidthPercentage = 100;
-                        tableEnd.HeaderRows = 0;
-                        tableEnd.SpacingBefore = 3;
-                        tableEnd.SpacingAfter = 3;
+                        tableEnd.SpacingBefore = 5;
 
-                        PdfPCell lt_cell_11 = new PdfPCell(new Phrase("Present:", fBold9));
-                        tableEnd.AddCell(lt_cell_11);
-                        tableEnd.AddCell(new Phrase(" " + sdata.totalPresent, fNormal8));
+                        // Row 1
+                        tableEnd.AddCell(new PdfPCell(new Phrase("Present:", fBold9)));
+                        tableEnd.AddCell(new Phrase(sdata.totalPresent.ToString(), fNormal8));
+                        tableEnd.AddCell(new PdfPCell(new Phrase("Absent:", fBold9)));
+                        tableEnd.AddCell(new Phrase(sdata.totalAbsent.ToString(), fNormal8));
 
-                        PdfPCell lt_cell_21 = new PdfPCell(new Phrase("Late And Early:", fBold9));
-                        tableEnd.AddCell(lt_cell_21);
-                        tableEnd.AddCell(new Phrase(" " + sdata.totalLate, fNormal8));
+                        // Row 2
+                        tableEnd.AddCell(new PdfPCell(new Phrase("Late & Early:", fBold9)));
+                        tableEnd.AddCell(new Phrase(sdata.totalLate.ToString(), fNormal8));
+                        tableEnd.AddCell(new PdfPCell(new Phrase("Leave:", fBold9)));
+                        tableEnd.AddCell(new Phrase(sdata.totalLeave.ToString(), fNormal8));
 
-                        PdfPCell lt_cell_31 = new PdfPCell(new Phrase("Absent:", fBold9));
-                        tableEnd.AddCell(lt_cell_31);
-                        tableEnd.AddCell(new Phrase(" " + sdata.totalAbsent, fNormal8));
-
-                        PdfPCell lt_cell_32 = new PdfPCell(new Phrase("Leave:", fBold9));
-                        tableEnd.AddCell(lt_cell_32);
-                        tableEnd.AddCell(new Phrase(" " + sdata.totalLeave, fNormal8));
-
-                        PdfPCell lt_cell_41 = new PdfPCell(new Phrase("Half Day:", fBold9));
-                        tableEnd.AddCell(lt_cell_41);
-                        tableEnd.AddCell(new Phrase(" " + sdata.totalEarlyOut, fNormal8));
-
-                        PdfPCell lt_cell_61 = new PdfPCell(new Phrase("Miss Punch:", fBold9));
-                        tableEnd.AddCell(lt_cell_61);
-                        tableEnd.AddCell(new Phrase(" " + sdata.MissPunch, fNormal8));
-
-                        PdfPCell lt_cell_71 = new PdfPCell(new Phrase("Total Days:", fBold9));
-                        tableEnd.AddCell(lt_cell_71);
-                        tableEnd.AddCell(new Phrase(" " + sdata.totalDays, fNormal8));
+                        // Row 3
+                        tableEnd.AddCell(new PdfPCell(new Phrase("Half Day:", fBold9)));
+                        tableEnd.AddCell(new Phrase(sdata.totalEarlyOut.ToString(), fNormal8));
+                        tableEnd.AddCell(new PdfPCell(new Phrase("Miss Punch:", fBold9)));
+                        tableEnd.AddCell(new Phrase(sdata.MissPunch.ToString(), fNormal8));
 
                         document.Add(tableEnd);
 
-                        // legends message
-                        // AB-Absent, PLO-Present Late, PO-Present On Time, PLE-Present Late Early Out, POE-Present On Time Early Out, OFF-Off, *-Manually Updated
-                        Paragraph p_abrv = new Paragraph("Legends: PO-Present On Time, AB-Absent, LV-Leave, L&E-Late and Early, MissPunch, HD-HalfDay, OV-Official Visit, OT-Official Travel, OM-Official Meeting, TR-Traning, *-Manually Updated", fNormal7);
-                        p_abrv.SpacingBefore = 1;
-                        //p_nsig.Alignment = 2;
+                        // Footer Notes
+                        Paragraph p_abrv = new Paragraph("\nLegends: PO-Present On Time, AB-Absent, LV-Leave, L&E-Late and Early, MP-MissPunch, HD-HalfDay, *-Manually Updated", fNormal7);
                         document.Add(p_abrv);
 
-                        Paragraph p_nsig = new Paragraph("This is a system generated report and does not require any signature.", fNormal7);
-                        p_nsig.SpacingBefore = 1;
-                        //p_nsig.SpacingAfter = 3;
-                        document.Add(p_nsig);
-
-                        // ------------- close PDF Document and download it automatically
-
-
-                        writer.RunDirection = PdfLayoutHelper.RunDirection;
-                        document.Close();
-                        writer.Close();
-                        return ms.ToArray();
+                        document.Add(new Paragraph("This is a system generated report and does not require any signature.", fNormal7));
                     }
                     else
                     {
-                        Paragraph p_no_data = new Paragraph("No Data Found.", fBold14Red);
-                        p_no_data.SpacingBefore = 20;
-                        p_no_data.SpacingAfter = 20;
-                        document.Add(p_no_data);
+                        document.Add(new Paragraph("\nNo Data Found.", fBold14Red));
                     }
+
+                    document.Close();
+                    return ms.ToArray();
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                //handle exception
+                // Debugging ke liye log add karein: ex.Message
+                return null;
             }
-
-            return null;
         }
-
         private int GenerateEvaluationPDF(BLL.PdfReports.MonthlyTimeSheetData sdata)
         {
             int reponse = 0;
@@ -14524,11 +14372,6 @@ namespace MvcApplication1.Areas.HR.Controllers
                     BLL.PdfReports.MonthlyTimeSheet reportLogoTitle = new BLL.PdfReports.MonthlyTimeSheet();
                     string[] strLogotitle = reportLogoTitle.getOrganizationLogoTitle().Split('^');
                    
-
-                    //PdfPCell cellLogoTitle = new PdfPCell(new Phrase(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("dashboard.Name"), font));
-                    //string[] strLogotitle = new string[] { cellLogoTitle.Phrase.Content };
-
-
                     // ---------- Header Table ---------------------
                     string imageURL = Server.MapPath(strLogotitle[0]);
                     //string imageURL = Request.PhysicalApplicationPath + "/Content/hbl-logo.png";
@@ -14536,17 +14379,9 @@ namespace MvcApplication1.Areas.HR.Controllers
                     Image logo = Image.GetInstance(imageURL);
                     document.Open();
 
-                    //logo.Width = 140.0f;
-                    //logo.Alignment = Element.ALIGN_LEFT;
-                    //logo.ScaleToFit(140f, 20f);
-                    //logo.ScaleAbsolute(140f, 20f);
-                    //logo.SpacingBefore = 5f;
-                    //logo.SpacingAfter = 5f;
-
                     PdfPTable tableHeader = new PdfPTable(new[] { 100.0f, 35.0f, 100.0f });//total 595 - 10 x 2 due to Left and Right side margin
                     tableHeader.WidthPercentage = 100;
                     tableHeader.HeaderRows = 0;
-                    //tableHeader.SpacingBefore = 50;
                     tableHeader.SpacingAfter = 3;
                     tableHeader.DefaultCell.Border = Rectangle.NO_BORDER;
 
@@ -14559,59 +14394,10 @@ namespace MvcApplication1.Areas.HR.Controllers
                     tableHeader.AddCell(logo);
 
                     PdfPCell cellTitle = new PdfPCell(new Phrase(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource(strLogotitle[1] +"\n"+ "Ministry of Energy and Infrastructure"), fontTitle));
-                    //cellTitle.HorizontalAlignment = PdfPCell.ALIGN_RIGHT;
                     cellTitle.Border = 0;
                     cellTitle.RunDirection = PdfLayoutHelper.RunDirection;
                     tableHeader.AddCell(cellTitle);
-
-                    //PdfPCell cellDateTime = new PdfPCell(new Phrase(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.date") + "\n\n" + DateTime.Now.ToString("dd-MMM-yyyy hh:mm tt"), font));
-                    //PdfPCell cellDateTime = new PdfPCell(new Phrase("Date:\n" + DateTime.Now.ToString("dd-MMM-yyyy") + "\n\nTime:\n" + DateTime.Now.ToString("hh:mm tt"), fNormal10));
-                    //cellDateTime.HorizontalAlignment = 2;
-                    //cellDateTime.PaddingTop = 2.0f;
-                   // cellDateTime.Border = 0;
-                   // cellDateTime.RunDirection = PdfLayoutHelper.RunDirection;
-                    //tableHeader.AddCell(cellDateTime);
-
-                    //PdfPCell cellTime = new PdfPCell(new Phrase(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.time") + "\n" + DateTime.Now.ToString("hh:mm tt"), font));
-                    ////PdfPCell cellDateTime = new PdfPCell(new Phrase("Date:\n" + DateTime.Now.ToString("dd-MMM-yyyy") + "\n\nTime:\n" + DateTime.Now.ToString("hh:mm tt"), fNormal10));
-                    ////cellDateTime.HorizontalAlignment = 2;
-                    //cellTime.PaddingTop = 4.0f;
-                    //cellTime.Border = 0;
-                    //cellTime.RunDirection = PdfLayoutHelper.RunDirection;
-                    //tableHeader.AddCell(cellTime);
-
-                    //tableHeader.AddCell("Date: " + DateTime.Now.ToShortDateString() + "\nTime: " +DateTime.Now.ToString("hh:mm tt"));
-
                     document.Add(tableHeader);
-
-
-
-                    // ---------- Header Table ---------------------
-                    //string imageURL = Server.MapPath("~/images/bams-logo-pdf.png");
-                    ////string imageURL = Request.PhysicalApplicationPath + "/Content/hbl-logo.png";
-
-                    //Image logo = Image.GetInstance(imageURL);
-
-                    //PdfPTable tableHeader = new PdfPTable(new[] { 70.0f, 320, 95.0f });//total 595 - 10 x 2 due to Left and Right side margin
-                    //tableHeader.WidthPercentage = 100;
-                    //tableHeader.HeaderRows = 0;
-                    ////tableHeader.SpacingBefore = 50;
-                    //tableHeader.SpacingAfter = 3;
-                    //tableHeader.DefaultCell.Border = Rectangle.NO_BORDER;
-
-                    //tableHeader.AddCell(logo);
-                    //tableHeader.AddCell("");
-
-                    //PdfPCell cellDateTime = new PdfPCell(new Phrase("Date: " + DateTime.Now.ToShortDateString() + "\n\nTime: " + DateTime.Now.ToString("hh:mm tt"), fNormal10));
-                    ////cellDateTime.HorizontalAlignment = 2;
-                    //cellDateTime.Border = 0;
-                    //tableHeader.AddCell(cellDateTime);
-
-                    ////tableHeader.AddCell("Date: " + DateTime.Now.ToShortDateString() + "\nTime: " +DateTime.Now.ToString("hh:mm tt"));
-
-                    //document.Add(tableHeader);
-
-                    //separator
                     document.Add(lineSeparator);
 
                     // ---------- Top Data -------------------------
@@ -14653,23 +14439,6 @@ namespace MvcApplication1.Areas.HR.Controllers
 
                     bool pdfRtl = PdfLayoutHelper.RunDirection == PdfWriter.RUN_DIRECTION_RTL;
                     tableEmployee.RunDirection = PdfLayoutHelper.RunDirection;
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    //PdfPCell cellETitle = new PdfPCell(new Phrase(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblmonthtitlehours"), font));
-                    //cellETitle.Border = 0;
-                    //cellETitle.RunDirection = PdfLayoutHelper.RunDirection;
-                    //cellETitle.HorizontalAlignment = 2;
 
                     PdfPCell cellETitle = new PdfPCell(new Phrase(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("title.workhourstimesheetreport"), font));
                     cellETitle.Border = 0;
@@ -14758,12 +14527,7 @@ namespace MvcApplication1.Areas.HR.Controllers
                         tableMid.AddCell(cell1);
                         tableMid.AddCell(cell0);
                     }
-
-                    //PdfPCell cell9 = new PdfPCell(new Phrase(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.empcode"), font));
-                    //cell9.BackgroundColor = Color.LIGHT_GRAY;
-                    //cell9.HorizontalAlignment = 1;
-                    //cell9.RunDirection = PdfLayoutHelper.RunDirection;
-                    //tableMid.AddCell(cell9);
+                    
                     var lookup = new Dictionary<string, string>(){
                         {"Monday", @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Monday")},
                         {"Tuesday", @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Tuesday")},
@@ -14781,13 +14545,6 @@ namespace MvcApplication1.Areas.HR.Controllers
                         {"On-Time", @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("On-Time")},
                         {"Absent", @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("Absent")}
                     };
-                    //Color greenColor = new iTextSharp.text.Color(175, 225, 175);
-                    //Color redColor = new iTextSharp.text.Color(255, 120, 100);
-                    //Color orangeColor = new iTextSharp.text.Color(252, 207, 73);
-                    //Color blueColor = new iTextSharp.text.Color(102, 205, 170);
-                    //Color whiteColor = null;
-                    //Color GreenColor = new iTextSharp.text.Color(80, 148, 46);
-
 
                     Color greenColor = new iTextSharp.text.Color(127, 185, 145);
                     Color redColor = new iTextSharp.text.Color(255, 203, 199);
@@ -14901,24 +14658,12 @@ namespace MvcApplication1.Areas.HR.Controllers
                             tableMid.AddCell(cellData0);
                         }
 
-                        //PdfPCell cellData9 = new PdfPCell(new Phrase(sdata.employeeCode, fNormal8));
-                        //cellData9.HorizontalAlignment = 1;
-                        //tableMid.AddCell(cellData9);
-
                     }
 
                     if (sdata.logs.Length > 0)
                     {
 
                         document.Add(tableMid);
-
-                        //Paragraph p_summary = new Paragraph(new Phrase(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblSummary.rpt"), font));
-                        //p_summary.SpacingBefore = 1;
-                        //document.Add(p_summary);
-
-                        // Summary heading
-                        //Paragraph p_summary = new Paragraph(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblSummary.rpt"), font);
-                        //document.Add(p_summary);
 
                         // ---------- Last Table ---------------------
                         // Calculate total shift hours
@@ -14933,10 +14678,7 @@ namespace MvcApplication1.Areas.HR.Controllers
                         lt_cell_11.RunDirection = PdfLayoutHelper.RunDirection;
                         tableEnd.AddCell(lt_cell_11);
                         double TotalHours = sdata.logs[sdata.logs.Count() - 1].GrandTotal_Hour;
-                        //tableEnd.AddCell(new Phrase($" {sdata.logs[sdata.logs.Count() - 1].totalShfit_Hour:00} : {sdata.logs[sdata.logs.Count() - 1].totalShfit_Mins:00} / {Math.Floor(TotalHours):00} : {Math.Round((TotalHours - Math.Floor(TotalHours)) * 60):00}", fNormal8));
-                        //tableEnd.AddCell(new Phrase($" {sdata.logs[sdata.logs.Count() - 1].totalShfit_Hour:00} : {sdata.logs[sdata.logs.Count() - 1].totalShfit_Mins:00}", fNormal8));
                         tableEnd.AddCell(new Phrase($" {sdata.logs[sdata.logs.Count() - 1].totalShfit_Hour:00} : {sdata.logs[sdata.logs.Count() - 1].totalShfit_Mins:00}", fNormal8));
-
 
                         PdfPCell lt_cell_21 = new PdfPCell(new Phrase(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblthourslate"), font));
                         lt_cell_21.RunDirection = PdfLayoutHelper.RunDirection;
@@ -14991,19 +14733,6 @@ namespace MvcApplication1.Areas.HR.Controllers
 
                         tableEndSummary.RunDirection = PdfLayoutHelper.RunDirection;
                         document.Add(tableEndSummary);
-
-                        //Paragraph p_nsigremarks = new Paragraph(new Phrase(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lbl.rpt.msg.remarks") + "   " + MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName), font));
-                        //p_nsigremarks.SpacingBefore = 1;
-                        //// p_nsig.RunDirection = PdfLayoutHelper.RunDirection;
-                        //document.Add(p_nsigremarks);
-
-
-                        //Paragraph p_nsig = new Paragraph(new Phrase(@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lbl.rpt.msg") + "   " + MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName), font));
-                        //p_nsig.SpacingBefore = 1;
-                        //// p_nsig.RunDirection = PdfLayoutHelper.RunDirection;
-                        //document.Add(p_nsig);
-
-
                         document.Close();
 
                         return File(ms.ToArray(), "application/pdf", "Monthly-Working-Hours-Timesheet-Report-" + sdata.employeeCode + ".pdf");
