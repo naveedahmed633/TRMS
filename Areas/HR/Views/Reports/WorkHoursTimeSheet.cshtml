@@ -1,4 +1,7 @@
-﻿@{
+﻿@inherits System.Web.Mvc.WebViewPage<dynamic>
+@using System.Web.Mvc
+@using System.Web.Mvc.Html
+@{
     ViewBag.Title = "TRMS - Monthly Working Hours Timesheet";
     Layout = "~/Areas/HR/Views/Shared/_Layout.cshtml";
 }
@@ -367,7 +370,7 @@
 
         function searchReport() {
             // get the entered string
-            var toSearch = $('attendance_table_filter input').val();
+            var toSearch = $('#attendance_table_filter input').val();
 
             $('#attendance_table').DataTable().search(toSearch);
             $('#attendance_table').DataTable().draw();
@@ -502,6 +505,9 @@
         }
 
         function setTypeOfReportDropDown() {
+            if ($('#type-of-report').length === 0) {
+                return;
+            }
             $('#type-of-report').chosen();
             $('#type-of-report').on("change", function () {
                 switch ($('#type-of-report').val()) {

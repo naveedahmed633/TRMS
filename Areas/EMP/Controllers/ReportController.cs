@@ -17,12 +17,63 @@ using Newtonsoft.Json;
 using TimeTune;
 using BLL_UNIS.ViewModels;
 using MvcApplication1.ViewModel;
+using System.Globalization;
 
 namespace MvcApplication1.Areas.EMP.Controllers
 {
     [Authorize(Roles = BLL.TimeTuneRoles.ROLE_EMP)]
     public class ReportController : Controller
     {
+        private string GetCurrentLang()
+        {
+            string requestLang = Request?["lang"] ?? Request?["GV_Langauge"];
+            if (!string.IsNullOrWhiteSpace(requestLang))
+            {
+                GlobalVariables.GV_Langauge = requestLang.Equals("ar", StringComparison.OrdinalIgnoreCase) ? "Ar" : "En";
+            }
+
+            return GlobalVariables.GetCurrentLanguage();
+        }
+
+        private Font GetFont(bool isBold = false, float size = 8f, Color color = null)
+        {
+            string fontPath = Environment.GetEnvironmentVariable("windir") + @"\fonts\Arial.ttf";
+            BaseFont bf = BaseFont.CreateFont(fontPath, BaseFont.IDENTITY_H, true);
+            int style = isBold ? Font.BOLD : Font.NORMAL;
+            bool isArabic = string.Equals(GetCurrentLang(), "Ar", StringComparison.OrdinalIgnoreCase);
+            float adjustedSize = isArabic ? size : Math.Max(6.5f, size - 0.5f);
+            return new Font(bf, adjustedSize, style, color ?? Color.BLACK);
+        }
+
+        private int GetPdfRunDirection()
+        {
+            return string.Equals(GetCurrentLang(), "Ar", StringComparison.OrdinalIgnoreCase)
+                ? PdfWriter.RUN_DIRECTION_RTL
+                : PdfWriter.RUN_DIRECTION_LTR;
+        }
+
+        private int GetPdfDefaultHorizontalAlignment()
+        {
+            return string.Equals(GetCurrentLang(), "Ar", StringComparison.OrdinalIgnoreCase)
+                ? Element.ALIGN_RIGHT
+                : Element.ALIGN_LEFT;
+        }
+
+        private string GetCurrentUserCode()
+        {
+            if (!string.IsNullOrWhiteSpace(GlobalVariables.GV_EmployeeCode))
+            {
+                return GlobalVariables.GV_EmployeeCode.Trim();
+            }
+
+            return string.IsNullOrWhiteSpace(User?.Identity?.Name) ? "000000" : User.Identity.Name.Trim();
+        }
+
+        private string BuildPdfFileName(string reportName)
+        {
+            return string.Format("{0}-Report-{1}.pdf", reportName, GetCurrentUserCode());
+        }
+
         #region ConsolidatedAttendance
 
         public ActionResult ConsolidatedAttendance()
@@ -975,7 +1026,7 @@ namespace MvcApplication1.Areas.EMP.Controllers
                     document.Close();
                     writer.Close();
                     Response.ContentType = "pdf/application";
-                    Response.AddHeader("content-disposition", "attachment;filename=Report-" + pInfo.EmployeeCode + "-" + pInfo.SalaryMonthYearText + ".pdf");
+                    Response.AddHeader("content-disposition", "attachment;filename=" + BuildPdfFileName("Report"));
                     Response.OutputStream.Write(ms.GetBuffer(), 0, ms.GetBuffer().Length);
                     Response.Flush();
                     Response.End();
@@ -1612,7 +1663,7 @@ namespace MvcApplication1.Areas.EMP.Controllers
                     document.Close();
                     writer.Close();
                     Response.ContentType = "pdf/application";
-                    Response.AddHeader("content-disposition", "attachment;filename=Report-" + pInfo.EmployeeCode + "-" + pInfo.SalaryMonthYearText + ".pdf");
+                    Response.AddHeader("content-disposition", "attachment;filename=" + BuildPdfFileName("Report"));
                     Response.OutputStream.Write(ms.GetBuffer(), 0, ms.GetBuffer().Length);
                     Response.Flush();
                     Response.End();
@@ -1928,27 +1979,12 @@ namespace MvcApplication1.Areas.EMP.Controllers
             if (toRender == null)
                 return RedirectToAction("MonthlyTimeSheet");
 
-            //return new Rotativa.ViewAsPdf("MonthlyTimeSheet", toRender) { FileName = "report.pdf" };
+            ActionResult pdfResult = GenerateWorkHoursTimeSheetPdfMonthlyStyle(toRender);
+            if (pdfResult != null)
+                return pdfResult;
 
-            // ------------ Added by Inayat - 05th Dec 2017 ---------------------
-
-            int found = 0; ViewData["PDFNoDataFound"] = "";
-            found = GenerateWorkHoursTimeSheetPDFAlt(toRender);
-
-            if (found == 1)
-            {
-                ViewData["PDFNoDataFound"] = "";
-                //return null;
-            }
-            else
-            {
-                ViewData["PDFNoDataFound"] = "No Data Found";
-            }
-
+            ViewData["PDFNoDataFound"] = "No Data Found";
             return View("MonthlyTimeSheet");
-
-
-            //return RedirectToAction("MonthlyTimeSheet", "Reports");
         }
 
         [HttpGet]
@@ -1983,28 +2019,166 @@ namespace MvcApplication1.Areas.EMP.Controllers
             if (toRender == null)
                 return RedirectToAction("MonthlyTimeSheetnews");
 
-            //return new Rotativa.ViewAsPdf("MonthlyTimeSheet", toRender) { FileName = "report.pdf" };
+            ActionResult pdfResult = GenerateWorkHoursTimeSheetPdfMonthlyStyle(toRender);
+            if (pdfResult != null)
+                return pdfResult;
 
-            // ------------ Added by Inayat - 05th Dec 2017 ---------------------
-
-            int found = 0; ViewData["PDFNoDataFound"] = "";
-            //   found = GenerateMonthlyTimeSheetPDF(toRender);
-            found = GenerateWorkHoursTimeSheetPDFNew(toRender);
-
-            if (found == 1)
-            {
-                ViewData["PDFNoDataFound"] = "";
-                //return null;
-            }
-            else
-            {
-                ViewData["PDFNoDataFound"] = "No Data Found";
-            }
-
+            ViewData["PDFNoDataFound"] = "No Data Found";
             return View("MonthlyTimeSheetnews");
+        }
 
+        private ActionResult GenerateWorkHoursTimeSheetPdfMonthlyStyle(BLL.PdfReports.CustomRangeTimeSheetData sdata)
+        {
+            if (sdata == null || sdata.logs == null || sdata.logs.Length == 0)
+            {
+                return null;
+            }
 
-            //return RedirectToAction("MonthlyTimeSheet", "Reports");
+            string lang = GetCurrentLang();
+            bool isArabic = string.Equals(lang, "Ar", StringComparison.OrdinalIgnoreCase);
+            int runDirection = GetPdfRunDirection();
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                Font fNormal7 = GetFont(false, 7f);
+                Font fNormal8 = GetFont(false, 8f);
+                Font fBold8 = GetFont(true, 8f);
+                Font fBold9 = GetFont(true, 9f);
+                Font fBold10 = GetFont(true, 10f);
+
+                Document document = new Document(PageSize.A4, 10f, 10f, 10f, 10f);
+                PdfWriter writer = PdfWriter.GetInstance(document, ms);
+                writer.RunDirection = runDirection;
+                document.Open();
+
+                var lineSeparator = new iTextSharp.text.pdf.draw.LineSeparator(0.8F, 99.0F, Color.BLACK, Element.ALIGN_LEFT, 1);
+
+                BLL.PdfReports.MonthlyTimeSheet reportLogoTitle = new BLL.PdfReports.MonthlyTimeSheet();
+                string[] strLogotitle = reportLogoTitle.getOrganizationLogoTitle().Split('^');
+                string imageURL = Server.MapPath(strLogotitle[0]);
+                Image logo = Image.GetInstance(imageURL);
+                logo.ScaleToFit(80f, 80f);
+
+                PdfPTable tableHeader = new PdfPTable(new[] { 30f, 40f, 30f });
+                tableHeader.WidthPercentage = 100;
+                tableHeader.RunDirection = runDirection;
+                tableHeader.DefaultCell.Border = Rectangle.NO_BORDER;
+
+                PdfPCell orgTitle = new PdfPCell(new Phrase(strLogotitle[1], fBold10));
+                orgTitle.Border = 0;
+                tableHeader.AddCell(orgTitle);
+
+                PdfPCell logoCell = new PdfPCell(logo) { Border = 0, HorizontalAlignment = Element.ALIGN_CENTER };
+                tableHeader.AddCell(logoCell);
+
+                PdfPTable dtSub = new PdfPTable(1);
+                dtSub.DefaultCell.Border = Rectangle.NO_BORDER;
+                dtSub.RunDirection = runDirection;
+                dtSub.AddCell(new Phrase(GlobalVariables.GetStringResource("lblDate") + ": " + DateTime.Now.ToString("dd-MMM-yyyy"), fNormal8));
+                dtSub.AddCell(new Phrase(GlobalVariables.GetStringResource("lblTime") + ": " + DateTime.Now.ToString("hh:mm tt"), fNormal8));
+                PdfPCell dtCell = new PdfPCell(dtSub) { Border = 0, HorizontalAlignment = isArabic ? Element.ALIGN_LEFT : Element.ALIGN_RIGHT, RunDirection = runDirection };
+                tableHeader.AddCell(dtCell);
+
+                document.Add(tableHeader);
+                document.Add(new Paragraph("\n"));
+                document.Add(lineSeparator);
+
+                PdfPTable top = new PdfPTable(2);
+                top.WidthPercentage = 100;
+                top.RunDirection = runDirection;
+                top.DefaultCell.Border = Rectangle.NO_BORDER;
+
+                PdfPTable info = new PdfPTable(1);
+                info.RunDirection = runDirection;
+                info.DefaultCell.Border = Rectangle.NO_BORDER;
+                info.AddCell(new PdfPCell(new Phrase(GlobalVariables.GetStringResource("dashboard.Name") + ": " + sdata.employeeName, fBold9)) { Border = 0 });
+                info.AddCell(new PdfPCell(new Phrase(GlobalVariables.GetStringResource("monthly.epcode") + ": " + sdata.employeeCode, fBold9)) { Border = 0 });
+                info.AddCell(new PdfPCell(new Phrase(GlobalVariables.GetStringResource("report.date") + ": " + string.Format("{0}/{1}/{2} - {3}/{4}/{5}", sdata.fromDay, sdata.fromMonth, sdata.fromYear, sdata.toDay, sdata.toMonth, sdata.toYear), fBold9)) { Border = 0 });
+                top.AddCell(new PdfPCell(info) { Border = 0 });
+
+                PdfPCell reportTitle = new PdfPCell(new Phrase(GlobalVariables.GetStringResource("title.workhourstimesheetreport"), fBold10));
+                reportTitle.Border = 0;
+                reportTitle.HorizontalAlignment = isArabic ? Element.ALIGN_LEFT : Element.ALIGN_RIGHT;
+                reportTitle.RunDirection = runDirection;
+                top.AddCell(reportTitle);
+                document.Add(top);
+
+                PdfPTable table = new PdfPTable(new[] { 12f, 12f, 12f, 12f, 12f, 14f, 13f, 13f });
+                table.WidthPercentage = 100;
+                table.HeaderRows = 1;
+                table.RunDirection = runDirection;
+                table.SpacingBefore = 8f;
+
+                Func<string, PdfPCell> headerCell = (text) =>
+                {
+                    return new PdfPCell(new Phrase(text, fBold8))
+                    {
+                        BackgroundColor = Color.LIGHT_GRAY,
+                        HorizontalAlignment = Element.ALIGN_CENTER,
+                        RunDirection = runDirection
+                    };
+                };
+
+                table.AddCell(headerCell(GlobalVariables.GetStringResource("report.date")));
+                table.AddCell(headerCell(GlobalVariables.GetStringResource("report.remarks")));
+                table.AddCell(headerCell(GlobalVariables.GetStringResource("report.timein")));
+                table.AddCell(headerCell(GlobalVariables.GetStringResource("report.timeout")));
+                table.AddCell(headerCell(GlobalVariables.GetStringResource("lblOvertime")));
+                table.AddCell(headerCell(GlobalVariables.GetStringResource("report.statusout")));
+                table.AddCell(headerCell(GlobalVariables.GetStringResource("report.terminalin")));
+                table.AddCell(headerCell(GlobalVariables.GetStringResource("report.terminalout")));
+
+                foreach (var log in sdata.logs)
+                {
+                    string finalRemarks = (log.finalRemarks ?? "") + (log.hasManualAttendance ? "*" : "");
+                    table.AddCell(new PdfPCell(new Phrase(log.date ?? "", fNormal8)) { HorizontalAlignment = Element.ALIGN_CENTER, RunDirection = runDirection });
+                    table.AddCell(new PdfPCell(new Phrase(finalRemarks, fNormal8)) { RunDirection = runDirection });
+                    table.AddCell(new PdfPCell(new Phrase(log.timeIn ?? "", fNormal8)) { HorizontalAlignment = Element.ALIGN_CENTER, RunDirection = runDirection });
+                    table.AddCell(new PdfPCell(new Phrase(log.timeOut ?? "", fNormal8)) { HorizontalAlignment = Element.ALIGN_CENTER, RunDirection = runDirection });
+                    table.AddCell(new PdfPCell(new Phrase(log.overtime2 ?? "", fNormal8)) { HorizontalAlignment = Element.ALIGN_CENTER, RunDirection = runDirection });
+                    table.AddCell(new PdfPCell(new Phrase(log.remarksOut ?? "", fNormal8)) { RunDirection = runDirection });
+                    table.AddCell(new PdfPCell(new Phrase(log.terminalIn ?? "", fNormal7)) { RunDirection = runDirection });
+                    table.AddCell(new PdfPCell(new Phrase(log.terminalOut ?? "", fNormal7)) { RunDirection = runDirection });
+                }
+
+                document.Add(table);
+                document.Add(new Paragraph(GlobalVariables.GetStringResource("lblSystemGenerated"), fNormal7) { SpacingBefore = 8f });
+                document.Close();
+
+                return File(ms.ToArray(), "application/pdf", BuildPdfFileName("Monthly-Working-Hours-Timesheet"));
+            }
+        }
+
+        private ActionResult GenerateWorkHoursTimeSheetPdfMonthlyStyle(BLL.PdfReports.MonthlyTimeSheetData sdata)
+        {
+            if (sdata == null)
+            {
+                return null;
+            }
+
+            int parsedYear = DateTime.Now.Year;
+            int parsedMonth = DateTime.Now.Month;
+            DateTime parsedMonthYear;
+            if (DateTime.TryParseExact((sdata.month ?? string.Empty) + "-" + (sdata.year ?? string.Empty), new[] { "MM-yyyy", "MMM-yyyy", "MMMM-yyyy" }, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedMonthYear))
+            {
+                parsedYear = parsedMonthYear.Year;
+                parsedMonth = parsedMonthYear.Month;
+            }
+
+            BLL.PdfReports.CustomRangeTimeSheetData adapted = new BLL.PdfReports.CustomRangeTimeSheetData
+            {
+                employeeName = sdata.employeeName,
+                employeeCode = sdata.employeeCode,
+                logs = sdata.logs,
+                fromDay = "1",
+                fromMonth = sdata.month,
+                fromYear = sdata.year,
+                toDay = DateTime.DaysInMonth(parsedYear, parsedMonth).ToString(),
+                toMonth = sdata.month,
+                toYear = sdata.year
+            };
+
+            return GenerateWorkHoursTimeSheetPdfMonthlyStyle(adapted);
         }
 
 
@@ -2336,7 +2510,7 @@ namespace MvcApplication1.Areas.EMP.Controllers
                         document.Close();
                         writer.Close();
                         Response.ContentType = "pdf/application";
-                        Response.AddHeader("content-disposition", "attachment;filename=Report-" + sdata.employeeCode + "-" + sdata.month + "-" + sdata.year + ".pdf");
+                        Response.AddHeader("content-disposition", "attachment;filename=" + BuildPdfFileName("Report"));
                         Response.OutputStream.Write(ms.GetBuffer(), 0, ms.GetBuffer().Length);
                         Response.Flush();
                         Response.End();
@@ -2632,7 +2806,7 @@ namespace MvcApplication1.Areas.EMP.Controllers
 
                         writer.Close();
                         Response.ContentType = "pdf/application";
-                        Response.AddHeader("content-disposition", "attachment;filename=Monthly-Working-Hours-Timesheet-Report-" + sdata.employeeCode + "-" + sdata.month + "-" + sdata.year + ".pdf");
+                        Response.AddHeader("content-disposition", "attachment;filename=" + BuildPdfFileName("Monthly-Working-Hours-Timesheet"));
                         Response.OutputStream.Write(ms.GetBuffer(), 0, ms.GetBuffer().Length);
                         Response.Flush();
                         Response.End();
@@ -3154,7 +3328,7 @@ namespace MvcApplication1.Areas.EMP.Controllers
                         writer.RunDirection = PdfLayoutHelper.RunDirection;
                         writer.Close();
                         Response.ContentType = "pdf/application";
-                        Response.AddHeader("content-disposition", "attachment;filename=Monthly-Working-Hours-Timesheet-Report-" + sdata.employeeCode + ".pdf");
+                        Response.AddHeader("content-disposition", "attachment;filename=" + BuildPdfFileName("Monthly-Working-Hours-Timesheet"));
                         Response.OutputStream.Write(ms.GetBuffer(), 0, ms.GetBuffer().Length);
                         Response.Flush();
                         Response.End();
@@ -3546,7 +3720,7 @@ namespace MvcApplication1.Areas.EMP.Controllers
                         document.Close();
                         writer.Close();
                         Response.ContentType = "pdf/application";
-                        Response.AddHeader("content-disposition", "attachment;filename=Report-" + sdata.employeeCode + "-" + sdata.month + "-" + sdata.year + ".pdf");
+                        Response.AddHeader("content-disposition", "attachment;filename=" + BuildPdfFileName("Report"));
                         Response.OutputStream.Write(ms.GetBuffer(), 0, ms.GetBuffer().Length);
                         Response.Flush();
                         Response.End();

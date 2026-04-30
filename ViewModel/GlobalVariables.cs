@@ -402,6 +402,17 @@ namespace MvcApplication1.ViewModel
         {
             get
             {
+                var request = HttpContext.Current?.Request;
+                string requestLang = request?["lang"] ?? request?["GV_Langauge"];
+                if (!string.IsNullOrWhiteSpace(requestLang))
+                {
+                    HttpContext.Current.Session["GV_Langauge"] =
+                        string.Equals(requestLang, "Ar", StringComparison.OrdinalIgnoreCase)
+                        || string.Equals(requestLang, "ar", StringComparison.OrdinalIgnoreCase)
+                            ? "Ar"
+                            : "En";
+                }
+
                 if (HttpContext.Current.Session["GV_Langauge"] != null && HttpContext.Current.Session["GV_Langauge"].ToString().Length > 0)
                 {
                     return HttpContext.Current.Session["GV_Langauge"].ToString();
@@ -413,6 +424,22 @@ namespace MvcApplication1.ViewModel
                 }
             }
             set { HttpContext.Current.Session["GV_Langauge"] = value; }
+        }
+
+        public static string GetCurrentLanguage()
+        {
+            var lang = GV_Langauge;
+            if (string.Equals(lang, "Ar", StringComparison.OrdinalIgnoreCase))
+            {
+                return "Ar";
+            }
+
+            return "En";
+        }
+
+        public static bool IsArabicLanguage()
+        {
+            return string.Equals(GetCurrentLanguage(), "Ar", StringComparison.OrdinalIgnoreCase);
         }
 
 
@@ -500,6 +527,18 @@ namespace MvcApplication1.ViewModel
                     return isArabic ? "جهاز الخروج" : "Terminal Out";
                 case "report.statusout":
                     return isArabic ? "حالة الخروج" : "Status Out";
+                case "lblPersonalityDesc":
+                    return isArabic ? "مرن وسهل التعامل معه، وقادر على التكيف والعمل ضمن الفريق." : "Flexible and easy to get along with an adaptable team player.";
+                case "lblCommunicationDesc":
+                    return isArabic ? "يستمع ويفهم ويعبر عن نفسه بشكل جيد." : "Listens, understands and expresses him or herself well.";
+                case "lblAttendanceDesc":
+                    return isArabic ? "يلتزم بساعات العمل المحددة ويتحلى بالمسؤولية." : "Observes assigned working hours and is conscientious.";
+                case "lblPayrollSlip":
+                    return isArabic ? "قسيمة الراتب" : "Payroll Slip";
+                case "lblPayrollStatement":
+                    return isArabic ? "بيان الرواتب" : "Payroll Statement";
+                case "lblLoanStatement":
+                    return isArabic ? "بيان القرض" : "Loan Statement";
                 default:
                     return valueId;
             }

@@ -1,4 +1,4 @@
-﻿<h4 style="font-weight: bold;">Unregistered Devices Report</h4>
+﻿<h4 style="font-weight: bold;">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("title.unregistereddevicesreport")</h4>
 
 <div class="row">
     <div class="form-group col-md-3">
@@ -6,7 +6,7 @@
         <form style="display:none">
             <div class="row">
                 <div class="col-md-12">
-                    <label class="control-label">Report Type</label>
+                    <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblReportType")</label>
 
                     <select id="type-of-report" class="form-control" required>
                         <option value="none" disabled="disabled" selected="selected">Select an option</option>
@@ -45,18 +45,18 @@
             <thead>
 
                 <tr style="line-height: 20px;">
-                    <th>ID</th>
+                    <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblID")</th>
 
-                    <th>Device Name</th>
-                    <th>Branch</th>
-                    <th>Location</th>
+                    <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblDeviceName")</th>
+                    <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblBranch")</th>
+                    <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblLocation")</th>
 
                 </tr>
 
             </thead>
             <tbody></tbody>
         </table>
-        <button type="submit" id="btnExport" style="margin-top:5px">Export Excel</button>
+        <button type="submit" id="btnExport" style="margin-top:5px">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("btnExportExcel")</button>
     </div>
 </div>
 <br><br><br><br><br><br><br><br>

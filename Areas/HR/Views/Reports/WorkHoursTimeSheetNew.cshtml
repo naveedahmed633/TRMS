@@ -52,6 +52,8 @@
                         <div class="col-12">
                             @using (Html.BeginForm("WorkHoursTimeSheetNew", "Reports", FormMethod.Post, new { id = "monthly-time-sheet-form" }))
                             {
+                            <input type="hidden" name="lang" value="@MvcApplication1.ViewModel.GlobalVariables.GetCurrentLanguage()" />
+                            <input type="hidden" name="GV_Langauge" value="@MvcApplication1.ViewModel.GlobalVariables.GetCurrentLanguage()" />
                             <div class="row">
                                 <div class="col-4">
                                     <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.fromdate") <span class="text-danger font-14">*</span></label>
@@ -197,6 +199,14 @@
                 return false;
             }
 
+            var fromDate = new Date($('#from-date').val());
+            var toDate = new Date($('#to-date').val());
+            if (toDate < fromDate) {
+                $('#alert_message').text("The 'To Date' should be greater than or equal to 'From Date'.");
+                $('.bs-example-modal-sm').modal('show');
+                return false;
+            }
+
             $('#pdf-no-data-found').val("");
             $('#pdf-no-data-found').text("");
 
@@ -309,7 +319,7 @@
 
         function searchReport() {
             // get the entered string
-            var toSearch = $('attendance_table_filter input').val();
+            var toSearch = $('#attendance_table_filter input').val();
 
             $('#attendance_table').DataTable().search(toSearch);
             $('#attendance_table').DataTable().draw();
@@ -328,8 +338,10 @@
 
                         // ---------------------------------------------
 
-                        var fDate = $('[name="fromDate"]').val().split("-").reverse().join("-")
-                        var tDate = $('[name="toDate"]').val().split("-").reverse().join("-")
+                        var fromRaw = $('[name="fromDate"]').val();
+                        var toRaw = $('[name="toDate"]').val();
+                        var fDate = fromRaw ? fromRaw.split("-").reverse().join("-") : "";
+                        var tDate = toRaw ? toRaw.split("-").reverse().join("-") : "";
 
                         //var lastDay = GetLastDayOfMonth(fDate.split("-")[1], fDate.split("-")[0]);
 
@@ -455,6 +467,9 @@
         }
 
         function setTypeOfReportDropDown() {
+            if ($('#type-of-report').length === 0) {
+                return;
+            }
             $('#type-of-report').chosen();
             $('#type-of-report').on("change", function () {
                 switch ($('#type-of-report').val()) {
@@ -590,7 +605,7 @@
             initReportDataTable('#attendance_table', url, columns);
 
             $('#btnExport').focus();
-            $('#monthly-time-sheet-month').focus();
+            $('#from-date').focus();
 
         });
 

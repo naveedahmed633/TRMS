@@ -330,6 +330,44 @@
         });
     </script>
 
+    <script type="text/javascript">
+        (function () {
+            var currentLang = '@MvcApplication1.ViewModel.GlobalVariables.GetCurrentLanguage()';
+
+            function appendLanguageInput(form) {
+                if (!form) return;
+
+                var inputLang = form.querySelector('input[name="lang"]');
+                if (!inputLang) {
+                    inputLang = document.createElement('input');
+                    inputLang.type = 'hidden';
+                    inputLang.name = 'lang';
+                    form.appendChild(inputLang);
+                }
+                inputLang.value = currentLang;
+
+                var inputGlobal = form.querySelector('input[name="GV_Langauge"]');
+                if (!inputGlobal) {
+                    inputGlobal = document.createElement('input');
+                    inputGlobal.type = 'hidden';
+                    inputGlobal.name = 'GV_Langauge';
+                    form.appendChild(inputGlobal);
+                }
+                inputGlobal.value = currentLang;
+            }
+
+            document.addEventListener('click', function (e) {
+                var button = e.target.closest('#generate-monthly-time-sheet');
+                if (!button) return;
+                appendLanguageInput(button.form || button.closest('form'));
+            });
+
+            document.addEventListener('submit', function (e) {
+                appendLanguageInput(e.target);
+            });
+        })();
+    </script>
+
     @RenderSection("JS", required: false)
 
 </body>

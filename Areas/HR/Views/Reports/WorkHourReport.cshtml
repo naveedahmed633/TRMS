@@ -9,10 +9,10 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="page-title-box">
-                <h4 class="page-title">Welcome <span class="text-danger">'HR'</span>! [Login ID: <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & Name: <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span>]</h4>
+                <h4 class="page-title">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblWelcome") <span class="text-danger">'@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.HR")'</span>! [@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblLoginID"): <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("dashboard.Name"): <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span>]</h4>
                 <ol class="breadcrumb float-right">
-                    <li class="breadcrumb-item"><a href="/HR">HR</a></li>
-                    <li class="breadcrumb-item active">Reports</li>
+                    <li class="breadcrumb-item"><a href="/HR">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.HR")</a></li>
+                    <li class="breadcrumb-item active">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.Reports")</li>
                 </ol>
                 <div class="clearfix"></div>
             </div>
@@ -29,7 +29,7 @@
                 <div class="panel-body">
                     <div class="clearfix">
                         <div class="pull-left">
-                            <h3 class="text-right"><i class="ti-files"></i> Work Hours Report </h3>
+                            <h3 class="text-right"><i class="ti-files"></i> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("title.workhourstimesheetreport") </h3>
                         </div>
                         <div class="pull-right small text-muted">
                             @DateTime.Now.ToString("f")
@@ -44,7 +44,7 @@
                             <form id="consolidate-form">
                                 <div class="row">
                                     <div class="col-12">
-                                        <label class="control-label">Employee Code <span class="text-danger font-14">*</span></label>
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.empcode") <span class="text-danger font-14">*</span></label>
                                         <select id="consolidated-employees" class="form-control" name="employee_id" required></select>
                                     </div>
                                 </div>
@@ -52,22 +52,22 @@
 
                                 <div class="row m-t-10">
                                     <div class="col-12">
-                                        <label class="control-label">Date From <span class="text-danger font-14">*</span></label>
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.datefrom") <span class="text-danger font-14">*</span></label>
                                         <input id="date_from" type="text" class="form-control datepicker" autocomplete="off" name="from_date" required>
                                     </div>
                                 </div>
 
                                 <div class="row m-t-10">
                                     <div class="col-12">
-                                        <label class="control-label">Date To <span class="text-danger font-14">*</span></label>
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.dateto") <span class="text-danger font-14">*</span></label>
                                         <input id="date_to" type="text" class="form-control datepicker" autocomplete="off" name="to_date" required>
                                     </div>
                                 </div>
 
                                 <div class="row">
                                     <div class="col-12">
-                                        <button type="submit" id="search-consolidated-report" onclick="clearr();" class="btn btn-primary waves-effect waves-light m-t-10">Search</button>&nbsp;
-                                        <button type="button" class="btn btn-primary waves-effect waves-light m-t-10" onclick="redirectToPage();">Reset</button>
+                                        <button type="submit" id="search-consolidated-report" onclick="clearr();" class="btn btn-primary waves-effect waves-light m-t-10">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("btnSearch")</button>&nbsp;
+                                        <button type="button" class="btn btn-primary waves-effect waves-light m-t-10" onclick="redirectToPage();">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("btnReset")</button>
                                     </div>
                                 </div>
                             </form>
@@ -94,11 +94,11 @@
                             <table id="attendance_table" class="table table-striped table-bordered dataTable dt-responsive nowrap no-footer small" style="width: 100%;">
                                 <thead>
                                     <tr>
-                                        <th>To Date</th>
-                                        <th>From Date</th>
-                                        <th>Employee Code</th>
-                                        <th>Name</th>
-                                        <th>Hours</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.todate")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.fromdate")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.empcode")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("dashboard.Name")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblHours")</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
@@ -108,8 +108,8 @@
 
                     <div class="row m-t-10">
                         <div class="col-12">
-                            <button type="submit" id="btnExport" onclick="ExortExcleBar();" class="btn btn-primary waves-effect waves-light">Export Grid Data</button>
-                            <button type="submit" id="btn-excel-download" form="consolidate-form" onclick="ExcleHide();" class="btn btn-primary waves-effect waves-light">Download Excel</button>
+                            <button type="submit" id="btnExport" onclick="ExortExcleBar();" class="btn btn-primary waves-effect waves-light">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("btnExportGridData")</button>
+                            <button type="submit" id="btn-excel-download" form="consolidate-form" onclick="ExcleHide();" class="btn btn-primary waves-effect waves-light">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("btnDownloadExcel")</button>
                             <span id="export_wait" style="display: none;" class="text-danger"><img src='/images/loader.gif' alt='processing' /></span>
                             <span id="demo" class="text-danger"></span>
                             <p id="export_wait2" style="display: none;" class="text-danger"><img src='/images/loader.gif' alt='processing' /></p>

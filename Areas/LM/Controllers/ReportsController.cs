@@ -28,6 +28,21 @@ namespace MvcApplication1.Areas.LM.Controllers
         //
         // GET: /LM/Reports/
 
+        private string GetCurrentUserCode()
+        {
+            if (!string.IsNullOrWhiteSpace(GlobalVariables.GV_EmployeeCode))
+            {
+                return GlobalVariables.GV_EmployeeCode.Trim();
+            }
+
+            return string.IsNullOrWhiteSpace(User?.Identity?.Name) ? "000000" : User.Identity.Name.Trim();
+        }
+
+        private string BuildPdfFileName(string reportName)
+        {
+            return string.Format("{0}-Report-{1}.pdf", reportName, GetCurrentUserCode());
+        }
+
         #region ConsolidatedReport
 
         public ActionResult ConsolidatedAttendance()
@@ -849,7 +864,7 @@ namespace MvcApplication1.Areas.LM.Controllers
                         writer.RunDirection = PdfLayoutHelper.RunDirection;
                         writer.Close();
                         Response.ContentType = "pdf/application";
-                        Response.AddHeader("content-disposition", "attachment;filename=Monthly-Working-Hours-Timesheet-Report-" + sdata.employeeCode + "-" + sdata.month + "-" + sdata.year + ".pdf");
+                        Response.AddHeader("content-disposition", "attachment;filename=" + BuildPdfFileName("Monthly-Working-Hours-Timesheet"));
                         Response.OutputStream.Write(ms.GetBuffer(), 0, ms.GetBuffer().Length);
                         Response.Flush();
                         Response.End();
@@ -1250,7 +1265,7 @@ namespace MvcApplication1.Areas.LM.Controllers
                         document.Close();
                         writer.Close();
                         Response.ContentType = "pdf/application";
-                        Response.AddHeader("content-disposition", "attachment;filename=Report-" + sdata.employeeCode + "-" + sdata.month + "-" + sdata.year + ".pdf");
+                        Response.AddHeader("content-disposition", "attachment;filename=" + BuildPdfFileName("Report"));
                         Response.OutputStream.Write(ms.GetBuffer(), 0, ms.GetBuffer().Length);
                         Response.Flush();
                         Response.End();
@@ -1757,7 +1772,7 @@ namespace MvcApplication1.Areas.LM.Controllers
                         document.Close();
                         writer.Close();
                         Response.ContentType = "pdf/application";
-                        Response.AddHeader("content-disposition", "attachment;filename=Report-" + sdata.employeeCode + "-" + sdata.month + "-" + sdata.year + ".pdf");
+                        Response.AddHeader("content-disposition", "attachment;filename=" + BuildPdfFileName("Report"));
                         Response.OutputStream.Write(ms.GetBuffer(), 0, ms.GetBuffer().Length);
                         Response.Flush();
                         Response.End();
@@ -2119,7 +2134,7 @@ namespace MvcApplication1.Areas.LM.Controllers
                         document.Close();
                         writer.Close();
                         Response.ContentType = "pdf/application";
-                        Response.AddHeader("content-disposition", "attachment;filename=Report-" + sdata.employeeCode + "-" + sdata.month + "-" + sdata.year + ".pdf");
+                        Response.AddHeader("content-disposition", "attachment;filename=" + BuildPdfFileName("Report"));
                         Response.OutputStream.Write(ms.GetBuffer(), 0, ms.GetBuffer().Length);
                         Response.Flush();
                         Response.End();
@@ -3139,7 +3154,7 @@ namespace MvcApplication1.Areas.LM.Controllers
                         document.Close();
                         writer.Close();
                         Response.ContentType = "pdf/application";
-                        Response.AddHeader("content-disposition", "attachment;filename=Report-" + sdata.employeeCode + "-" + sdata.month + "-" + sdata.year + ".pdf");
+                        Response.AddHeader("content-disposition", "attachment;filename=" + BuildPdfFileName("Report"));
                         Response.OutputStream.Write(ms.GetBuffer(), 0, ms.GetBuffer().Length);
                         Response.Flush();
                         Response.End();

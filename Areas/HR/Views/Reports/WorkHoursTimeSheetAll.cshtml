@@ -1,4 +1,4 @@
-﻿﻿@{
+﻿@{
     ViewBag.Title = "TRMS - Monthly Working Hours Timesheet";
     Layout = "~/Areas/HR/Views/Shared/_Layout.cshtml";
 }
@@ -140,7 +140,14 @@
                 <div class="col-12">
 
                     <button type="submit" id="btnExport" onclick="exportAsExcel();" class="btn btn-primary waves-effect waves-light">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.exportgrid")</button>
-                    <button type="submit" id="generate-monthly-time-sheet" form="monthly-time-sheet-form" class="btn btn-primary waves-effect waves-light" style="display: @ViewData["PDFDownloadEnabled"];" onclick="exportToPdf()">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("exportPDF")</button>
+                    <form id="work-hours-all-pdf-form" method="post" action="@Url.Action("WorkHoursTimeSheetAll", "Reports", null, Request.Url.Scheme)" style="display:inline;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" id="pdf-month" name="month" />
+                        <input type="hidden" id="pdf-location" name="location" />
+                        <input type="hidden" id="pdf-department" name="department" />
+                        <input type="hidden" id="pdf-function" name="function" />
+                        <button type="submit" id="generate-monthly-time-sheet" class="btn btn-primary waves-effect waves-light" style="display: @ViewData["PDFDownloadEnabled"];" onclick="return submitWorkHoursAllPdf();">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("exportPDF")</button>
+                    </form>
                     <span id="export_wait" style="display: none;" class="text-danger"><img src='/images/loader.gif' alt='processing' /></span><span id="pdf-no-data-found" class="text-danger">@ViewData["PDFNoDataFound"]</span>
                     <span id="demo" class="text-danger"></span>
                     <p id="export_wait2" style="display: none;" class="text-danger"><img src='/images/loader.gif' alt='processing' /></p>
@@ -153,9 +160,6 @@
 
 
 @section JS {
-    <script src="@Url.Content("/js/jspdf.umd.min.js")"></script>
-    <script src="@Url.Content("/js/jspdf.plugin.autotable.min.js")"></script>
-    <script src="@Url.Content("/js/Amiri-Regular-normal.js")"></script>
     <script>
         const columns = [
             { data: 'totalAbsent', title: '@{@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.absent")}' },
@@ -256,110 +260,17 @@
             $('#myDataTable').DataTable().buttons().container().find('a.buttons-excel').click();
         }
 
-        function exportToPdf() {
-            // Create a new jsPDF instance
-            const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4'); // Ensure the correct namespace is used
-            const width = pdf.internal.pageSize.getWidth();
-            const height = pdf.internal.pageSize.getHeight();
-            //pdf.addFont = ('ArialUnicodeMS', 'ArialUnicodeMS', 'normal');
-            //pdf.setFont = ('ArialUincodeMS');
-            //pdf.internal.write('charset utf-8');
-            // Add your custom header
-            const date = new Date().toLocaleString();
-            let reportMonth = $('#monthly-time-sheet-month').find(':selected').text().trim();
+        function submitWorkHoursAllPdf() {
+            var month = $('#monthly-time-sheet-month').val();
+            if (!month || month === "0") {
+                return false;
+            }
 
-            pdf.setFont("Amiri-Regular");
-            pdf.setFontSize(20);
-            pdf.text("@{@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("organization.albatinah")}", 150, 15);
-            pdf.setFontSize(15);
-            pdf.text("@{@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.date")}",35, 15);
-            pdf.text(date.split(", ")[0], 5, 15);
-            pdf.text("@{@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.time")}", 35, 25);
-            pdf.text(date.split(", ")[1], 5, 25);
-            pdf.text("@{@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.month")}",35, 35);
-            pdf.text(reportMonth, 5, 35);
-
-            pdf.addImage("/Content/Logos/pngwing.com.png", 'JPEG', 90, 8, 32, 32);
-
-            pdf.setFontSize(20);
-            pdf.text("@{@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.MonthlyAttendanceSummaryReport")}", 75, 50);
-            pdf.line(5, 55, width - 5, 55);
-            //pdf.text(`@{@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.absent")} ${reportMonth}`, 5, 52);
-
-            // Extract DataTable data
-            const dataTableData = $('#myDataTable').DataTable().rows().data().toArray();
-            //const dataTableHeader = $('#myDataTable').dataTable().head().data().toArray();
-
-            // Convert DataTable data to a format suitable for PDF
-            var pdfData = dataTableData.map(row => {
-                return columns.map((m) => { return m.data }).map(columnTitle => {
-                    return row[columnTitle];
-                });
-
-
-
-            });
-            pdfData = pdfData.map(row => {
-                return Object.values(row).map(cell => cell);
-            });
-            //console.log()
-            //const header1 = $('#head1').text().trim();
-            //const header2 = $('#head2').text().trim();
-            //const header3 = $('#head3').text().trim();
-            //const header4 = $('#head4').text().trim();
-            //const header5 = $('#head5').text().trim();
-            //const header6 = $('#head6').text().trim();
-            //const header7 = $('#head7').text().trim();
-
-
-
-            // Add the data to the PDF
-            pdf.autoTable({
-                head: [columns.map((m) => { return m.title })], // Replace with your column headers
-                //head: [[header1, header2, header3, header4, header5, header6, header7]],
-                //head: [['one', 'one', 'one', 'one', 'one', 'one']],
-                //head:
-                body: pdfData,
-                startY: 65, // Adjust the starting Y position to leave space for the header
-                theme: 'grid', // Choose a theme
-                styles: {
-                    fontSize: 10,
-                    lineWidth: 0.25,
-                    lineColor: [0, 0, 0],
-                    //fontfamily: 'ArialUnicodeMS',
-                    font: 'Amiri-Regular',
-
-                },
-                margin: { top: 5, right: 5, bottom: 5, left: 5 },
-                headStyles: {
-                    fillColor: [211, 211, 211, 211],
-                    textColor: [0, 0, 0],
-                    fontWeight: 'normal',
-                    fontSize: 10,
-                    font: 'Amiri-Regular',
-                    halign: 'center', // Align the header text to the center
-                    valign: 'middle', // Align the header text vertically to the middle
-                    cellPadding: 2, // Add padding to the header cells
-                    lineWidth: 0.25,
-                    lineColor: [0, 0, 0],
-                    FontFace: 'ArialUnicodeMS'
-
-                },
-                columnStyles: {
-                    0: { cellWidth: 20 },
-                    1: { cellWidth: 20 },
-                    2: { cellWidth: 20 },
-                    3: { cellWidth: 20 },
-                    4: { cellWidth: 20 },
-                    5: { cellWidth: 20 },
-                    6: { cellWidth: 30 },
-
-                }
-
-            });
-            addImageWatermark(pdf, "/Content/Logos/pngwing.com.png");
-            // Save the PDF or open it in a new window
-            pdf.save('monthlyTimeSheetReport.pdf');
+            $('#pdf-month').val(month);
+            $('#pdf-location').val($('#LocationId').val() || "");
+            $('#pdf-department').val($('#DepartmentId').val() || "");
+            $('#pdf-function').val($('#FunctionId').val() || "");
+            return true;
         }
 
         $(".chzn-select").chosen();

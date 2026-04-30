@@ -15,10 +15,10 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="page-title-box">
-                <h4 class="page-title">Welcome <span class="text-danger">'HR'</span>! [Login ID: <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & Name: <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span>]</h4>
+                <h4 class="page-title">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblWelcome") <span class="text-danger">'@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.HR")'</span>! [@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblLoginID"): <span class="text-warning" title="@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId)">@User.Identity.Name</span> & @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("dashboard.Name"): <span class="text-success">@MvcApplication1.ViewModel.GlobalVariables.CheckNULLValidation(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeName)</span>]</h4>
                 <ol class="breadcrumb float-right">
-                    <li class="breadcrumb-item"><a href="/HR">HR</a></li>
-                    <li class="breadcrumb-item active">Reports</li>
+                    <li class="breadcrumb-item"><a href="/HR">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.HR")</a></li>
+                    <li class="breadcrumb-item active">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("menu.Reports")</li>
                 </ol>
                 <div class="clearfix"></div>
             </div>
@@ -35,7 +35,7 @@
                 <div class="panel-body">
                     <div class="clearfix">
                         <div class="pull-left">
-                            <h3 class="text-right"><i class="mdi mdi-desktop-classic"></i> Payroll Report By Month </h3>
+                            <h3 class="text-right"><i class="mdi mdi-desktop-classic"></i> @MvcApplication1.ViewModel.GlobalVariables.GetStringResource("title.payrollreportbymonth") </h3>
                         </div>
                         <div class="pull-right small text-muted">
                             @DateTime.Now.ToString("f")
@@ -50,7 +50,7 @@
                             {
                                 <div class="row">
                                     <div class="col-4">
-                                        <label class="control-label">Select Month</label>
+                                        <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.selectmonth")</label>
                                         <input id="salary_month_year" type="text" name="salary_month_year" class="form-control monthPicker" autocomplete="off" required />
                                     </div>
                                 </div>
@@ -65,9 +65,9 @@
 
                                 <div class="row">
                                     <div class="col-12">
-                                        <button type="submit" id="search-payroll-report" onclick="clearr();" class="btn btn-primary waves-effect waves-light m-t-10">Search</button>
+                                        <button type="submit" id="search-payroll-report" onclick="clearr();" class="btn btn-primary waves-effect waves-light m-t-10">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("btnSearch")</button>
                                         @*<input type="button" value="Reset" class="btn btn-default m-t-10" onclick="redirectToPage();" />*@
-                                        <button type="button" class="btn btn-primary waves-effect waves-light m-t-10" onclick="redirectToPage();">Reset</button>
+                                        <button type="button" class="btn btn-primary waves-effect waves-light m-t-10" onclick="redirectToPage();">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("btnReset")</button>
                                     </div>
                                 </div>
                             }
@@ -77,7 +77,7 @@
                                     @using (Html.BeginForm("GeneratePayrollStatement", "Reports", FormMethod.Post, new { id = "payroll-report-form" }))
                                     {
                                         <input id="month_year" type="hidden" name="month_year" />
-                                        <button type="submit" id="generate-payroll-report" class="btn btn-primary waves-effect waves-light m-t-10" onclick="return generatePayrollStatement();">Download Statement</button>
+                                        <button type="submit" id="generate-payroll-report" class="btn btn-primary waves-effect waves-light m-t-10" onclick="return generatePayrollStatement();">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("btnDownloadStatement")</button>
                                         <span id="export_wait" style="display: none;" class="text-danger"><img src='/images/loader.gif' alt='processing' /></span><span id="pdf-no-data-found" class="text-danger">@ViewData["PDFNoDataFound"]</span>
                                     }
                                 </div>
@@ -109,56 +109,56 @@
                             <table id="payroll_report_table" class="table table-striped table-bordered dataTable dt-responsive nowrap no-footer small" style="width: 100%;">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
-                                        <th>Salary Month Year</th>
-                                        <th>Employee Code</th>
-                                        <th>Full Name</th>
-                                        <th>Gross Salary</th>
-                                        <th>Deduction</th>
-                                        <th>Net Salary</th>
-                                        <th>CNIC #</th>
-                                        <th>Basic Pay (Rs.)</th>
-                                        <th>Increment (Rs.)</th>
-                                        <th>Transport (Rs.)</th>
-                                        <th>Mobile (Rs.)</th>
-                                        <th>Medical (Rs.)</th>
-                                        <th>Cash Allowance (Rs.)</th>
-                                        <th>Commission (Rs.)</th>
-                                        <th>Overtime (in hours)</th>
-                                        <th>Overtime Amount (Rs.)</th>
-                                        <th>Food (Rs.)</th>
-                                        <th>Night (Rs.)</th>
-                                        <th>Rent (Rs.)</th>
-                                        <th>Group Allowance (Rs.)</th>
-                                        <th>Yearly Bonus (Rs.)</th>
-                                        <th>Leaves Count (yearly remaining)</th>
-                                        <th>Leaves Encash (yearly remaining) (Rs.)</th>
-                                        <th>Income Tax (Rs.)</th>
-                                        <th>Fine/Extra Amount (Rs.)</th>
-                                        <th>Mobile Deduction (Rs.)</th>
-                                        <th>Absents Count (Last Month)</th>
-                                        <th>Absents Amount (Last Month) (Rs.)</th>
-                                        <th>EOBI Employee (Rs.)</th>
-                                        <th>EOBI Employer (Rs.)</th>
-                                        <th>SESSI Employee (Rs.)</th>
-                                        <th>SESSI Employer (Rs.)</th>
-                                        <th>Loan Installment (Rs.)</th>
-                                        <th>Other Deduction (Rs.)</th>
-                                        <th>Payment Mode</th>
-                                        <th>Bank Name</th>
-                                        <th>Bank Account Title</th>
-                                        <th>Bank Account Number</th>
-                                        <th>NTN #</th>
-                                        <th>EOBI #</th>
-                                        <th>SESSI #</th>
-                                        <th>Ack Status</th>
-                                        <th>Pay Status</th>
-                                        <th>Comments</th>
-                                        <th>Attachment Path</th>
-                                        <th>Is First Month?</th>
-                                        <th>Payment Date</th>
-                                        <th>Create Date</th>
-                                        <th>Update Date</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblID")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblSalaryMonthYear")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("monthly.epcode")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblFullName")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblGrossSalary")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblDeduction")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblNetSalary")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblCNICNo")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblBasicPayRs")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblIncrementRs")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblTransportRs")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblMobileRs")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblMedicalRs")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblCashAllowanceRs")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblCommissionRs")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblOvertimeHours")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblOvertimeAmountRs")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblFoodRs")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblNightRs")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblRentRs")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblGroupAllowanceRs")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblYearlyBonusRs")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblLeavesCountYearlyRemaining")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblLeavesEncashYearlyRemainingRs")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblIncomeTaxRs")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblFineExtraAmountRs")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblMobileDeductionRs")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblAbsentsCountLastMonth")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblAbsentsAmountLastMonthRs")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblEOBIEmployeeRs")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblEOBIEmployerRs")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblSESSIEmployeeRs")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblSESSIEmployerRs")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblLoanInstallmentRs")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblOtherDeductionRs")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblPaymentMode")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblBankName")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblAccountTitle")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblAccountNo")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblNTNNo")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblEOBINo")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblSESSINo")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblAckStatus")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblPayStatus")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblComments")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblAttachmentPath")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblIsFirstMonth")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblPaymentDate")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblCreateDate")</th>
+                                        <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblUpdateDate")</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
@@ -168,7 +168,7 @@
 
                     <div class="row m-t-10">
                         <div class="col-12">
-                            <button type="submit" id="btnExport" onclick="ExortExcleBar();" class="btn btn-primary waves-effect waves-light">Export Grid Data</button>
+                            <button type="submit" id="btnExport" onclick="ExortExcleBar();" class="btn btn-primary waves-effect waves-light">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("btnExportGridData")</button>
                             <span id="demo" class="text-danger"></span>
                             <p id="export_wait2" style="display: none;" class="text-danger"><img src='/images/loader.gif' alt='processing' /></p>
                         </div>
@@ -186,7 +186,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title" id="mySmallModalLabel">Message Alert</h4>
+                <h4 class="modal-title" id="mySmallModalLabel">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblMessageAlert")</h4>
             </div>
             <div class="modal-body">
                 <span id="alert_message"></span>

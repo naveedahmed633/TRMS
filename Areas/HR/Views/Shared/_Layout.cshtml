@@ -428,7 +428,7 @@
                                 <li>@Html.ActionLink("Working Hours Report", "WorkHourReport", "Reports")</li>
                                 <li>@Html.ActionLink("Devices Status", "DevicesStatusReport", "Reports")</li>
                                 <li>@Html.ActionLink("Devices Unregistered", "DevicesUnregistered", "Reports")</li>
-                                <li>@Html.ActionLink("View Attendance Report", "ConsolidateAttendance", "Reports")</li>
+                                <li>@Html.ActionLink("View Attendance Report", "ConsolidatedAttendance", "Reports")</li>
                             </ul>
                         </li>
                         <li class="has_sub" id="Fleetmgmnt">
@@ -582,6 +582,10 @@
     <script src="@Url.Content("/Scripts/chosen.jquery.js")" type="text/javascript"></script> <!-- Chosen JavaScript -->
     <script type="text/javascript" src="@Url.Content("/Scripts/tableexport.js")"></script>
     <script type="text/javascript" src="@Url.Content("/Scripts/jquery.base64.js")"></script>
+    <script src="@Url.Content("/js/jspdf.umd.min.js")"></script>
+    <script src="@Url.Content("/js/jspdf.plugin.autotable.min.js")"></script>
+    <script src="@Url.Content("/js/Amiri-Regular-normal.js")"></script>
+    <script src="@Url.Content("/js/export-t.js")"></script>
     <script src="@Url.Content("/Scripts/custom.js")" type="text/javascript"></script> <!-- custom JavaScript -->
     <script src="@Url.Content("/Scripts/idle_timer.js")" type="text/javascript"></script>
 
@@ -669,6 +673,44 @@
             $('#test span').text('0');
         };
 
+    </script>
+
+    <script type="text/javascript">
+        (function () {
+            var currentLang = '@MvcApplication1.ViewModel.GlobalVariables.GetCurrentLanguage()';
+
+            function appendLanguageInput(form) {
+                if (!form) return;
+
+                var inputLang = form.querySelector('input[name="lang"]');
+                if (!inputLang) {
+                    inputLang = document.createElement('input');
+                    inputLang.type = 'hidden';
+                    inputLang.name = 'lang';
+                    form.appendChild(inputLang);
+                }
+                inputLang.value = currentLang;
+
+                var inputGlobal = form.querySelector('input[name="GV_Langauge"]');
+                if (!inputGlobal) {
+                    inputGlobal = document.createElement('input');
+                    inputGlobal.type = 'hidden';
+                    inputGlobal.name = 'GV_Langauge';
+                    form.appendChild(inputGlobal);
+                }
+                inputGlobal.value = currentLang;
+            }
+
+            document.addEventListener('click', function (e) {
+                var button = e.target.closest('#generate-monthly-time-sheet');
+                if (!button) return;
+                appendLanguageInput(button.form || button.closest('form'));
+            });
+
+            document.addEventListener('submit', function (e) {
+                appendLanguageInput(e.target);
+            });
+        })();
     </script>
 
     @RenderSection("JS", required: false)

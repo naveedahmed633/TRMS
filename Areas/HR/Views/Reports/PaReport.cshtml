@@ -3,7 +3,7 @@
     Layout = "~/Areas/HR/Views/Shared/_Layout.cshtml";
 }
 
-<h4 style="font-weight: bold;">Present and Absent Attendance</h4>
+<h4 style="font-weight: bold;">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("title.presentabsentattendance")</h4>
 <div class="row">
     <div id="monthly-time-sheet" class="form-group col-md-3">
         <form id="pa-form">
@@ -11,31 +11,31 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <label class="control-label">Date From</label>
+                    <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.datefrom")</label>
                     <input id="date_from" type="text" class="form-control datepicker" name="from_date" required>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-12">
-                    <label class="control-label">Date To</label>
+                    <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.dateto")</label>
                     <input id="date_to" type="text" class="form-control datepicker" name="to_date" required>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-12">
-                    <label class="control-label">Final Remarks</label>
+                    <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblFinalRemarks")</label>
                     <select class="form-control" id="final_remarks" name="final_remarks" required>
 
-                        <option value="PP">Present</option>
-                        <option value="AB">Absent</option>
+                        <option value="PP">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblPresent")</option>
+                        <option value="AB">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblAbsent")</option>
 
                     </select>
                 </div>
             </div>
 
-            <button type="submit" id="search-pa-report" style="margin-top:5px">Search</button>
+            <button type="submit" id="search-pa-report" style="margin-top:5px">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("btnSearch")</button>
         </form>
     </div>
 
@@ -50,18 +50,18 @@
             <thead>
 
                 <tr>
-                    <th>Date</th>
-                    <th>Employee Code</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Final Remarks</th>
+                    <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblDate")</th>
+                    <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("monthly.epcode")</th>
+                    <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblFirstName")</th>
+                    <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblLastName")</th>
+                    <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblFinalRemarks")</th>
 
                 </tr>
 
             </thead>
             <tbody></tbody>
         </table>
-        <button type="submit" id="btnExport" style="margin-top:5px">Export Grid Data</button>
+        <button type="submit" id="btnExport" style="margin-top:5px">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("btnExportGridData")</button>
     </div>
 </div>
 

@@ -26,6 +26,46 @@ namespace MvcApplication1.Areas.SLM.Controllers
         //
         // GET: /LM/Reports/
 
+        private string GetCurrentLang()
+        {
+            string requestLang = Request?["lang"] ?? Request?["GV_Langauge"];
+            if (!string.IsNullOrWhiteSpace(requestLang))
+            {
+                MvcApplication1.ViewModel.GlobalVariables.GV_Langauge =
+                    requestLang.Equals("ar", StringComparison.OrdinalIgnoreCase) ? "Ar" : "En";
+            }
+
+            return MvcApplication1.ViewModel.GlobalVariables.GetCurrentLanguage();
+        }
+
+        private string GetStringResource(string key)
+        {
+            return MvcApplication1.ViewModel.GlobalVariables.GetStringResource(key) ?? key;
+        }
+
+        private Font GetFont(bool isBold, float size, Color color = null)
+        {
+            string fontPath = Environment.GetEnvironmentVariable("windir") + @"\fonts\Arial.ttf";
+            BaseFont bf = BaseFont.CreateFont(fontPath, BaseFont.IDENTITY_H, true);
+            int style = isBold ? Font.BOLD : Font.NORMAL;
+            return new Font(bf, size, style, color ?? Color.BLACK);
+        }
+
+        private string GetCurrentUserCode()
+        {
+            if (!string.IsNullOrWhiteSpace(GlobalVariables.GV_EmployeeCode))
+            {
+                return GlobalVariables.GV_EmployeeCode.Trim();
+            }
+
+            return string.IsNullOrWhiteSpace(User?.Identity?.Name) ? "000000" : User.Identity.Name.Trim();
+        }
+
+        private string BuildPdfFileName(string reportName)
+        {
+            return string.Format("{0}-Report-{1}.pdf", reportName, GetCurrentUserCode());
+        }
+
         #region ConsolidatedReport
 
         public ActionResult ConsolidatedAttendance()
@@ -437,6 +477,8 @@ namespace MvcApplication1.Areas.SLM.Controllers
 
         private int GenerateMonthlyTimeSheetPDF(BLL.PdfReports.MonthlyTimeSheetData sdata)
         {
+            string lang = GetCurrentLang();
+            int runDirection = lang.Equals("ar", StringComparison.OrdinalIgnoreCase) ? PdfWriter.RUN_DIRECTION_RTL : PdfWriter.RUN_DIRECTION_LTR;
             int reponse = 0;
 
             try
@@ -453,26 +495,22 @@ namespace MvcApplication1.Areas.SLM.Controllers
                     //BaseFont bfTimesBold = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, false);
                     //Font timesBold = new Font(bfTimesBold, 12, Font.BOLD, Color.BLACK);
 
-                    Font fNormal7 = FontFactory.GetFont("HELVETICA", 7, Font.NORMAL, Color.BLACK);
-
-                    Font fNormal8 = FontFactory.GetFont("HELVETICA", 8, Font.NORMAL, Color.BLACK);
-                    Font fBold8 = FontFactory.GetFont("HELVETICA", 8, Font.BOLD, Color.BLACK);
-
-                    Font fNormal9 = FontFactory.GetFont("HELVETICA", 9, Font.NORMAL, Color.BLACK);
-                    Font fBold9 = FontFactory.GetFont("HELVETICA", 9, Font.BOLD, Color.BLACK);
-
-                    Font fNormal10 = FontFactory.GetFont("HELVETICA", 10, Font.NORMAL, Color.BLACK);
-                    Font fBold10 = FontFactory.GetFont("HELVETICA", 10, Font.BOLD, Color.BLACK);
-
-                    Font fBold14Red = FontFactory.GetFont("HELVETICA", 14, Font.BOLD | Font.UNDERLINE, Color.RED);
-                    Font fBold16 = FontFactory.GetFont("HELVETICA", 16, Font.BOLD | Font.UNDERLINE, Color.BLACK);
+                    Font fNormal7 = GetFont(false, 7f);
+                    Font fNormal8 = GetFont(false, 8f);
+                    Font fBold8 = GetFont(true, 8f);
+                    Font fNormal9 = GetFont(false, 9f);
+                    Font fBold9 = GetFont(true, 9f);
+                    Font fNormal10 = GetFont(false, 10f);
+                    Font fBold10 = GetFont(true, 10f);
+                    Font fBold14Red = GetFont(true, 14f, Color.RED);
+                    Font fBold16 = GetFont(true, 16f);
 
                     //// Initialize Document Page for PDF
                     Document document = new Document(PageSize.A4, 10f, 10f, 5f, 5f);
 
                     //// To Export PDF file automatically then write data to memory stream
                     PdfWriter writer = PdfWriter.GetInstance(document, ms);
-                    writer.RunDirection = PdfLayoutHelper.RunDirection;
+                    writer.RunDirection = runDirection;
 
                     //// To save file in a specific folder of project, also remove MemoryStream code above
                     //string path = Server.MapPath("Content");
@@ -505,9 +543,10 @@ namespace MvcApplication1.Areas.SLM.Controllers
                     tableHeader.AddCell(logo);
                     tableHeader.AddCell("");
 
-                    PdfPCell cellDateTime = new PdfPCell(new Phrase("Date: " + DateTime.Now.ToShortDateString() + "\n\nTime: " + DateTime.Now.ToString("hh:mm tt"), fNormal10));
+                    PdfPCell cellDateTime = new PdfPCell(new Phrase(GetStringResource("lblDate") + ": " + DateTime.Now.ToShortDateString() + "\n\n" + GetStringResource("lblTime") + ": " + DateTime.Now.ToString("hh:mm tt"), fNormal10));
                     //cellDateTime.HorizontalAlignment = 2;
                     cellDateTime.Border = 0;
+                    cellDateTime.RunDirection = runDirection;
                     tableHeader.AddCell(cellDateTime);
 
                     //tableHeader.AddCell("Date: " + DateTime.Now.ToShortDateString() + "\nTime: " +DateTime.Now.ToString("hh:mm tt"));
@@ -738,7 +777,7 @@ namespace MvcApplication1.Areas.SLM.Controllers
                         document.Close();
                         writer.Close();
                         Response.ContentType = "pdf/application";
-                        Response.AddHeader("content-disposition", "attachment;filename=Report-" + sdata.employeeCode + "-" + sdata.month + "-" + sdata.year + ".pdf");
+                        Response.AddHeader("content-disposition", "attachment;filename=" + BuildPdfFileName("Report"));
                         Response.OutputStream.Write(ms.GetBuffer(), 0, ms.GetBuffer().Length);
                         Response.Flush();
                         Response.End();
@@ -926,6 +965,8 @@ namespace MvcApplication1.Areas.SLM.Controllers
 
         private int GenerateMonthlyTimeOvertimeSheetPDF(BLL.PdfReports.MonthlyTimeSheetData sdata)
         {
+            string lang = GetCurrentLang();
+            int runDirection = lang.Equals("ar", StringComparison.OrdinalIgnoreCase) ? PdfWriter.RUN_DIRECTION_RTL : PdfWriter.RUN_DIRECTION_LTR;
             int reponse = 0;
 
             try
@@ -942,26 +983,22 @@ namespace MvcApplication1.Areas.SLM.Controllers
                     //BaseFont bfTimesBold = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, false);
                     //Font timesBold = new Font(bfTimesBold, 12, Font.BOLD, Color.BLACK);
 
-                    Font fNormal7 = FontFactory.GetFont("HELVETICA", 7, Font.NORMAL, Color.BLACK);
-
-                    Font fNormal8 = FontFactory.GetFont("HELVETICA", 8, Font.NORMAL, Color.BLACK);
-                    Font fBold8 = FontFactory.GetFont("HELVETICA", 8, Font.BOLD, Color.BLACK);
-
-                    Font fNormal9 = FontFactory.GetFont("HELVETICA", 9, Font.NORMAL, Color.BLACK);
-                    Font fBold9 = FontFactory.GetFont("HELVETICA", 9, Font.BOLD, Color.BLACK);
-
-                    Font fNormal10 = FontFactory.GetFont("HELVETICA", 10, Font.NORMAL, Color.BLACK);
-                    Font fBold10 = FontFactory.GetFont("HELVETICA", 10, Font.BOLD, Color.BLACK);
-
-                    Font fBold14Red = FontFactory.GetFont("HELVETICA", 14, Font.BOLD | Font.UNDERLINE, Color.RED);
-                    Font fBold16 = FontFactory.GetFont("HELVETICA", 16, Font.BOLD | Font.UNDERLINE, Color.BLACK);
+                    Font fNormal7 = GetFont(false, 7f);
+                    Font fNormal8 = GetFont(false, 8f);
+                    Font fBold8 = GetFont(true, 8f);
+                    Font fNormal9 = GetFont(false, 9f);
+                    Font fBold9 = GetFont(true, 9f);
+                    Font fNormal10 = GetFont(false, 10f);
+                    Font fBold10 = GetFont(true, 10f);
+                    Font fBold14Red = GetFont(true, 14f, Color.RED);
+                    Font fBold16 = GetFont(true, 16f);
 
                     //// Initialize Document Page for PDF
                     Document document = new Document(PageSize.A4, 10f, 10f, 5f, 5f);
 
                     //// To Export PDF file automatically then write data to memory stream
                     PdfWriter writer = PdfWriter.GetInstance(document, ms);
-                    writer.RunDirection = PdfLayoutHelper.RunDirection;
+                    writer.RunDirection = runDirection;
 
                     //// To save file in a specific folder of project, also remove MemoryStream code above and Response code lines below
                     //string path = Server.MapPath("~/Content");
@@ -994,9 +1031,10 @@ namespace MvcApplication1.Areas.SLM.Controllers
                     tableHeader.AddCell(logo);
                     tableHeader.AddCell("");
 
-                    PdfPCell cellDateTime = new PdfPCell(new Phrase("Date: " + DateTime.Now.ToShortDateString() + "\n\nTime: " + DateTime.Now.ToString("hh:mm tt"), fNormal10));
+                    PdfPCell cellDateTime = new PdfPCell(new Phrase(GetStringResource("lblDate") + ": " + DateTime.Now.ToShortDateString() + "\n\n" + GetStringResource("lblTime") + ": " + DateTime.Now.ToString("hh:mm tt"), fNormal10));
                     //cellDateTime.HorizontalAlignment = 2;
                     cellDateTime.Border = 0;
+                    cellDateTime.RunDirection = runDirection;
                     tableHeader.AddCell(cellDateTime);
 
                     //tableHeader.AddCell("Date: " + DateTime.Now.ToShortDateString() + "\nTime: " +DateTime.Now.ToString("hh:mm tt"));
@@ -1211,7 +1249,7 @@ namespace MvcApplication1.Areas.SLM.Controllers
                         document.Close();
                         writer.Close();
                         Response.ContentType = "pdf/application";
-                        Response.AddHeader("content-disposition", "attachment;filename=Report-" + sdata.employeeCode + "-" + sdata.month + "-" + sdata.year + ".pdf");
+                        Response.AddHeader("content-disposition", "attachment;filename=" + BuildPdfFileName("Report"));
                         Response.OutputStream.Write(ms.GetBuffer(), 0, ms.GetBuffer().Length);
                         Response.Flush();
                         Response.End();

@@ -1,6 +1,6 @@
 ﻿
 
-<h4 style="font-weight: bold;">Monthly Report</h4>
+<h4 style="font-weight: bold;">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("title.monthlyreport")</h4>
 <div class="row">
     <div class="form-group col-md-3">
         
@@ -13,21 +13,21 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <label class="control-label">Date of Joining</label>
+                    <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblDateOfJoining")</label>
                     <input type="text" class="form-control datepicker" name="from_date" style="background-color: #FFF" required>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-12">
-                    <label class="control-label">Date of Leaving</label>
+                    <label class="control-label">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblDateOfLeaving")</label>
                     <input type="text" class="form-control datepicker" name="to_date" style="background-color: #FFF" required>
                 </div>
             </div>
           <div class="row">
                     <div class="col-md-12" style="margin-top:5px">
-                        <button type="submit" value="Submit">Get Report</button>
-                        <button type="reset" value="Reset">Reset</button>
+                        <button type="submit" value="Submit">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("btnGetReport")</button>
+                        <button type="reset" value="Reset">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("btnReset")</button>
                     </div>
                 </div>
         }
@@ -36,18 +36,18 @@
 
 
     <div class="col-md-9">
-        <h5 style="font-weight: bold;">Attendance Report</h5>
+        <h5 style="font-weight: bold;">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("title.attendancereport")</h5>
 
         <table id="report_table" class="display cell-border" width="100%">
             <thead>
 
                 <tr>
-                    <th>Employee Code</th>
-                    <th>Present</th>
-                    <th>On Time</th>
-                    <th>Late</th>
-                    <th>Early Gone</th>
-                    <th>Absent</th>
+                    <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("monthly.epcode")</th>
+                    <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblPresent")</th>
+                    <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblOnTime")</th>
+                    <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblLateEarly")</th>
+                    <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblEarlyGone")</th>
+                    <th>@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("lblAbsent")</th>
 
                 </tr>
 
