@@ -388,6 +388,27 @@
     <!-- Custom main Js -->
     <script src="/js/jquery.core.js"></script>
     <script src="/js/jquery.app.js"></script>
+    <script src="/js/jspdf.umd.min.js"></script>
+    <script src="/js/jspdf.plugin.autotable.min.js"></script>
+    <script src="/js/Amiri-Regular-normal.js"></script>
+    <script src="/js/export-t.js"></script>
+    @{
+        string exportLogoPath = "/Content/Logos/logo-default.png";
+        try
+        {
+            var reportLogoTitle = new BLL.PdfReports.MonthlyTimeSheet();
+            var logoTitleParts = (reportLogoTitle.getOrganizationLogoTitle() ?? "").Split('^');
+            if (logoTitleParts.Length > 0 && !string.IsNullOrWhiteSpace(logoTitleParts[0]))
+            {
+                exportLogoPath = Url.Content(logoTitleParts[0]);
+            }
+        }
+        catch { }
+    }
+    <script type="text/javascript">
+        window.ExportTConfig = window.ExportTConfig || {};
+        window.ExportTConfig.logoPath = '@exportLogoPath';
+    </script>
 
 </body>
 </html>

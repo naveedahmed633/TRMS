@@ -366,6 +366,25 @@
         img.src = src;
     }
 
+    function getConfiguredLogoPath() {
+        var cfg = window.ExportTConfig || {};
+        var p = (cfg.logoPath || "").trim();
+        if (!p) {
+            return window.location.origin + "/Content/Logos/logo-default.png";
+        }
+
+        if (p.indexOf("http://") === 0 || p.indexOf("https://") === 0 || p.indexOf("data:") === 0) {
+            return p;
+        }
+        if (p.indexOf("~/") === 0) {
+            return window.location.origin + p.substring(1);
+        }
+        if (p.indexOf("/") === 0) {
+            return window.location.origin + p;
+        }
+        return window.location.origin + "/" + p;
+    }
+
     function getPrintedByName() {
         return getCurrentUserName();
     }
@@ -388,7 +407,7 @@
         var leftX = 14;
         var rightX = pageWidth - 14;
         var centerX = pageWidth / 2;
-        var logoPath = window.location.origin + "/images/TRMS-LM.png";
+        var logoPath = getConfiguredLogoPath();
 
         setPdfFont(doc, isArabic, false);
         doc.setFontSize(11);
