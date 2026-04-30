@@ -39,12 +39,38 @@
         return null;
     }
 
-    function buildFileName() {
-        var title = (document.title || "report").replace(/[^\w\- ]+/g, "").trim().replace(/\s+/g, "-");
-        if (!title) {
-            title = "report";
+    function getReportTitle() {
+        var headingSelectors = [
+            ".panel-body h3",
+            ".card-box h3",
+            ".page-title-box h3",
+            ".page-title"
+        ];
+
+        for (var i = 0; i < headingSelectors.length; i++) {
+            var heading = document.querySelector(headingSelectors[i]);
+            if (!heading) continue;
+            var raw = (heading.textContent || "").replace(/\s+/g, " ").trim();
+            if (raw) return raw;
         }
-        return title + "-" + new Date().toISOString().slice(0, 10) + ".pdf";
+
+        return (document.title || "Report").trim();
+    }
+
+    function buildFileName(reportTitle, isArabic) {
+        var title = (reportTitle || "").trim();
+        if (!title) {
+            title = isArabic ? "تقرير" : "report";
+        }
+
+        // Keep Arabic/Unicode letters; remove only invalid filename characters.
+        title = title.replace(/[\\/:*?"<>|]+/g, "").replace(/\s+/g, " ").trim();
+        if (!title) {
+            title = isArabic ? "تقرير" : "report";
+        }
+
+        var fileDate = new Date().toISOString().slice(0, 10);
+        return title + "-" + fileDate + ".pdf";
     }
 
     function isArabicLanguage() {
@@ -470,7 +496,7 @@
         var doc = new jsPDF("l", "mm", "a4");
         var isArabic = isArabicLanguage();
         var labels = getPdfLabels(isArabic);
-        var title = (document.title || "Report").trim();
+        var title = getReportTitle();
         var dateTime = getDateTimeParts();
         var contextRoot = (triggerElement && (triggerElement.form || triggerElement.closest("form"))) || document;
         var headerInfo = {
@@ -503,13 +529,14 @@
                     fontSize: 8,
                     cellPadding: 1.5,
                     overflow: "linebreak",
-                    halign: isArabic ? "right" : "left",
+                    // Keep same visual flow as English: first column starts from left.
+                    halign: "left",
                     font: isArabic ? "Amiri-Regular" : "helvetica"
                 },
                 headStyles: {
                     fillColor: [52, 58, 64],
                     textColor: 255,
-                    halign: isArabic ? "right" : "left",
+                    halign: "left",
                     font: isArabic ? "Amiri-Regular" : "helvetica"
                 }
             });
@@ -526,7 +553,7 @@
                 doc.text(labels.labelPrintedBy + ": " + printedBy, 14, y);
             }
 
-            doc.save(buildFileName());
+            doc.save(buildFileName(title, isArabic));
             done(true);
         });
     }
