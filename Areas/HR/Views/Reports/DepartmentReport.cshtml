@@ -160,7 +160,7 @@
                         <div class="col-12">
                             <button type="submit" id="btnExport" onclick="ExortExcleBar();" class="btn btn-primary waves-effect waves-light">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.exportgrid")</button>
                             <button id="btn-excel-download" class="btn btn-primary waves-effect waves-light" onclick="ExportExcelBar()">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.downloadexcel")</button>
-                            <button type="submit" id="btn-pdf-download" onclick="ExportPDFBar()" form="monthly-time-sheet-form" class="btn btn-primary waves-effect waves-light">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.exportpdf")</button>
+                            <button type="submit" id="department-report-pdf-btn" onclick="ExportPDFBar()" form="monthly-time-sheet-form" class="btn btn-primary waves-effect waves-light">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("report.exportpdf")</button>
                             <span id="export_wait_pdf" style="display: none;"><img src='/images/loader.gif' style='width: 110px' alt='processing' /></span>
                             <br /><span id="pdf-no-data-found">@ViewData["PDFNoDataFoundDept"]</span>
                             <span id="export_wait_excel" style="display: none;"><img src='/images/loader.gif' style='width: 110px' alt='processing' /></span>
@@ -216,7 +216,7 @@
     }
     $("#monthly-time-sheet-form").submit(function (e) {
 
-        document.getElementById("btn-pdf-download").disabled = true;
+        document.getElementById("department-report-pdf-btn").disabled = true;
         document.getElementById("btn-excel-download").disabled = true;
         return true;
     });
@@ -233,7 +233,7 @@
         else {
             $('#export_wait_excel').show(); //$('#export_wait_pdf').hide();
 
-            document.getElementById("btn-pdf-download").disabled = true;
+            document.getElementById("department-report-pdf-btn").disabled = true;
             HideBarPDF();
             HideMessage();
             //$('#export_wait_pdf').hide();
@@ -275,12 +275,12 @@
 
     function HideBarExcel() {
         //alert('hExcel');
-        setTimeout(function () { $('#export_wait_pdf').hide(); document.getElementById("btn-pdf-download").disabled = false; document.getElementById("btn-excel-download").disabled = false; document.getElementById("btnExport").disabled = false; }, 22000);
+        setTimeout(function () { $('#export_wait_pdf').hide(); document.getElementById("department-report-pdf-btn").disabled = false; document.getElementById("btn-excel-download").disabled = false; document.getElementById("btnExport").disabled = false; }, 22000);
     }
 
     function HideBarPDF() {
         //alert('hPDF');
-        setTimeout(function () { $('#export_wait_excel').hide(); document.getElementById("btn-pdf-download").disabled = false; document.getElementById("btn-excel-download").disabled = false; document.getElementById("btnExport").disabled = false; }, 22000);
+        setTimeout(function () { $('#export_wait_excel').hide(); document.getElementById("department-report-pdf-btn").disabled = false; document.getElementById("btn-excel-download").disabled = false; document.getElementById("btnExport").disabled = false; }, 22000);
     }
 
     function initReportDataTable(identifier, url, columns) {
@@ -451,7 +451,7 @@
                     $("#btnExport").hide();
                 }
                 if (data.HRExportPDF == false) {
-                    $("#btn-pdf-download").hide();
+                    $("#department-report-pdf-btn").hide();
                 }
 
             },

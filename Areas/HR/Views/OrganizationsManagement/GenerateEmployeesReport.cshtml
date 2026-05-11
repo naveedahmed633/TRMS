@@ -241,7 +241,7 @@
         }
 
         $("#employees-report-form").submit(function (e) {
-            document.getElementById("generate-monthly-time-sheet").disabled = true;
+            document.getElementById("search-consolidated-report").disabled = true;
             return true;
         });
 
@@ -279,75 +279,6 @@
         function HideBarExcle() {
             setTimeout(function () { $('#export_wait2').hide(); document.getElementById("btnExport").disabled = false; document.getElementById("demo").innerHTML = ""; }, 1500);
         }
-
-        function submitcheck() {
-
-            var fDate = $('[name="month"]').val();
-            var tDate = $('[name="month"]').val();
-
-            var lastDay = GetLastDayOfMonth(fDate.split("-")[1], fDate.split("-")[0]);
-
-            fDate = fDate.replace("-", "-01-");
-            tDate = tDate.replace("-", "-" + lastDay + "-");
-
-            //console.log('1>> ' + fDate + ' - ' + tDate);
-
-            fDate = fDate.split("-").reverse()
-            tDate = tDate.split("-").reverse();
-
-            //console.log('2>> ' + fDate + ' - ' + tDate);
-
-            fDate = new Date(fDate[0] + "-" + fDate[1] + "-" + fDate[2]);
-            tDate = new Date(tDate[0] + "-" + tDate[1] + "-" + tDate[2]);
-
-            //console.log('3>> ' + fDate + ' - ' + tDate);
-
-            //return false;
-
-            if (tDate < fDate) {
-
-                $('#alert_message').text("The 'To Date' should be greater than 'From Date'.");
-                $('.bs-example-modal-sm').modal('show');
-
-                //alert("The 'To Date' should be greater than 'From Date'.");
-                return false;
-            }
-
-            searchReport();
-            return true;
-
-        }
-
-        function GetLastDayOfMonth(m, y) {
-
-            var lastDay = 28;
-
-            if (m == "04" || m == "06" || m == "09" || m == "11") {
-                lastDay = 30;
-            }
-            else if (m == "02") {
-                if ((y % 4) == 0) {
-                    lastDay = 29;
-                }
-                else {
-                    lastDay = 28;
-                }
-            }
-            else {
-                lastDay = 31;
-            }
-
-            return lastDay;
-        }
-
-        function searchReport() {
-            // get the entered string
-            var toSearch = $('students_report_table_filter input').val();
-
-            $('#students_report_table').DataTable().search(toSearch);
-            $('#students_report_table').DataTable().draw();
-        }
-
 
         function setTypeOfReportDropDown() {
             $('#type-of-report').chosen();
@@ -404,7 +335,7 @@
                         $("#btnExport").hide();
                     }
                     if (data.HRExportPDF == false) {
-                        $("#generate-monthly-time-sheet").hide();
+                        $("#search-consolidated-report").hide();
                     }
 
                 },
@@ -453,49 +384,9 @@
 
 
             //$('#search-consolidated-report').button();
-            $("#search-consolidated-report").click(function (e) {
-
-                //$('input[type="search"]').focus();
-                //$('input[type="search"]').val("");
-
-                //alert('values >> ' + $('#schedule-room-id').val() + ' >> ' + $('#schedule-from-date').val());
-
-
-
-                //<select id="schedule-room-id"
-
-                //        <input id="schedule-from-date" type="text" name="month" class="form-control monthPicker" required />
-
-
-
-
-                //if ($('#schedule-from-date').val() == "" || $('#schedule-from-date').val() == null) {
-
-                //    $('#alert_message').text("Please select a Month");
-                //    $('.bs-example-modal-sm').modal('show');
-
-                //    //alert('Please select a Month.');
-                //    return false;
-                //}
-
-                //if ($('#schedule-room-id').val() == "" || $('#schedule-room-id').val() == null) {
-
-                //    $('#alert_message').text("Please select an Employee Id");
-                //    $('.bs-example-modal-sm').modal('show');
-
-                //    //alert('Please select an Employee Id.');
-                //    return false;
-                //}
-
+            $("#search-consolidated-report").click(function () {
                 $('#pdf-no-data-found').val("");
                 $('#pdf-no-data-found').text("");
-
-                submitcheck();
-                //  serializeAndSend();
-                e.preventDefault();
-
-                //$('input[type="search"]').blur();
-
             });
 
 

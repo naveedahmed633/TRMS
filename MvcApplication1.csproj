@@ -533,10 +533,6 @@
     <Content Include="Content\loginpage\fonts\Bliss2.svg" />
     <Content Include="Content\loginpage\images\bgr.jpg" />
     <Content Include="Content\loginstyle.css" />
-    <Content Include="Content\Logos\DUHSLogo.png" />
-    <Content Include="Content\Logos\logo-default.png" />
-    <Content Include="Content\Logos\logo-full.png" />
-    <Content Include="Content\Logos\logo.png" />
     <Content Include="Content\Logos\pngwing.com.png" />
     <Content Include="Content\Logos\watermark.png" />
     <Content Include="Content\modal.css" />
@@ -1155,6 +1151,8 @@
     <Content Include="Areas\HR\Views\PayrollsManagement\ViewPayrollSetting.cshtml" />
     <Content Include="Areas\SuperAdmin\Views\SU\UserControl.cshtml" />
     <Content Include="Areas\HR\Views\Reports\PresentAbsentReport.cshtml" />
+    <Content Include="Areas\HR\Views\Reports\DevicesStatusReport.cshtml" />
+    <Content Include="Areas\HR\Views\Reports\DevicesUnregistered.cshtml" />
     <Content Include="Areas\HR\Views\Reports\DevicesStatusReportHR.cshtml" />
     <Content Include="Areas\HR\Views\Reports\HourlyReport.cshtml" />
     <Content Include="Areas\SuperAdmin\Views\SU\AdjustAttendance.cshtml" />

@@ -101,6 +101,7 @@
                                 <div class="row">
                                     <div class="col-4">
                                         <button type="submit" value="Submit" id="update" onclick="return validateFormData();" class="btn btn-primary waves-effect waves-light m-t-10">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("attendance.updateatt")</button>
+                                        <div id="manual-attendance-message" class="text-danger m-t-10"></div>
                                     </div>
                                 </div>
                             }
@@ -253,11 +254,12 @@
         });
 
         function validateFormData() {
+            var $message = $('#manual-attendance-message');
+            $message.text("");
 
             var eCode = $('#employees').val();
             if (eCode == null || eCode == "") {
-                alert("'Employee Code' is required");
-                //$('[name*="employee_code"]').focus();
+                $message.text("'Employee Code' is required");
                 return false;
             }
 
@@ -266,13 +268,13 @@
 
 
             if (fDate == '') {
-                alert("'From Date' is required to select");
+                $message.text("'From Date' is required to select");
                 $('[name*="time_in_from"]').focus();
                 return false;
             }
 
             if (tDate == '') {
-                alert("'To Date' is required to select");
+                $message.text("'To Date' is required to select");
                 $('[name*="time_in_to"]').focus();
                 return false;
             }
@@ -291,29 +293,23 @@
 
             var today = new Date();
             if (dtFDate >= today) {
-                alert("ONLY Past date is allowed in 'From Date'");
+                $message.text("ONLY Past date is allowed in 'From Date'");
                 return false;
             }
 
             if (dtTDate >= today) {
-                alert("ONLY Past date is allowed in 'To Date'");
+                $message.text("ONLY Past date is allowed in 'To Date'");
                 return false;
             }
 
             if (dtTDate < dtFDate) {
-                alert("'To Date' should be greater than 'From Date'");
+                $message.text("'To Date' should be greater than 'From Date'");
                 return false;
             }
 
             var eRem = $('#remarks').val();
             if (eRem == null || eRem == "") {
-                alert("'Remarks' is required");
-                //$('[name*="employee_code"]').focus();
-                return false;
-            }
-
-            var r = confirm("Are you sure you want to Update?");
-            if (r == false) {
+                $message.text("'Remarks' is required");
                 return false;
             }
 

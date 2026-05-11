@@ -125,6 +125,45 @@
 
 @section JS {
     <script>
+        function exportDataTableAsCsv(tableSelector, fileName) {
+            var table = $(tableSelector);
+            if (!table.length || !$.fn.DataTable) {
+                return;
+            }
+
+            var dataTable = table.DataTable();
+            var rows = [];
+            var headers = [];
+
+            table.find("thead th").each(function () {
+                var headerText = ($(this).text() || "").replace(/\s+/g, " ").trim().replace(/"/g, '""');
+                headers.push('"' + headerText + '"');
+            });
+            if (headers.length > 0) rows.push(headers.join(","));
+
+            var exportRows = dataTable.rows({ search: "applied" }).data().toArray();
+            for (var i = 0; i < exportRows.length; i++) {
+                var row = exportRows[i];
+                rows.push([
+                    '"' + String(row.id || "").replace(/"/g, '""') + '"',
+                    '"' + String(row.name || "").replace(/"/g, '""') + '"',
+                    '"' + String(row.description || "").replace(/"/g, '""') + '"',
+                    '""'
+                ].join(","));
+            }
+
+            var csvContent = rows.join("\n");
+            var blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+            var url = URL.createObjectURL(blob);
+            var link = document.createElement("a");
+            link.href = url;
+            link.download = fileName + ".csv";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
         $(document).ready(function () {
             var empCode2= @Html.Raw(MvcApplication1.ViewModel.GlobalVariables.GV_EmployeeId);
 
@@ -147,7 +186,7 @@
                 }
             });
             $("#btnExport").click(function (e) {
-                setupTableExportButton('#department_table', 'Departments');
+                exportDataTableAsCsv('#department_table', 'Departments');
                 e.preventDefault();
             });
 

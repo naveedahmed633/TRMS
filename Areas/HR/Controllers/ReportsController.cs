@@ -8013,7 +8013,7 @@ namespace MvcApplication1.Areas.HR.Controllers
                     ViewData["PDFNoDataFoundDept"] = "No Data Found";
                 }
 
-                return View("DepartmentReport");
+                return View("DepartmentAttendanceReport");
             }
             catch (Exception ex)
             {

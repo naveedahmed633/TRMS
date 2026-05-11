@@ -5426,17 +5426,17 @@ namespace MvcApplication1.Areas.HR.Controllers
             //    return RedirectToAction("GenerateOrganizationEmployeesReport");
 
             if (!int.TryParse(Request.Form["dept_id"], out iDeptID))
-                return RedirectToAction("GenerateOrganizationEmployeesReport");
+                return RedirectToAction("GenerateEmployeesReport");
 
             if (!int.TryParse(Request.Form["desg_id"], out iDesgID))
-                return RedirectToAction("GenerateOrganizationEmployeesReport");
+                return RedirectToAction("GenerateEmployeesReport");
 
             if (!int.TryParse(Request.Form["loct_id"], out iLoctID))
-                return RedirectToAction("GenerateOrganizationEmployeesReport");
+                return RedirectToAction("GenerateEmployeesReport");
 
             EmployeesReportData toRender = reportMaker.getOrganizationEmployeesReport(iCampusID, iDeptID, iDesgID, iLoctID);
             if (toRender == null)
-                return RedirectToAction("GenerateOrganizationEmployeesReport");
+                return RedirectToAction("GenerateEmployeesReport");
 
             found = DownloadEmployeesReportPDF(toRender);
             if (found == 1)
@@ -5460,6 +5460,11 @@ namespace MvcApplication1.Areas.HR.Controllers
         private int DownloadEmployeesReportPDF(EmployeesReportData sdata)
         {
             int reponse = 0;
+
+            if (sdata == null || sdata.logs == null || sdata.logs.Length == 0)
+            {
+                return 0;
+            }
 
             try
             {

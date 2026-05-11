@@ -6,7 +6,11 @@
         "generate-monthly-punched-photo",
         "generate-captured-photo-sheet",
         "generate-loan-report",
-        "generate-payroll-report"
+        "generate-payroll-report",
+        "department-attendance-pdf-btn",
+        "department-report-pdf-btn",
+        "miss-punch-report-pdf-btn",
+        "manual-punch-report-pdf-btn"
     ];
 
     function hasJsPdf() {
@@ -132,38 +136,96 @@
         return null;
     }
 
+    function isPlaceholderValue(value) {
+        if (value == null) return true;
+        var normalized = String(value).replace(/\s+/g, " ").trim();
+        if (!normalized) return true;
+        var lower = normalized.toLowerCase();
+        return lower === "n/a" || lower === "na" || lower === "null" || lower === "undefined";
+    }
+
+    function cleanTextValue(value) {
+        if (value == null) return "";
+        return String(value).replace(/\s+/g, " ").trim();
+    }
+
     function getCurrentUserName() {
-        var fromPageTitle = document.querySelector(".page-title .text-success");
-        if (fromPageTitle && (fromPageTitle.textContent || "").trim()) {
-            return (fromPageTitle.textContent || "").trim();
+        if (typeof window.userRole === "string" && window.userRole.trim()) {
+            var fromRole = window.userRole.replace(/^(HR|EMPLOYEE|LINE MANAGER)\s*:\s*/i, "").trim();
+            if (!isPlaceholderValue(fromRole) && fromRole.toLowerCase() !== "unauthorized" && !/^\d+$/.test(fromRole)) {
+                return fromRole;
+            }
         }
 
-        var navUser = document.querySelector(".nav-user");
-        if (navUser && (navUser.textContent || "").trim()) {
-            return (navUser.textContent || "").trim();
+        var fromPageTitle = document.querySelector(".page-title .text-success");
+        if (fromPageTitle) {
+            var fromPageTitleText = cleanTextValue(fromPageTitle.textContent || "");
+            if (!isPlaceholderValue(fromPageTitleText) && !/^\d+$/.test(fromPageTitleText)) {
+                return fromPageTitleText;
+            }
+        }
+
+        var navCandidates = [
+            ".nav-user span",
+            "a.nav-user span",
+            ".navbar-custom .nav-user",
+            "a[href*='UserProfile'] span"
+        ];
+        for (var i = 0; i < navCandidates.length; i++) {
+            var navUser = document.querySelector(navCandidates[i]);
+            if (!navUser) continue;
+            var navText = cleanTextValue(navUser.textContent || "");
+            if (!isPlaceholderValue(navText)) {
+                navText = navText.replace(/^(HR|EMPLOYEE|LINE MANAGER)\s*:\s*/i, "").trim();
+                if (!isPlaceholderValue(navText) && !/^\d+$/.test(navText)) return navText;
+            }
+        }
+
+        var sidebarUserNode = document.querySelector("#sidebar-menu .mdi-account-box + span");
+        if (sidebarUserNode) {
+            var sidebarUser = cleanTextValue(sidebarUserNode.textContent || "");
+            if (!isPlaceholderValue(sidebarUser) && !/^\d+$/.test(sidebarUser)) {
+                return sidebarUser;
+            }
         }
 
         var titleText = (document.querySelector(".page-title") && document.querySelector(".page-title").textContent || "").trim();
         if (titleText) {
             var m = titleText.match(/Name\s*:\s*([^\]\n\r]+)/i);
-            if (m && m[1] && m[1].trim()) return m[1].trim();
+            if (m && m[1] && !isPlaceholderValue(m[1]) && !/^\d+$/.test(m[1].trim())) return m[1].trim();
         }
 
         return "N/A";
     }
 
     function getCurrentUserCode() {
+        if (typeof window.userRole === "string" && window.userRole.trim()) {
+            var fromRole = window.userRole.replace(/^(HR|EMPLOYEE|LINE MANAGER)\s*:\s*/i, "").trim();
+            if (fromRole && fromRole.toLowerCase() !== "unauthorized") {
+                return fromRole;
+            }
+        }
+
         var loginIdNode = document.querySelector(".page-title .text-warning");
         if (loginIdNode) {
-            var fromTitle = (loginIdNode.getAttribute("title") || "").trim();
-            if (fromTitle) return fromTitle;
             var fromText = (loginIdNode.textContent || "").trim();
-            if (fromText) return fromText;
+            if (!isPlaceholderValue(fromText)) return fromText;
+            var fromTitle = (loginIdNode.getAttribute("title") || "").trim();
+            if (!isPlaceholderValue(fromTitle)) return fromTitle;
         }
+
+        var sidebarCodeNode = document.querySelector("#sidebar-menu .mdi-account-box + span");
+        if (sidebarCodeNode) {
+            var sidebarCode = cleanTextValue(sidebarCodeNode.textContent || "");
+            if (!isPlaceholderValue(sidebarCode)) {
+                return sidebarCode;
+            }
+        }
+
         var titleText = (document.querySelector(".page-title") && document.querySelector(".page-title").textContent || "").trim();
         if (titleText) {
             var m = titleText.match(/Login ID\s*:\s*([^\]&\n\r]+)/i);
-            if (m && m[1] && m[1].trim()) return m[1].trim();
+            if (m && m[1] && !isPlaceholderValue(m[1])) return m[1].trim();
         }
         return "N/A";
     }
@@ -198,11 +260,27 @@
         return (cells[idx].textContent || "").trim();
     }
 
+    function getEmployeeNameFromTable(table) {
+        if (!table) return "";
+        var firstNameIdx = getTableHeaderIndex(table, ["fname", "first name", "employee first name", "الاسم"]);
+        var lastNameIdx = getTableHeaderIndex(table, ["lname", "last name", "employee last name"]);
+        var fullNameIdx = getTableHeaderIndex(table, ["employee name", "emp name", "full name", "employee full name"]);
+
+        var firstName = getFirstBodyCellByIndex(table, firstNameIdx);
+        var lastName = getFirstBodyCellByIndex(table, lastNameIdx);
+        if (firstName || lastName) {
+            return (firstName + " " + lastName).replace(/\s+/g, " ").trim();
+        }
+
+        return getFirstBodyCellByIndex(table, fullNameIdx);
+    }
+
     function getEmployeeName(contextRoot, table) {
         var root = contextRoot || document;
         var selectors = [
             "#EmployeeName",
             "#employee_name",
+            "#employees option:checked",
             "#monthly-time-sheet-employees option:checked",
             "#consolidated-employees option:checked",
             "#monthly-punched-photo-employees option:checked",
@@ -210,6 +288,7 @@
             "#monthly-captured-photo-employees option:checked",
             "#EmployeeId option:checked",
             "#employee_id option:checked",
+            "select[name='employee_code'] option:checked",
             "select[name='employee_id'] option:checked",
             "select[name='employee_d'] option:checked"
         ];
@@ -245,8 +324,7 @@
             }
         }
 
-        var nameIdx = getTableHeaderIndex(table, ["name", "fname", "employee name", "الاسم"]);
-        var nameFromTable = getFirstBodyCellByIndex(table, nameIdx);
+        var nameFromTable = getEmployeeNameFromTable(table);
         if (nameFromTable) return nameFromTable;
 
         return getCurrentUserName();
@@ -265,7 +343,9 @@
             "#monthly-punched-photo-employees option:checked",
             "#monthly-geo-phencing-employees option:checked",
             "#monthly-captured-photo-employees option:checked",
+            "#employees option:checked",
             "#employee_id option:checked",
+            "select[name='employee_code'] option:checked",
             "select[name='employee_id'] option:checked",
             "select[name='employee_d'] option:checked"
         ];
@@ -286,8 +366,10 @@
             "#monthly-punched-photo-employees",
             "#monthly-geo-phencing-employees",
             "#monthly-captured-photo-employees",
+            "#employees",
             "#EmployeeId",
             "#employee_id",
+            "select[name='employee_code']",
             "select[name='employee_id']",
             "select[name='employee_d']"
         ];
@@ -309,7 +391,7 @@
             }
         }
 
-        var codeIdx = getTableHeaderIndex(table, ["empcode", "employee code", "code", "رمز"]);
+        var codeIdx = getTableHeaderIndex(table, ["empcode", "employee code", "employeecode", "رمز الموظف", "رمز"]);
         var codeFromTable = getFirstBodyCellByIndex(table, codeIdx);
         if (codeFromTable) return codeFromTable;
 
@@ -353,8 +435,46 @@
             return fromValue + " to " + toValue;
         }
 
-        var monthInput = pickFirst(root, ["[name='month']", "#monthly-time-sheet-month", "#month_year", "#pdf-month", "[name='month_year']", "[name='lmonth_year']"]) || document.querySelector("[name='month'], #monthly-time-sheet-month, #month_year, #pdf-month, [name='month_year'], [name='lmonth_year']");
-        var monthValue = monthInput && (monthInput.value || "").trim();
+        var reviewPeriodNode = pickFirst(root, ["#_reviewPeriod", "[name='reviewPeriod']"]) || document.querySelector("#_reviewPeriod, [name='reviewPeriod']");
+        if (reviewPeriodNode) {
+            var reviewValue = (reviewPeriodNode.value || "").trim();
+            var reviewText = "";
+            if (reviewPeriodNode.selectedOptions && reviewPeriodNode.selectedOptions.length > 0) {
+                reviewText = (reviewPeriodNode.selectedOptions[0].textContent || "").trim();
+            }
+
+            if (reviewValue && reviewValue.toLowerCase() === "today") {
+                var now = getDateTimeParts();
+                return now.date;
+            }
+
+            if (reviewText && reviewText.toLowerCase() !== "none") {
+                return reviewText;
+            }
+        }
+
+        function firstNonEmptyValue(selectors) {
+            for (var i = 0; i < selectors.length; i++) {
+                var local = root.querySelector(selectors[i]);
+                var localValue = local && (local.value || "").trim();
+                if (localValue) return localValue;
+            }
+            for (var j = 0; j < selectors.length; j++) {
+                var global = document.querySelector(selectors[j]);
+                var globalValue = global && (global.value || "").trim();
+                if (globalValue) return globalValue;
+            }
+            return "";
+        }
+
+        var monthValue = firstNonEmptyValue([
+            "#monthly-time-sheet-month",
+            "#month_year",
+            "[name='month_year']",
+            "[name='lmonth_year']",
+            "#pdf-month",
+            "[name='month']"
+        ]);
         if (monthValue) {
             var parsed = parseMonthValue(monthValue);
             if (parsed) {
@@ -368,7 +488,8 @@
             return (anyDate.value || "").trim();
         }
 
-        return "N/A";
+        var fallbackToday = getDateTimeParts();
+        return fallbackToday.date;
     }
 
     function loadImageAsDataUrl(src, callback) {
@@ -412,7 +533,27 @@
     }
 
     function getPrintedByName() {
-        return getCurrentUserName();
+        var printedBy = getCurrentUserName();
+        if (printedBy && printedBy !== "N/A") {
+            return printedBy;
+        }
+
+        var loginId = getCurrentUserCode();
+        if (loginId && loginId !== "N/A") {
+            return loginId;
+        }
+
+        return "System";
+    }
+
+    function getHeaderName() {
+        var userName = getCurrentUserName();
+        if (userName && userName !== "N/A") {
+            return userName;
+        }
+
+        // Keep header name populated with login identity when full name is unavailable.
+        return getPrintedByName();
     }
 
     function setPdfFont(doc, isArabic, isBold) {
@@ -463,14 +604,12 @@
             setPdfFont(doc, isArabic, false);
             doc.setFontSize(10);
             if (isArabic) {
-                doc.text(labels.labelName + ": " + headerInfo.employeeName, rightX, 31, { align: "right" });
-                doc.text(labels.labelEmployeeCode + ": " + headerInfo.employeeCode, rightX, 37, { align: "right" });
-                doc.text(labels.labelFilterDate + ": " + headerInfo.filterDateRange, rightX, 43, { align: "right" });
+                doc.text(labels.labelEmployeeCode + ": " + headerInfo.employeeCode, rightX, 31, { align: "right" });
+                doc.text(labels.labelFilterDate + ": " + headerInfo.filterDateRange, rightX, 37, { align: "right" });
                 doc.text(reportTitle, leftX, 34);
             } else {
-                doc.text(labels.labelName + ": " + headerInfo.employeeName, leftX, 31);
-                doc.text(labels.labelEmployeeCode + ": " + headerInfo.employeeCode, leftX, 37);
-                doc.text(labels.labelFilterDate + ": " + headerInfo.filterDateRange, leftX, 43);
+                doc.text(labels.labelEmployeeCode + ": " + headerInfo.employeeCode, leftX, 31);
+                doc.text(labels.labelFilterDate + ": " + headerInfo.filterDateRange, leftX, 37);
                 doc.text(reportTitle, rightX, 34, { align: "right" });
             }
 
@@ -502,10 +641,28 @@
         var headerInfo = {
             date: dateTime.date,
             time: dateTime.time,
-            employeeName: getEmployeeName(contextRoot, table),
+            employeeName: getHeaderName(),
             employeeCode: getEmployeeCode(contextRoot, table),
             filterDateRange: getFilterDateRange(contextRoot)
         };
+
+        if (!headerInfo.employeeName || headerInfo.employeeName === "N/A") {
+            headerInfo.employeeName = getHeaderName();
+        }
+        if (!headerInfo.employeeCode || headerInfo.employeeCode === "N/A") {
+            headerInfo.employeeCode = getCurrentUserCode();
+        }
+        if (!headerInfo.filterDateRange || headerInfo.filterDateRange === "N/A") {
+            headerInfo.filterDateRange = getDateTimeParts().date;
+        }
+
+        if (headerInfo.employeeName && headerInfo.employeeCode && headerInfo.employeeName === headerInfo.employeeCode) {
+            var nonCodeName = getCurrentUserName();
+            if (nonCodeName && nonCodeName !== "N/A" && nonCodeName !== headerInfo.employeeCode) {
+                headerInfo.employeeName = nonCodeName;
+            }
+        }
+
         var printedBy = getPrintedByName();
 
         setPdfFont(doc, isArabic, false);
@@ -521,25 +678,75 @@
         }
 
         drawPdfHeader(doc, title, headerInfo, labels, isArabic, function (startY) {
-            doc.autoTable({
-                html: table,
+            function cellText(el) {
+                return (el.textContent || "").replace(/\s+/g, " ").trim();
+            }
+
+            function extractTableMatrix(tbl) {
+                var head = [];
+                var theadRows = tbl.querySelectorAll("thead tr");
+                for (var hr = 0; hr < theadRows.length; hr++) {
+                    var hcells = theadRows[hr].querySelectorAll("th, td");
+                    var row = [];
+                    for (var hc = 0; hc < hcells.length; hc++) {
+                        row.push(cellText(hcells[hc]));
+                    }
+                    if (row.length) head.push(row);
+                }
+
+                var body = [];
+                var bodyRows = tbl.querySelectorAll("tbody tr");
+                for (var br = 0; br < bodyRows.length; br++) {
+                    var bcells = bodyRows[br].querySelectorAll("td");
+                    var brow = [];
+                    for (var bc = 0; bc < bcells.length; bc++) {
+                        brow.push(cellText(bcells[bc]));
+                    }
+                    if (brow.length) body.push(brow);
+                }
+
+                return { head: head, body: body };
+            }
+
+            function reverseMatrixRows(rows) {
+                var out = [];
+                for (var i = 0; i < rows.length; i++) {
+                    out.push(rows[i].slice().reverse());
+                }
+                return out;
+            }
+
+            var autoTableOpts = {
                 startY: startY,
                 theme: "grid",
                 styles: {
                     fontSize: 8,
                     cellPadding: 1.5,
                     overflow: "linebreak",
-                    // Keep same visual flow as English: first column starts from left.
-                    halign: "left",
+                    halign: isArabic ? "right" : "left",
                     font: isArabic ? "Amiri-Regular" : "helvetica"
                 },
                 headStyles: {
                     fillColor: [52, 58, 64],
                     textColor: 255,
-                    halign: "left",
+                    halign: isArabic ? "right" : "left",
                     font: isArabic ? "Amiri-Regular" : "helvetica"
                 }
-            });
+            };
+
+            if (isArabic) {
+                var matrix = extractTableMatrix(table);
+                if (matrix.head.length && matrix.body.length) {
+                    autoTableOpts.head = reverseMatrixRows(matrix.head);
+                    autoTableOpts.body = reverseMatrixRows(matrix.body);
+                } else {
+                    autoTableOpts.html = table;
+                }
+            } else {
+                autoTableOpts.html = table;
+            }
+
+            doc.autoTable(autoTableOpts);
 
             var y = (doc.lastAutoTable && doc.lastAutoTable.finalY ? doc.lastAutoTable.finalY : startY) + 10;
             if (y > 200) {

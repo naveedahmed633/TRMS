@@ -112,6 +112,7 @@
                                 <div class="row">
                                     <div class="col-4">
                                         <button type="submit" value="Submit" id="update" onclick="return validateFormData();" class="btn btn-primary waves-effect waves-light m-t-10">@MvcApplication1.ViewModel.GlobalVariables.GetStringResource("attendance.updateatt")</button>
+                                        <div id="manual-time-adjustment-message" class="m-t-10"></div>
                                     </div>
                                 </div>
                             }
@@ -199,6 +200,14 @@
         }
 
         $(document).ready(function () {
+            function showAdjustmentMessage(message, isSuccess) {
+                var $message = $('#manual-time-adjustment-message');
+                $message
+                    .removeClass('text-success text-danger')
+                    .addClass(isSuccess ? 'text-success' : 'text-danger')
+                    .text(message);
+            }
+
             $(".chzn-select").chosen();
             $(".datepicker").datepicker({ dateFormat: 'dd-mm-yy' });
 
@@ -214,13 +223,13 @@
                     data: form.serialize(), // Serialize the form data
                     success: function (response) {
                         if (response && response.Success) {
-                            alert("Attendance log updated successfully!");
+                            showAdjustmentMessage("Attendance log updated successfully!", true);
                         } else {
-                            alert("Failed to update attendance log. Please try again.");
+                            showAdjustmentMessage("Failed to update attendance log. Please try again.", false);
                         }
                     },
                     error: function (xhr, status, error) {
-                        alert("An error occurred: " + error);
+                        showAdjustmentMessage("An error occurred: " + error, false);
                     }
                 });
             });
@@ -228,11 +237,11 @@
 
             $('#loadRecord').on('click', function () {
                 // Step 1: Validate fields
-                const empId = $('#employees').val().trim();
-                const date = $('#date').val().trim();
+                const empId = ($('#employees').val() || "").trim();
+                const date = ($('#date').val() || "").trim();
 
                 if (!empId || !date) {
-                    alert('Both Employee ID and Date are required.');
+                    showAdjustmentMessage('Both Employee ID and Date are required.', false);
                     return;
                 }
 
@@ -251,13 +260,14 @@
                             $('#time_in').val(response.time_in);
                             $('#time_out').val(response.time_out);
                             $('#remark').val(response.final_remarks);
+                            showAdjustmentMessage('', true);
                         } else {
-                            alert('No record found.');
+                            showAdjustmentMessage('No record found.', false);
                         }
                     },
                     error: function (xhr, status, error) {
                         console.error('Error loading record:', error);
-                        alert('An error occurred while loading the record. Please try again.');
+                        showAdjustmentMessage('An error occurred while loading the record. Please try again.', false);
                     }
                 });
             });
