@@ -456,6 +456,7 @@
     <Compile Include="Areas\HR\Controllers\ReportsController.cs" />
     <Compile Include="Areas\HR\Controllers\RosterManagementController.cs" />
     <Compile Include="Areas\HR\Controllers\ShiftManagementController.cs" />
+    <Compile Include="Helpers\PdfArabicTextHelper.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

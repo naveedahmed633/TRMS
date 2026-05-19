@@ -92,6 +92,130 @@
         return htmlLang.indexOf("ar") === 0;
     }
 
+    var PDF_UNICODE_FONT = "Amiri-Regular";
+    var ARABIC_SCRIPT_RE = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+    var MOJIBAKE_RE = /[þÿÃÂØÙÚÛÜÝÞßà-ï]{2,}/;
+
+    function hasArabicScript(value) {
+        if (value == null) return false;
+        return ARABIC_SCRIPT_RE.test(String(value));
+    }
+
+    function hasLikelyMojibake(value) {
+        if (value == null) return false;
+        return MOJIBAKE_RE.test(String(value));
+    }
+
+    function bytesFromLatin1String(text) {
+        var bytes = new Uint8Array(text.length);
+        for (var i = 0; i < text.length; i++) {
+            bytes[i] = text.charCodeAt(i) & 0xff;
+        }
+        return bytes;
+    }
+
+    function tryDecodeBytes(bytes, encoding) {
+        try {
+            if (typeof TextDecoder === "undefined") {
+                return "";
+            }
+            return new TextDecoder(encoding).decode(bytes);
+        } catch (e) {
+            return "";
+        }
+    }
+
+    function repairUtf8Mojibake(value) {
+        if (value == null) return "";
+        var text = String(value);
+        if (!text || hasArabicScript(text)) return text;
+
+        if (!hasLikelyMojibake(text) && !/[\u0080-\u00ff]/.test(text)) {
+            return text;
+        }
+
+        var bytes = bytesFromLatin1String(text);
+
+        var fromCp1256 = tryDecodeBytes(bytes, "windows-1256");
+        if (fromCp1256 && hasArabicScript(fromCp1256)) {
+            return fromCp1256;
+        }
+
+        var fromUtf8 = tryDecodeBytes(bytes, "utf-8");
+        if (fromUtf8 && hasArabicScript(fromUtf8)) {
+            return fromUtf8;
+        }
+
+        try {
+            var repaired = decodeURIComponent(escape(text));
+            if (repaired && hasArabicScript(repaired)) {
+                return repaired;
+            }
+        } catch (e1) {
+            // fall through
+        }
+
+        return text;
+    }
+
+    function normalizePdfText(value) {
+        return repairUtf8Mojibake(cleanTextValue(value));
+    }
+
+    function tableHasArabicContent(table) {
+        if (!table) return false;
+        var cells = table.querySelectorAll("th, td");
+        for (var i = 0; i < cells.length; i++) {
+            var text = normalizePdfText(cells[i].textContent || "");
+            if (hasArabicScript(text) || hasLikelyMojibake(text)) return true;
+        }
+        return false;
+    }
+
+    function shouldUseUnicodeFont(isArabic, table, extraTexts) {
+        if (isArabic) return true;
+        if (tableHasArabicContent(table)) return true;
+        if (extraTexts) {
+            for (var i = 0; i < extraTexts.length; i++) {
+                var normalized = normalizePdfText(extraTexts[i]);
+                if (hasArabicScript(normalized) || hasLikelyMojibake(normalized)) return true;
+            }
+        }
+        return false;
+    }
+
+    function registerPdfUnicodeFonts(doc) {
+        if (!doc) return false;
+
+        try {
+            if (doc.getFontList && doc.getFontList()[PDF_UNICODE_FONT]) {
+                return true;
+            }
+        } catch (e) {
+            // continue
+        }
+
+        try {
+            var JsPDF = getJsPdfCtor();
+            if (JsPDF && JsPDF.API && JsPDF.API.events) {
+                for (var i = 0; i < JsPDF.API.events.length; i++) {
+                    var entry = JsPDF.API.events[i];
+                    if (entry[0] === "addFonts" && typeof entry[1] === "function") {
+                        entry[1].call(doc);
+                    }
+                }
+            }
+        } catch (e2) {
+            return false;
+        }
+
+        try {
+            return !!(doc.getFontList && doc.getFontList()[PDF_UNICODE_FONT]);
+        } catch (e3) {
+            return false;
+        }
+    }
+
     function getPdfLabels(isArabic) {
         if (isArabic) {
             return {
@@ -556,10 +680,10 @@
         return getPrintedByName();
     }
 
-    function setPdfFont(doc, isArabic, isBold) {
-        if (isArabic) {
+    function setPdfFont(doc, useUnicodeFont, isBold) {
+        if (useUnicodeFont) {
             try {
-                doc.setFont("Amiri-Regular", "normal");
+                doc.setFont(PDF_UNICODE_FONT, "normal");
                 return;
             } catch (e) {
                 doc.setFont("helvetica", isBold ? "bold" : "normal");
@@ -569,14 +693,14 @@
         doc.setFont("helvetica", isBold ? "bold" : "normal");
     }
 
-    function drawPdfHeader(doc, reportTitle, headerInfo, labels, isArabic, done) {
+    function drawPdfHeader(doc, reportTitle, headerInfo, labels, isArabic, useUnicodeFont, done) {
         var pageWidth = doc.internal.pageSize.getWidth();
         var leftX = 14;
         var rightX = pageWidth - 14;
         var centerX = pageWidth / 2;
         var logoPath = getConfiguredLogoPath();
 
-        setPdfFont(doc, isArabic, false);
+        setPdfFont(doc, useUnicodeFont, false);
         doc.setFontSize(11);
         if (isArabic) {
             doc.text(labels.governorate, rightX, 12, { align: "right" });
@@ -601,7 +725,7 @@
             doc.setLineWidth(0.3);
             doc.line(leftX, 24, rightX, 24);
 
-            setPdfFont(doc, isArabic, false);
+            setPdfFont(doc, useUnicodeFont, false);
             doc.setFontSize(10);
             if (isArabic) {
                 doc.text(labels.labelEmployeeCode + ": " + headerInfo.employeeCode, rightX, 31, { align: "right" });
@@ -633,6 +757,7 @@
 
         var jsPDF = getJsPdfCtor();
         var doc = new jsPDF("l", "mm", "a4");
+        var unicodeFontReady = registerPdfUnicodeFonts(doc);
         var isArabic = isArabicLanguage();
         var labels = getPdfLabels(isArabic);
         var title = getReportTitle();
@@ -664,8 +789,28 @@
         }
 
         var printedBy = getPrintedByName();
+        title = normalizePdfText(title);
+        headerInfo.employeeName = normalizePdfText(headerInfo.employeeName);
+        headerInfo.employeeCode = normalizePdfText(headerInfo.employeeCode);
+        headerInfo.filterDateRange = normalizePdfText(headerInfo.filterDateRange);
+        printedBy = normalizePdfText(printedBy);
 
-        setPdfFont(doc, isArabic, false);
+        var needsUnicodeFont = shouldUseUnicodeFont(isArabic, table, [
+            title,
+            headerInfo.employeeName,
+            headerInfo.employeeCode,
+            headerInfo.filterDateRange,
+            printedBy
+        ]);
+        var useUnicodeFont = unicodeFontReady;
+
+        if (needsUnicodeFont && !unicodeFontReady) {
+            alert("Arabic PDF font could not be loaded. Please refresh the page and try again.");
+            done(false);
+            return;
+        }
+
+        setPdfFont(doc, useUnicodeFont, false);
 
         if (typeof doc.autoTable !== "function" && window.jspdfAutoTable) {
             doc.autoTable = window.jspdfAutoTable.default || window.jspdfAutoTable;
@@ -677,9 +822,22 @@
             return;
         }
 
-        drawPdfHeader(doc, title, headerInfo, labels, isArabic, function (startY) {
+        drawPdfHeader(doc, title, headerInfo, labels, isArabic, useUnicodeFont, function (startY) {
             function cellText(el) {
-                return (el.textContent || "").replace(/\s+/g, " ").trim();
+                return normalizePdfText(el.textContent || "");
+            }
+
+            function normalizeCellText(cell) {
+                if (cell == null) return cell;
+                if (typeof cell === "string") {
+                    return normalizePdfText(cell);
+                }
+                if (Array.isArray(cell)) {
+                    for (var ci = 0; ci < cell.length; ci++) {
+                        cell[ci] = normalizePdfText(cell[ci]);
+                    }
+                }
+                return cell;
             }
 
             function extractTableMatrix(tbl) {
@@ -716,6 +874,7 @@
                 return out;
             }
 
+            var pdfTableFont = useUnicodeFont ? PDF_UNICODE_FONT : "helvetica";
             var autoTableOpts = {
                 startY: startY,
                 theme: "grid",
@@ -724,24 +883,36 @@
                     cellPadding: 1.5,
                     overflow: "linebreak",
                     halign: isArabic ? "right" : "left",
-                    font: isArabic ? "Amiri-Regular" : "helvetica"
+                    font: pdfTableFont,
+                    fontStyle: "normal"
                 },
                 headStyles: {
                     fillColor: [52, 58, 64],
                     textColor: 255,
                     halign: isArabic ? "right" : "left",
-                    font: isArabic ? "Amiri-Regular" : "helvetica"
+                    font: pdfTableFont,
+                    fontStyle: "normal"
+                },
+                didParseCell: function (data) {
+                    if (data.cell && data.cell.text != null) {
+                        data.cell.text = normalizeCellText(data.cell.text);
+                    }
+                    if (useUnicodeFont) {
+                        data.cell.styles.font = PDF_UNICODE_FONT;
+                        data.cell.styles.fontStyle = "normal";
+                    }
+                },
+                willDrawCell: function (data) {
+                    if (useUnicodeFont) {
+                        doc.setFont(PDF_UNICODE_FONT, "normal");
+                    }
                 }
             };
 
-            if (isArabic) {
-                var matrix = extractTableMatrix(table);
-                if (matrix.head.length && matrix.body.length) {
-                    autoTableOpts.head = reverseMatrixRows(matrix.head);
-                    autoTableOpts.body = reverseMatrixRows(matrix.body);
-                } else {
-                    autoTableOpts.html = table;
-                }
+            var matrix = extractTableMatrix(table);
+            if (matrix.head.length && matrix.body.length) {
+                autoTableOpts.head = isArabic ? reverseMatrixRows(matrix.head) : matrix.head;
+                autoTableOpts.body = isArabic ? reverseMatrixRows(matrix.body) : matrix.body;
             } else {
                 autoTableOpts.html = table;
             }
@@ -753,7 +924,7 @@
                 doc.addPage();
                 y = 20;
             }
-            setPdfFont(doc, isArabic, true);
+            setPdfFont(doc, useUnicodeFont, true);
             if (isArabic) {
                 doc.text(labels.labelPrintedBy + ": " + printedBy, doc.internal.pageSize.getWidth() - 14, y, { align: "right" });
             } else {

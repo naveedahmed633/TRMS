@@ -9,6 +9,7 @@ using ViewModels;
 using TimeTune;
 using Rotativa;
 using BLL.ViewModels;
+using MvcApplication1.Helpers;
 using System.IO;
 using iTextSharp.text.pdf;
 using iTextSharp.text;
@@ -110,6 +111,11 @@ namespace MvcApplication1.Areas.HR.Controllers
             return MvcApplication1.ViewModel.GlobalVariables.GetStringResource(key) ?? key;
         }
 
+        private static Phrase CreatePdfPhrase(string text, Font font)
+        {
+            return new Phrase(new Chunk(text ?? string.Empty, font));
+        }
+
 // ============================================================
 // REPORT NAME: SafeAddCell
 // FUNCTIONALITY: Handles report workflow and output generation.
@@ -117,9 +123,9 @@ namespace MvcApplication1.Areas.HR.Controllers
 // ============================================================
         private PdfPCell SafeAddCell(string text, bool isBold = false, int alignment = PdfPCell.ALIGN_LEFT)
         {
-            text = text ?? "";
+            text = PdfArabicTextHelper.FixIfNeeded(text ?? "");
             var font = GetFont(isBold);
-            var cell = new PdfPCell(new Phrase(text, font));
+            var cell = new PdfPCell(CreatePdfPhrase(text, font));
             int resolvedAlignment = alignment == Element.ALIGN_CENTER ? Element.ALIGN_CENTER : GetPdfDefaultHorizontalAlignment();
             cell.HorizontalAlignment = resolvedAlignment;
             cell.RunDirection = GetPdfRunDirection();
@@ -754,12 +760,12 @@ namespace MvcApplication1.Areas.HR.Controllers
 
                         tableEInfo.AddCell(SafeAddCell(GetStringResource("lblmonthyear") + ": " + emp.month + " " + emp.year, true));
 
-                        PdfPCell cellDeptName = new PdfPCell(new Phrase(GetStringResource("lblDepartmentName") + ": " + emp.departmentName, fBold9));
+                        PdfPCell cellDeptName = new PdfPCell(CreatePdfPhrase(GetStringResource("lblDepartmentName") + ": " + PdfArabicTextHelper.FixIfNeeded(emp.departmentName), fBold9));
                         cellDeptName.Border = 0;
                         cellDeptName.HorizontalAlignment = GetPdfTextAlignment(lang);
                         tableEInfo.AddCell(cellDeptName);
 
-                        PdfPCell cellDesigName = new PdfPCell(new Phrase(GetStringResource("lblDesignationName") + ": " + emp.designationName, fBold9));
+                        PdfPCell cellDesigName = new PdfPCell(CreatePdfPhrase(GetStringResource("lblDesignationName") + ": " + PdfArabicTextHelper.FixIfNeeded(emp.designationName), fBold9));
                         cellDesigName.Border = 0;
                         cellDesigName.HorizontalAlignment = GetPdfTextAlignment(lang);
                         tableEInfo.AddCell(cellDesigName);
@@ -8895,7 +8901,7 @@ namespace MvcApplication1.Areas.HR.Controllers
                     foreach (Dept_Per_Rept log in sdata.dataSet)
                     {
 
-                        PdfPCell cellData1 = new PdfPCell(new Phrase(log.DepartmentName, fNormal8));
+                        PdfPCell cellData1 = new PdfPCell(CreatePdfPhrase(PdfArabicTextHelper.FixIfNeeded(log.DepartmentName), fNormal8));
                         tableMid.AddCell(cellData1);
 
                         PdfPCell cellData2 = new PdfPCell(new Phrase(log.PresentPercent.ToString(), fNormal8));
@@ -9055,6 +9061,14 @@ namespace MvcApplication1.Areas.HR.Controllers
                     return Json("No Data to Show");
 
                 List<ViewModels.Dept_Per_Rept> data = DeptPerReportSet.GetResult(param.Search.Value, param.SortOrder, param.Start, param.Length, dtsource.dataSet);
+
+                if (data != null)
+                {
+                    foreach (var row in data)
+                    {
+                        row.DepartmentName = PdfArabicTextHelper.FixIfNeeded(row.DepartmentName);
+                    }
+                }
 
                 int count = DeptPerReportSet.Count(param.Search.Value, dtsource.dataSet);
 
@@ -9303,7 +9317,7 @@ namespace MvcApplication1.Areas.HR.Controllers
                     foreach (Dept_Per_Rept log in sdata.dataSet)
                     {
 
-                        PdfPCell cellData1 = new PdfPCell(new Phrase(log.DepartmentName, fNormal8));
+                        PdfPCell cellData1 = new PdfPCell(CreatePdfPhrase(PdfArabicTextHelper.FixIfNeeded(log.DepartmentName), fNormal8));
                         tableMid.AddCell(cellData1);
 
                         PdfPCell cellData2 = new PdfPCell(new Phrase(log.PresentPercent.ToString(), fNormal8));
